@@ -7,8 +7,6 @@ Sample::~Sample()
 {}
 bool Sample::Init()
 {
-	HRESULT hr;
-
 	UINT createDeviceFlags = 0;
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -46,14 +44,14 @@ bool Sample::Init()
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; ++driverTypeIndex)
 	{
 		m_DriverType = driverTypes[driverTypeIndex];
-		if (SUCCEEDED(hr = D3D11CreateDeviceAndSwapChain(NULL,
+		if (D3D11CreateDeviceAndSwapChain(NULL,
 			m_DriverType, NULL, createDeviceFlags,
 			featureLevels, numFeatureLevels,
 			D3D11_SDK_VERSION, &sd,
 			&m_pSwapChain, &m_pd3dDevice, &m_FeatureLevel,
-			&m_pImmediateContext)))
+			&m_pImmediateContext))
 		{
-			if (FAILED(hr) || m_FeatureLevel < D3D_FEATURE_LEVEL_11_0)
+			if (m_FeatureLevel < D3D_FEATURE_LEVEL_11_0)
 			{
 				if (m_pImmediateContext) m_pImmediateContext->Release();
 				if (m_pd3dDevice) m_pd3dDevice->Release();
@@ -62,19 +60,14 @@ bool Sample::Init()
 			break;
 		}
 	}
-	if (FAILED(hr))
-	{
-		return false;
-	}
 	// ·»´õ Å¸°Ùºä »ý¼º
 	ID3D11Texture2D* pBackBuffer;
-	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-	if (FAILED(hr)) return false;
+	m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	
 
-	hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
+	m_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
 	pBackBuffer->Release();
 	
-	if (FAILED(hr)) return false;
 
 	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
 

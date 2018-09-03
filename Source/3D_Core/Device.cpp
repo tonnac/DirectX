@@ -35,17 +35,14 @@ HRESULT Device::CreateDevice()
 		if (FAILED(hr = D3D11CreateDevice(NULL, m_DriverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
 			D3D11_SDK_VERSION, &m_pd3dDevice, &m_FeatureLevel, &m_pImmediateContext)))
 		{
-			DXTRACE_ERR(DXGetErrorDescription(hr), hr);
 			continue;
 		}
 		break;
 	}
 	if (FAILED(hr))
 	{
-		DXTRACE_ERR_MSGBOX(DXGetErrorDescription(hr), hr);
 		return false;
 	}
-	DXTRACE_MSG(DXGetErrorDescription(hr));
 	return S_OK;
 }
 HRESULT Device::CreateGIFactory()
@@ -53,7 +50,6 @@ HRESULT Device::CreateGIFactory()
 	HRESULT hr;
 	if (FAILED(hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&m_pGIFactory))))
 	{
-		DXTRACE_ERR_MSGBOX(DXGetErrorDescription(hr), hr);
 		return false;
 	}
 	return hr;
