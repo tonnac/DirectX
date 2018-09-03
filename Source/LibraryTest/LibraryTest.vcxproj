@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{26C66FBF-F1B2-4D87-8B4A-DEF4F59343FA}</ProjectGuid>
+    <ProjectGuid>{33810ABD-B9D6-4ADC-8446-29C147BECD5A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>My04LibraryTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
