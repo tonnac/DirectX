@@ -10,10 +10,9 @@ public:
 						,int nCmdShow, const TCHAR* strWindowTitle);
 	void			 CenterWindow();
 public:				 
-	virtual bool	 Init();
-	virtual bool	 Frame();
-	virtual bool	 Render();
-	virtual bool	 Release();
+	virtual bool	 GameInit();
+	virtual bool	 GameRun();
+	virtual bool	 GameRelease();
 	virtual bool	 Run();
 	virtual LRESULT  WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 protected:

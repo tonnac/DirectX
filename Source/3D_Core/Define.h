@@ -3,6 +3,7 @@
 #include <cassert>
 #include <tchar.h>
 #include <D3D11.h>
+#include <vector>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")

@@ -124,15 +124,3 @@ bool Device::CleanupDevice()
 	m_pGIFactory = nullptr;
 	return true;
 }
-bool Device::PreRender()
-{
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
-	float ClearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, ClearColor);
-	m_pSwapChain->Present(0, 0);
-	return true;
-}
-bool Device::PostRender()
-{
-	return true;
-}

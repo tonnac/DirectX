@@ -84,26 +84,21 @@ void Window::CenterWindow()
 
 	MoveWindow(m_hWnd, x, y, m_rtClient.right - m_rtClient.left, m_rtClient.bottom - m_rtClient.top, TRUE);
 }
-
-bool Window::Init()
+bool Window::GameInit()
 {
 	return true;
 }
-bool Window::Frame()
+bool Window::GameRun()
 {
 	return true;
 }
-bool Window::Render()
-{
-	return true;
-}
-bool Window::Release()
+bool Window::GameRelease()
 {
 	return true;
 }
 bool Window::Run()
 {
-	if (Init() == false) return false;
+	if (GameInit() == false) return false;
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
 
@@ -116,11 +111,10 @@ bool Window::Run()
 		}
 		else
 		{
-			Frame();
-			Render();
+			GameRun();
 		}
 	}
-	if (Release() == false) return false;
+	if (GameRelease() == false) return false;
 	return true;
 }
 LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
