@@ -49,7 +49,12 @@ HRESULT Device::CreateDevice()
 }
 HRESULT Device::CreateGIFactory()
 {
-	if (m_pd3dDevice == NULL) return E_FAIL;
+	if (m_pd3dDevice == nullptr) return E_FAIL;
+	if (m_pGIFactory != nullptr)
+	{
+		m_pGIFactory->Release();
+		m_pGIFactory = nullptr;
+	}
 	HRESULT hr;// = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&m_pGIFactory) );
 	IDXGIDevice * pDXGIDevice;
 	hr = m_pd3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void **)&pDXGIDevice);

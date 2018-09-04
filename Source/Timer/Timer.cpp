@@ -75,7 +75,6 @@ FLOAT Timer::getElapstedTime() const
 {
 	return m_fEventTime;
 }
-
 INT Timer::getFPS() const
 {
 	return m_FPS.QuadPart;

@@ -86,7 +86,7 @@ bool Sample::Release()
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInst, LPWSTR szCmdLine, int nCmdShow)
 {
 	Sample wd;
-	wd.InitWindow(hInstance, 800, 600, nCmdShow, L"SampleDXGI");
+	wd.InitWindow(hInstance, 800, 600, nCmdShow, L"SampleFullScreen");
 	wd.Run();
 	return 0;
 }

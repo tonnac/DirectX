@@ -7,17 +7,17 @@ public:
 	Timer();
 	~Timer();
 public:
-	bool Init();
-	bool Frame();
-	bool Render();
-	bool Release();
-	void Stop();
-	bool isStarted() const;
-	FLOAT getElapstedTime() const;
-	INT getFPS() const;
-	FLOAT getSPF() const;
-	void Reset();
-	void Start();
+	bool				Init();
+	bool				Frame();
+	bool				Render();
+	bool				Release();
+	void				Reset();
+	void				Start();
+	void				Stop();
+	bool				isStarted() const;
+	FLOAT				getElapstedTime() const;
+	INT					getFPS() const;
+	FLOAT				getSPF() const;
 private:
 	LARGE_INTEGER		m_Frequency;
 	LARGE_INTEGER		m_Current;
