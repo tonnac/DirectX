@@ -46,7 +46,7 @@ bool Window::InitWindow(HINSTANCE hInstance, UINT width, UINT height
 		static_cast<LONG>(height) };
 	AdjustWindowRect(&rt, WS_OVERLAPPEDWINDOW, FALSE);
 
-	m_hWnd = g_hWnd = CreateWindowEx(WS_EX_TOOLWINDOW,
+	m_hWnd = g_hWnd = CreateWindowEx(WS_EX_APPWINDOW,
 		L"Window", 
 		strWindowTitle,
 		WS_OVERLAPPEDWINDOW,

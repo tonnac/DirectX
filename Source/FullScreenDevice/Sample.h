@@ -7,7 +7,6 @@ public:
 	Sample();
 	~Sample();
 public:
-	bool					PreInit	() override;
 	bool					Init	() override;
 	bool					Render	() override;
 	bool					Frame	() override;

@@ -1,5 +1,9 @@
 #pragma once
 #include "Window.h"
+#include "Enumeration.h"
+#include "Timer.h"
+
+// #define DEVICE_INFO
 
 class Core : public Window
 {
@@ -18,4 +22,6 @@ public:
 private:
 	bool			GamePreRender	();
 	bool			GamePostRender	();
+private:
+	Timer			m_Timer;
 };

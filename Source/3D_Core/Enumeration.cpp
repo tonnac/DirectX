@@ -82,13 +82,13 @@ void Enumeration::DeviceInfoSave(AdapterList AdapterList_)
 			fp << L"\n\t\t" << L"Output[" << k << L"] DeviceName : " << pOutput->desc.DeviceName << L"\n\t\t" <<
 				L"DesktopCoordinates : " << pOutput->desc.DesktopCoordinates.left << L", " <<
 				pOutput->desc.DesktopCoordinates.top << L", " << pOutput->desc.DesktopCoordinates.right << L", " <<
-				pOutput->desc.DesktopCoordinates.bottom << L"\n\t\tNumDisplayMode : " << pOutput->m_ModList.size() << L"\n";
+				pOutput->desc.DesktopCoordinates.bottom << L"\n\t\tNumDisplayMode(800x600 ~ 1920x1080) : " << pOutput->m_ModList.size() << L"\n";
 
 			DXGI_MODE_DESC de;
 			for (UINT p = 0; p < AdapterList_.at(i)->m_OutputList.at(k)->m_ModList.size(); ++p)
 			{
 				de = AdapterList_.at(i)->m_OutputList.at(k)->m_ModList[p];
-				fp << L"\t\t\tDisplayMode[" << i << L"] Width : " << de.Width << L" Height : " << de.Height << L" FORMAT : " <<
+				fp << L"\t\t\tDisplayMode[" << p << L"] Width : " << de.Width << L" Height : " << de.Height << L" FORMAT : " <<
 					de.Format << L" RefreshRate : " << de.RefreshRate.Numerator / de.RefreshRate.Denominator << L"\n";
 			}
 		}

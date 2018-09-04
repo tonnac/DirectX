@@ -1,7 +1,7 @@
 #include "Device.h"
 
 Device::Device() : m_pd3dDevice(nullptr), m_pSwapChain(nullptr), m_pRenderTargetView(nullptr),
-m_pImmediateContext(nullptr), m_pGIFactory(nullptr)
+m_pImmediateContext(nullptr), m_pGIFactory(nullptr), m_bFullScreenMode(false)
 {
 	ZeroMemory(&m_SwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 }
@@ -68,7 +68,7 @@ HRESULT Device::CreateGIFactory()
 	pDXGIAdapter->Release();
 	return hr;
 }
-HRESULT Device::CreateSwapChain(HWND hWnd, UINT iWidth, UINT iHeight)
+HRESULT Device::CreateSwapChain(HWND hWnd, const UINT& iWidth, const UINT& iHeight)
 {
 	HRESULT hr = S_OK;
 	if (m_pGIFactory == nullptr) return S_FALSE;
@@ -127,7 +127,7 @@ void Device::SetViewPort()
 }
 bool Device::CleanupDevice()
 {
-//	m_pSwapChain->SetFullscreenState(!isFullMode, NULL);
+	m_pSwapChain->SetFullscreenState(false, NULL);
 	if (m_pImmediateContext) m_pImmediateContext->ClearState();
 	if (m_pRenderTargetView) m_pRenderTargetView->Release();
 	if (m_pSwapChain) m_pSwapChain->Release();
@@ -142,7 +142,7 @@ bool Device::CleanupDevice()
 	m_pGIFactory = nullptr;
 	return true;
 }
-void Device::ResizeDevice(UINT Width, UINT Height)
+void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 {
 	HRESULT hr;
 	if (m_pd3dDevice == nullptr) return;
@@ -195,4 +195,12 @@ ID3D11RenderTargetView*	Device::getRenderTargetView() const
 DXGI_SWAP_CHAIN_DESC Device::getSwapChainDesc() const
 {
 	return m_SwapChainDesc;
+}
+BOOL Device::getFullScreenMode() const
+{
+	return m_bFullScreenMode;
+}
+void Device::setFullScreenMode(const BOOL& FullScreen)
+{
+	m_bFullScreenMode = FullScreen;
 }

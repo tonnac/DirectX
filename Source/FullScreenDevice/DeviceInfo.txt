@@ -1,0 +1,58 @@
+Adapter Number : 2
+
+	Description[0] : NVIDIA GeForce GTX 760
+	Output Number : 1
+
+		Output[0] DeviceName : \\.\DISPLAY1
+		DesktopCoordinates : 0, 0, 1920, 1080
+		NumDisplayMode(800x600 ~ 1920x1080) : 48
+			DisplayMode[0] Width : 800 Height : 600 FORMAT : 28 RefreshRate : 56
+			DisplayMode[1] Width : 800 Height : 600 FORMAT : 28 RefreshRate : 60
+			DisplayMode[2] Width : 800 Height : 600 FORMAT : 28 RefreshRate : 72
+			DisplayMode[3] Width : 800 Height : 600 FORMAT : 28 RefreshRate : 75
+			DisplayMode[4] Width : 1024 Height : 768 FORMAT : 28 RefreshRate : 60
+			DisplayMode[5] Width : 1024 Height : 768 FORMAT : 28 RefreshRate : 70
+			DisplayMode[6] Width : 1024 Height : 768 FORMAT : 28 RefreshRate : 75
+			DisplayMode[7] Width : 1152 Height : 864 FORMAT : 28 RefreshRate : 59
+			DisplayMode[8] Width : 1152 Height : 864 FORMAT : 28 RefreshRate : 59
+			DisplayMode[9] Width : 1152 Height : 864 FORMAT : 28 RefreshRate : 59
+			DisplayMode[10] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 50
+			DisplayMode[11] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 50
+			DisplayMode[12] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 50
+			DisplayMode[13] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 59
+			DisplayMode[14] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 59
+			DisplayMode[15] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 59
+			DisplayMode[16] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 60
+			DisplayMode[17] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 60
+			DisplayMode[18] Width : 1176 Height : 664 FORMAT : 28 RefreshRate : 60
+			DisplayMode[19] Width : 1280 Height : 720 FORMAT : 28 RefreshRate : 50
+			DisplayMode[20] Width : 1280 Height : 720 FORMAT : 28 RefreshRate : 59
+			DisplayMode[21] Width : 1280 Height : 720 FORMAT : 28 RefreshRate : 60
+			DisplayMode[22] Width : 1280 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[23] Width : 1280 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[24] Width : 1280 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[25] Width : 1280 Height : 800 FORMAT : 28 RefreshRate : 59
+			DisplayMode[26] Width : 1280 Height : 800 FORMAT : 28 RefreshRate : 59
+			DisplayMode[27] Width : 1280 Height : 800 FORMAT : 28 RefreshRate : 59
+			DisplayMode[28] Width : 1280 Height : 960 FORMAT : 28 RefreshRate : 60
+			DisplayMode[29] Width : 1280 Height : 1024 FORMAT : 28 RefreshRate : 60
+			DisplayMode[30] Width : 1280 Height : 1024 FORMAT : 28 RefreshRate : 75
+			DisplayMode[31] Width : 1360 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[32] Width : 1360 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[33] Width : 1360 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[34] Width : 1366 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[35] Width : 1366 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[36] Width : 1366 Height : 768 FORMAT : 28 RefreshRate : 59
+			DisplayMode[37] Width : 1440 Height : 900 FORMAT : 28 RefreshRate : 59
+			DisplayMode[38] Width : 1600 Height : 900 FORMAT : 28 RefreshRate : 59
+			DisplayMode[39] Width : 1600 Height : 900 FORMAT : 28 RefreshRate : 59
+			DisplayMode[40] Width : 1600 Height : 900 FORMAT : 28 RefreshRate : 59
+			DisplayMode[41] Width : 1600 Height : 1024 FORMAT : 28 RefreshRate : 59
+			DisplayMode[42] Width : 1600 Height : 1024 FORMAT : 28 RefreshRate : 59
+			DisplayMode[43] Width : 1600 Height : 1024 FORMAT : 28 RefreshRate : 59
+			DisplayMode[44] Width : 1680 Height : 1050 FORMAT : 28 RefreshRate : 59
+			DisplayMode[45] Width : 1920 Height : 1080 FORMAT : 28 RefreshRate : 50
+			DisplayMode[46] Width : 1920 Height : 1080 FORMAT : 28 RefreshRate : 60
+			DisplayMode[47] Width : 1920 Height : 1080 FORMAT : 28 RefreshRate : 59
+	Description[1] : Microsoft Basic Render Driver
+	Output Number : 0
