@@ -2,7 +2,9 @@
 
 Device::Device() : m_pd3dDevice(nullptr), m_pSwapChain(nullptr), m_pRenderTargetView(nullptr),
 m_pImmediateContext(nullptr), m_pGIFactory(nullptr)
-{}
+{
+	ZeroMemory(&m_SwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+}
 Device::~Device()
 {}
 
@@ -47,31 +49,37 @@ HRESULT Device::CreateDevice()
 }
 HRESULT Device::CreateGIFactory()
 {
-	HRESULT hr;
-	if (FAILED(hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&m_pGIFactory))))
-	{
-		return false;
-	}
+	if (m_pd3dDevice == NULL) return E_FAIL;
+	HRESULT hr;// = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&m_pGIFactory) );
+	IDXGIDevice * pDXGIDevice;
+	hr = m_pd3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void **)&pDXGIDevice);
+
+	IDXGIAdapter * pDXGIAdapter;
+	hr = pDXGIDevice->GetParent(__uuidof(IDXGIAdapter), (void **)&pDXGIAdapter);
+
+	pDXGIAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&m_pGIFactory);
+
+	pDXGIDevice->Release();
+	pDXGIAdapter->Release();
 	return hr;
 }
 HRESULT Device::CreateSwapChain(HWND hWnd, UINT iWidth, UINT iHeight)
 {
 	HRESULT hr = S_OK;
 	if (m_pGIFactory == nullptr) return S_FALSE;
-	DXGI_SWAP_CHAIN_DESC sd;
-	ZeroMemory(&sd, sizeof(DXGI_SWAP_CHAIN_DESC));
-	sd.BufferCount = 1;
-	sd.BufferDesc.Width = iWidth;
-	sd.BufferDesc.Height = iHeight;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
-	sd.BufferDesc.RefreshRate.Denominator = 1;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow = g_hWnd;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.Windowed = TRUE;
-	if (FAILED(hr = m_pGIFactory->CreateSwapChain(m_pd3dDevice, &sd, &m_pSwapChain)))
+	m_SwapChainDesc.BufferCount = 1;
+	m_SwapChainDesc.BufferDesc.Width = iWidth;
+	m_SwapChainDesc.BufferDesc.Height = iHeight;
+	m_SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	m_SwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+	m_SwapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+	m_SwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	m_SwapChainDesc.OutputWindow = g_hWnd;
+	m_SwapChainDesc.SampleDesc.Count = 1;
+	m_SwapChainDesc.SampleDesc.Quality = 0;
+	m_SwapChainDesc.Windowed = TRUE;
+	m_SwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	if (FAILED(hr = m_pGIFactory->CreateSwapChain(m_pd3dDevice, &m_SwapChainDesc, &m_pSwapChain)))
 	{
 		return hr;
 	}
@@ -91,13 +99,13 @@ HRESULT Device::SetRendetTargetView()
 
 	return hr;
 }
-HRESULT Device::SetViewPort()
+void Device::SetViewPort()
 {
 	HRESULT hr;
 	DXGI_SWAP_CHAIN_DESC Desc;
 	if (FAILED(hr = m_pSwapChain->GetDesc(&Desc)))
 	{
-		return hr;
+		return;
 	}
 	m_ViewPort.Width = static_cast<FLOAT>(Desc.BufferDesc.Width);
 	m_ViewPort.Height = static_cast<FLOAT>(Desc.BufferDesc.Height);
@@ -106,10 +114,15 @@ HRESULT Device::SetViewPort()
 	m_ViewPort.TopLeftX = 0;
 	m_ViewPort.TopLeftY = 0;
 	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
-	return hr;
+
+	g_rtClient.right = m_SwapChainDesc.BufferDesc.Width;
+	g_rtClient.bottom = m_SwapChainDesc.BufferDesc.Height;
+
+
 }
 bool Device::CleanupDevice()
 {
+//	m_pSwapChain->SetFullscreenState(!isFullMode, NULL);
 	if (m_pImmediateContext) m_pImmediateContext->ClearState();
 	if (m_pRenderTargetView) m_pRenderTargetView->Release();
 	if (m_pSwapChain) m_pSwapChain->Release();
@@ -123,4 +136,58 @@ bool Device::CleanupDevice()
 	m_pImmediateContext = nullptr;
 	m_pGIFactory = nullptr;
 	return true;
+}
+void Device::ResizeDevice(UINT Width, UINT Height)
+{
+	HRESULT hr;
+	if (m_pd3dDevice == nullptr) return;
+	m_pImmediateContext->OMSetRenderTargets(0, NULL, NULL);
+	m_pRenderTargetView->Release();
+
+	m_SwapChainDesc.BufferDesc.Height = Height;
+	m_SwapChainDesc.BufferDesc.Width = Width;
+
+	if (SUCCEEDED(hr = m_pSwapChain->ResizeBuffers(m_SwapChainDesc.BufferCount, m_SwapChainDesc.BufferDesc.Width,
+		m_SwapChainDesc.BufferDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, m_SwapChainDesc.Flags)))
+	{
+		DXGI_SWAP_CHAIN_DESC sd;
+		m_pSwapChain->GetDesc(&sd);
+	}
+
+	if (FAILED(SetRendetTargetView())) return;
+	SetViewPort();
+}
+ID3D11Device *	Device::getDevice() const
+{
+	if (m_pd3dDevice)
+		return m_pd3dDevice;
+	return nullptr;
+}
+ID3D11DeviceContext* Device::getContext() const
+{
+	if (m_pImmediateContext)
+		return m_pImmediateContext;
+	return nullptr;
+}
+IDXGIFactory* Device::getGIFactory() const
+{
+	if (m_pGIFactory)
+		return m_pGIFactory;
+	return nullptr;
+}
+IDXGISwapChain* Device::getSwapChain() const
+{
+	if (m_pSwapChain)
+		return m_pSwapChain;
+	return nullptr;
+}
+ID3D11RenderTargetView*	Device::getRenderTargetView() const
+{
+	if (m_pRenderTargetView)
+		return m_pRenderTargetView;
+	return nullptr;
+}
+DXGI_SWAP_CHAIN_DESC Device::getSwapChainDesc() const
+{
+	return m_SwapChainDesc;
 }

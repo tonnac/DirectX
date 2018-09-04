@@ -11,16 +11,24 @@ public:
 	HRESULT					CreateGIFactory();
 	HRESULT					CreateSwapChain(HWND hWnd, UINT iWidth, UINT iHeight);
 	HRESULT					SetRendetTargetView();
-	HRESULT					SetViewPort();
+	void					SetViewPort();
 	bool					CleanupDevice();
-protected:
+public:
+	void					ResizeDevice(UINT Width, UINT Height);
+public:
+	ID3D11Device *			getDevice() const;
+	ID3D11DeviceContext*	getContext() const;
+	IDXGIFactory*			getGIFactory() const;
+	IDXGISwapChain*			getSwapChain() const;
+	ID3D11RenderTargetView*	getRenderTargetView() const;
+	DXGI_SWAP_CHAIN_DESC	getSwapChainDesc() const;
+private:
 	ID3D11Device *			m_pd3dDevice;
 	ID3D11DeviceContext*	m_pImmediateContext;
 
 	IDXGIFactory*			m_pGIFactory;
 
 	IDXGISwapChain*			m_pSwapChain;
-
 
 	ID3D11RenderTargetView* m_pRenderTargetView;
 	D3D_FEATURE_LEVEL		m_FeatureLevel;

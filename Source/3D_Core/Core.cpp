@@ -1,12 +1,16 @@
 #include "Core.h"
 bool Core::GameInit()
 {
-	Init();
-	if (FAILED(CreateGIFactory())) return false;
 	if (FAILED(CreateDevice())) return false;
+	if (FAILED(CreateGIFactory())) return false;
 	if (FAILED(CreateSwapChain(m_hWnd, m_iWindowWidth, m_iWindowHeight))) return false;
 	if (FAILED(SetRendetTargetView())) return false;
-	if (FAILED(SetViewPort())) return false;
+	SetViewPort();
+
+	IDXGIFactory * pFactory = getGIFactory();
+	pFactory->MakeWindowAssociation(g_hWnd, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES); // 윈도우 메시지와 ALT+ENTER로 인한 전체화면을 막음
+
+	Init();
 	return true;
 }
 bool Core::GameRun()
@@ -44,10 +48,13 @@ bool Core::Release() { return true; }
 
 bool Core::GamePreRender()
 {
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, NULL);
+	ID3D11DeviceContext* pContext = getContext();
+	ID3D11RenderTargetView* pRenderTargetView = getRenderTargetView();
+	IDXGISwapChain* pSwapChain = getSwapChain();
+	pContext->OMSetRenderTargets(1, &pRenderTargetView, NULL);
 	float ClearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, ClearColor);
-	m_pSwapChain->Present(0, 0);
+	pContext->ClearRenderTargetView(pRenderTargetView, ClearColor);
+	pSwapChain->Present(0, 0);
 	return true;
 }
 bool Core::GamePostRender()

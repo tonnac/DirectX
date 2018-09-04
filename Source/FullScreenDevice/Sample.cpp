@@ -22,8 +22,8 @@ bool Sample::PreInit()
 {
 	HRESULT hr;
 	Device::CreateGIFactory();
-	std::vector<Adapter> m_AdapterList;
 	IDXGIFactory * pFactory = getGIFactory();
+	std::vector<Adapter> m_AdapterList;
 	for (int iAdapter = 0; ; ++iAdapter)		// 그래픽카드 찾는다
 	{
 		IDXGIAdapter* pAdapter;
@@ -67,7 +67,11 @@ bool Sample::PreInit()
 }
 bool Sample::Init()
 {
-	PreInit();
+//	PreInit();
+	return true;
+}
+bool Sample::Frame()
+{
 	return true;
 }
 bool Sample::Render()
