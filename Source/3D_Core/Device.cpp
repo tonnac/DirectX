@@ -83,7 +83,7 @@ HRESULT Device::CreateSwapChain(HWND hWnd, const UINT& iWidth, const UINT& iHeig
 	m_SwapChainDesc.SampleDesc.Count = 1;
 	m_SwapChainDesc.SampleDesc.Quality = 0;
 	m_SwapChainDesc.Windowed = TRUE;
-	m_SwapChainDesc.Flags = 0; ////
+	m_SwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; ////
 	if (FAILED(hr = m_pGIFactory->CreateSwapChain(m_pd3dDevice, &m_SwapChainDesc, &m_pSwapChain)))
 	{
 		return hr;
