@@ -14,8 +14,16 @@ bool Core::GameInit()
 	IDXGIFactory * pFactory = getGIFactory();
 	pFactory->MakeWindowAssociation(g_hWnd, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES); // 윈도우 메시지와 ALT+ENTER로 인한 전체화면을 막음
 
-	m_Timer.Init();
+	IDXGISurface1 * pSurface = nullptr;
+	IDXGISwapChain* pSwapChain = getSwapChain();
 
+	pSwapChain->GetBuffer(0, __uuidof(IDXGISurface1), (LPVOID*)&pSurface);
+
+	m_Timer.Init();
+	S_DirectWrite.Init();
+
+	S_DirectWrite.Set(g_rtClient.right, g_rtClient.bottom, pSurface);
+	pSurface->Release();
 	Init();
 	return true;
 }
@@ -40,10 +48,10 @@ bool Core::GameFrame()
 }
 bool Core::GameRender()
 {
-//	if (GamePreRender() == false) return false;
-//	m_Timer.Render();
+	if (PreRender() == false) return false;
+	m_Timer.Render();
 	Render();
-//	if (GamePostRender() == false) return false;
+	if (PostRender() == false) return false;
 	return true;
 }
 bool Core::PreInit()
@@ -54,19 +62,19 @@ bool Core::Init() { return true; }
 bool Core::Frame() { return true; }
 bool Core::Render() { return true; }
 bool Core::Release() { return true; }
-
-bool Core::GamePreRender()
+bool Core::PreRender()
 {
 	ID3D11DeviceContext* pContext = getContext();
 	ID3D11RenderTargetView* pRenderTargetView = getRenderTargetView();
 	IDXGISwapChain* pSwapChain = getSwapChain();
-	float ClearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	D3D11_VIEWPORT& ViewPort = getViewPort();
+	float ClearColor[] = { 0.25f, 0.25f, 0.25f, 1.0f };
 	pContext->ClearRenderTargetView(pRenderTargetView, ClearColor);
-	pContext->OMSetRenderTargets(1, &pRenderTargetView, NULL);
-	pSwapChain->Present(0, 0);
 	return true;
 }
-bool Core::GamePostRender()
+bool Core::PostRender()
 {
+	IDXGISwapChain* pSwapChain = getSwapChain();
+	pSwapChain->Present(0, 0);
 	return true;
 }

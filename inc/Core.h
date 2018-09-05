@@ -2,11 +2,14 @@
 #include "Window.h"
 #include "Enumeration.h"
 #include "Timer.h"
+#include "DirectWrite.h"
 
 //#define DEVICE_INFO
 
 class Core : public Window
 {
+public:
+	Core() {};
 public:
 	bool			GameInit		() override;
 	bool			GameRun			() override;
@@ -20,8 +23,8 @@ public:
 	virtual bool	Render			();
 	virtual bool	Release			();
 private:
-	bool			GamePreRender	();
-	bool			GamePostRender	();
+	bool			PreRender		();
+	bool			PostRender		();
 private:
 	Timer			m_Timer;
 };

@@ -83,7 +83,7 @@ HRESULT Device::CreateSwapChain(HWND hWnd, const UINT& iWidth, const UINT& iHeig
 	m_SwapChainDesc.SampleDesc.Count = 1;
 	m_SwapChainDesc.SampleDesc.Quality = 0;
 	m_SwapChainDesc.Windowed = TRUE;
-	m_SwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	m_SwapChainDesc.Flags = 0; ////
 	if (FAILED(hr = m_pGIFactory->CreateSwapChain(m_pd3dDevice, &m_SwapChainDesc, &m_pSwapChain)))
 	{
 		return hr;
@@ -102,6 +102,8 @@ HRESULT Device::SetRendetTargetView()
 
 	if (FAILED(hr)) return false;
 
+	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
+
 	return hr;
 }
 void Device::SetViewPort()
@@ -118,12 +120,10 @@ void Device::SetViewPort()
 	m_ViewPort.MaxDepth = 1.0f;
 	m_ViewPort.TopLeftX = 0;
 	m_ViewPort.TopLeftY = 0;
-	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
 
+	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
 	g_rtClient.right = m_SwapChainDesc.BufferDesc.Width;
 	g_rtClient.bottom = m_SwapChainDesc.BufferDesc.Height;
-
-
 }
 bool Device::CleanupDevice()
 {
@@ -179,6 +179,10 @@ IDXGIFactory* Device::getGIFactory() const
 	if (m_pGIFactory)
 		return m_pGIFactory;
 	return nullptr;
+}
+D3D11_VIEWPORT& Device::getViewPort()
+{
+	return m_ViewPort;
 }
 IDXGISwapChain* Device::getSwapChain() const
 {

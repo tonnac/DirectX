@@ -1,5 +1,6 @@
 #pragma once
 #include "Define.h"
+#include "DirectWrite.h"
 
 class Timer
 {
@@ -17,7 +18,7 @@ public:
 	bool				isStarted() const;
 public:
 	FLOAT				getElapstedTime() const;
-	LONGLONG			getFPS() const;
+	INT					getFPS() const;
 	FLOAT				getSPF() const;
 private:
 	LARGE_INTEGER		m_Frequency;
@@ -33,4 +34,6 @@ private:
 	LARGE_INTEGER		m_Elapse;
 	BOOL				m_bStarted;
 	FLOAT				m_fEventTime;
+
+	std::tstring		m_Buffer;
 };

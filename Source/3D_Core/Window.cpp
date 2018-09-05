@@ -126,7 +126,9 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg)
 	{
 	case WM_SIZE:
+	{
 		ResizeDevice(width, height);
+	}
 		break;
 	case WM_KEYDOWN:
 		switch (wparam)

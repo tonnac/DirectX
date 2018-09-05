@@ -1,7 +1,7 @@
 #include "DirectWrite.h"
 DirectWrite::DirectWrite() : m_pd2dFactory(nullptr), m_pWriteFactory(nullptr), m_pRenderTarget(nullptr), m_pTextFormat(nullptr), m_pColorBrush(nullptr)
 {}
-bool DirectWrite::Set(const int& width, const int& height, IDXGISurface* pSurface)
+bool DirectWrite::Set(const int& width, const int& height, IDXGISurface1* pSurface)
 {
 	CreateDeviceIndependentResources();
 	CreateDeviceResources(pSurface);
@@ -26,14 +26,14 @@ HRESULT DirectWrite::CreateDeviceIndependentResources()
 		DWRITE_FONT_STYLE_NORMAL,		// STYLE
 		DWRITE_FONT_STRETCH_NORMAL,		// STRETCH
 		20,								// FontSize
-		L"ko-KR",						// L"en-us"
+		L"ko-kr",						// L"en-us"
 		&m_pTextFormat)))
 	{
 		return hr;
 	}
 	return hr;
 }
-HRESULT DirectWrite::CreateDeviceResources(IDXGISurface* pSurface)
+HRESULT DirectWrite::CreateDeviceResources(IDXGISurface1* pSurface)
 {
 	HRESULT hr;
 
@@ -67,24 +67,24 @@ void DirectWrite::DiscardDeviceResources()
 {
 	if (m_pColorBrush) m_pColorBrush->Release();
 	if (m_pRenderTarget) m_pRenderTarget->Release();
-	m_pRenderTarget = nullptr;
 	m_pColorBrush = nullptr;
+	m_pRenderTarget = nullptr;
 }
 HRESULT DirectWrite::DrawText(const D2D1_RECT_F& rt, const TCHAR* pText, D2D1::ColorF color)
 {
 	m_pRenderTarget->BeginDraw();
-	D2D1::Matrix3x2F matWorld;
-	D2D1_POINT_2F center;
-	center.x = 400;
-	center.y = 300;
+	//D2D1::Matrix3x2F matWorld;
+	//D2D1_POINT_2F center;
+	//center.x = 250;
+	//center.y = 15;
 
-	FLOAT fScale = (cosf(g_fGameTimer)*0.5f + 0.5f) * 10;
+	//FLOAT fScale = (cosf(g_fGameTimer)*0.5f + 0.5f) * 10;
 
-	D2D1::Matrix3x2F scale = matWorld.Rotation(g_fGameTimer * 50.0f, center);
-	D2D1::Matrix3x2F rot = matWorld.Scale(fScale, fScale, center);
-	rot = scale * rot;
+	//D2D1::Matrix3x2F rot = matWorld.Rotation(g_fGameTimer * 50.0f, center);
+	//D2D1::Matrix3x2F scale = matWorld.Scale(fScale, fScale, center);
+	//rot = rot;
 
-	m_pRenderTarget->SetTransform(rot);
+	//m_pRenderTarget->SetTransform(rot);
 
 	m_pColorBrush->SetColor(color);
 	m_pRenderTarget->DrawText(pText, static_cast<UINT>(_tcslen(pText)), m_pTextFormat, rt, m_pColorBrush);
@@ -92,7 +92,7 @@ HRESULT DirectWrite::DrawText(const D2D1_RECT_F& rt, const TCHAR* pText, D2D1::C
 	m_pRenderTarget->EndDraw();
 	return S_OK;
 }
-void DirectWrite::OnResize(const int& width, const int& height, IDXGISurface* pSurface)
+void DirectWrite::OnResize(const int& width, const int& height, IDXGISurface1* pSurface)
 {
 	DiscardDeviceResources();
 	CreateDeviceResources(pSurface);
@@ -108,25 +108,24 @@ bool DirectWrite::Frame()
 bool DirectWrite::Render()
 {
 	m_pRenderTarget->BeginDraw();
-	D2D1::Matrix3x2F matWorld;
-	D2D1_POINT_2F center;
-	center.x = 400;
-	center.y = 300;
+	//D2D1::Matrix3x2F matWorld;
+	//D2D1_POINT_2F center;
+	//center.x = 400;
+	//center.y = 300;
 
-	FLOAT fScale = (cosf(g_fGameTimer)*0.5f + 0.5f) * 10;
+	//FLOAT fScale = (cosf(g_fGameTimer)*0.5f + 0.5f) * 10;
 
-	D2D1::Matrix3x2F scale = matWorld.Rotation(g_fGameTimer, center);
-	D2D1::Matrix3x2F rot = matWorld.Scale(fScale, fScale, center);
-	rot = scale * rot;
+	//D2D1::Matrix3x2F scale = matWorld.Rotation(g_fGameTimer, center);
+	//D2D1::Matrix3x2F rot = matWorld.Scale(fScale, fScale, center);
+	//rot = scale * rot;
 
-	for (int iText = 0; iText < m_TextList.size(); ++iText)
+	for(auto iter : m_TextList)
 	{
-		D2D1_RECT_F rf = m_TextList[iText].m_rt;
-		m_pRenderTarget->SetTransform(m_TextList[iText].matWorld);
-		m_pColorBrush->SetColor(m_TextList[iText].m_Color);
-		m_pRenderTarget->DrawText(m_TextList[iText].m_Text.c_str(),
-			static_cast<UINT>(m_TextList[iText].m_Text.length()),
-			m_pTextFormat, rf, m_pColorBrush);
+		m_pRenderTarget->SetTransform(iter.matWorld);
+		m_pColorBrush->SetColor(iter.m_Color);
+		m_pRenderTarget->DrawText(iter.m_Text.c_str(),
+			static_cast<UINT>(iter.m_Text.length()),
+			m_pTextFormat, iter.m_rt, m_pColorBrush);
 	}
 
 	m_pRenderTarget->EndDraw();
@@ -135,15 +134,19 @@ bool DirectWrite::Render()
 bool DirectWrite::Release()
 {
 	DiscardDeviceResources();
-	if (m_pTextFormat) m_pTextFormat->Release();
 	if (m_pWriteFactory) m_pWriteFactory->Release();
 	if (m_pd2dFactory) m_pd2dFactory->Release();
-	m_pTextFormat = nullptr;
+	if (m_pTextFormat) m_pTextFormat->Release();
 	m_pWriteFactory = nullptr;
 	m_pd2dFactory = nullptr;
+	m_pTextFormat = nullptr;
 	return true;
 }
-IDWriteTextFormat * DirectWrite::getTextFormat()
+void DirectWrite::AddTextList(const TextArray& TextArray_)
+{
+	m_TextList.push_back(TextArray_);
+}
+IDWriteTextFormat *	DirectWrite::getTextFormat()
 {
 	if (m_pTextFormat)
 		return m_pTextFormat;

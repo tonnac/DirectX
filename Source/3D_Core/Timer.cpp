@@ -36,6 +36,10 @@ bool Timer::Frame()
 
 	if (((m_Current.LowPart - m_FPS.LowPart) / m_Frequency.LowPart) >= 1)
 	{
+		std::tsstream is;
+		
+		is << std::fixed << std::setprecision(3) <<  L"FPS : " << m_iFPSElapse << " Timer : " << g_fGameTimer << " SPF : " << std::setprecision(5) << m_fSecPerFrame;
+		m_Buffer = is.str();
 		m_iFramePerSecond = m_iFPSElapse;
 		m_iFPSElapse = 0;
 		m_FPS = m_Current;
@@ -48,6 +52,21 @@ bool Timer::Frame()
 }
 bool Timer::Render()
 {
+	static FLOAT Color1 = 0.0f;
+	static FLOAT Color2 = 0.0f;
+	static FLOAT Color3 = 0.0f;
+
+	Color1 += g_fSecPerFrame / 4;
+	Color2 += g_fSecPerFrame / 6;
+	Color3 += g_fSecPerFrame / 8;
+
+	if (Color1 >= 1.0f) Color1 = rand() % 10 / 10;
+	if (Color2 >= 1.0f) Color2 = rand() % 10 / 10;
+	if (Color3 >= 1.0f) Color3 = rand() % 10 / 10;
+
+
+	D2D1_RECT_F rt = D2D1::RectF(5.0f, 0.0f, 500.0f, 30.0f);
+	S_DirectWrite.DrawText(rt, m_Buffer.c_str(), D2D1::ColorF(Color1, Color2, Color3, 1.0f));
 	return true;
 }
 bool Timer::Release()
@@ -80,9 +99,9 @@ FLOAT Timer::getElapstedTime() const
 {
 	return m_fEventTime;
 }
-LONGLONG Timer::getFPS() const
+INT Timer::getFPS() const
 {
-	return m_FPS.QuadPart;
+	return m_iFPSElapse;
 }
 FLOAT Timer::getSPF() const
 {

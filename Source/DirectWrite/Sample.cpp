@@ -1,4 +1,5 @@
 #include "Sample.h"
+#include <cmath>
 
 Sample::Sample()
 {}
@@ -27,20 +28,11 @@ bool Sample::Init()
 }
 bool Sample::Render()
 {
-	IDXGISwapChain* pSwapChain = getSwapChain();
-	ID3D11DeviceContext* pContext = getContext();
-	ID3D11RenderTargetView* pRenderTarget = getRenderTargetView();
-	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
-	pContext->ClearRenderTargetView(pRenderTarget, ClearColor);
 	IDWriteTextFormat* pFormat = m_DirectWrite.getTextFormat();
 	pFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);				// 가로 정렬
 	pFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);		// 세로 정렬
-
-	m_DirectWrite.DrawText(g_rtClient, L"KGCA", D2D1::ColorF(1.0f, 1.0f, 0, 1.0f));	// 알파값으로 투명도를 조절
-	pContext->OMSetRenderTargets(1, &pRenderTarget, NULL);
-	pSwapChain->Present(0, 0);
-
-
+	D2D1_RECT_F rf = D2D1::RectF(g_rtClient.left, g_rtClient.top, g_rtClient.right, g_rtClient.bottom);
+	m_DirectWrite.DrawText(rf, L"KGCA", D2D1::ColorF(1.0f, 1.0f, 0, cosf(g_fGameTimer)*0.5 + 0.5));	// 알파값으로 투명도를 조절
 //	m_DirectWrite.Render();
 	return true;
 }

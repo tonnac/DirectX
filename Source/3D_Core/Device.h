@@ -21,6 +21,7 @@ public:
 	IDXGIFactory*			getGIFactory() const;
 	IDXGISwapChain*			getSwapChain() const;
 	ID3D11RenderTargetView*	getRenderTargetView() const;
+	D3D11_VIEWPORT&			getViewPort();
 	DXGI_SWAP_CHAIN_DESC	getSwapChainDesc() const;
 	BOOL					getFullScreenMode() const;
 public:
