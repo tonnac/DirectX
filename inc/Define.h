@@ -15,3 +15,5 @@
 extern HWND g_hWnd;
 extern RECT g_rtClient;
 extern BOOL g_bActiveApp;
+extern FLOAT g_fGameTimer;
+extern FLOAT g_fSecPerFrame;

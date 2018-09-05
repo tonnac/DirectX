@@ -3,7 +3,7 @@
 #include "Enumeration.h"
 #include "Timer.h"
 
-// #define DEVICE_INFO
+//#define DEVICE_INFO
 
 class Core : public Window
 {

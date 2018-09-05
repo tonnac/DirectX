@@ -11,7 +11,7 @@ Device::~Device()
 HRESULT Device::CreateDevice()
 {
 	HRESULT hr;
-	UINT createDeviceFlags = 0;
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT; // 넣어줘야 2d와 연동이 가능하다
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif

@@ -40,10 +40,10 @@ bool Core::GameFrame()
 }
 bool Core::GameRender()
 {
-	if (GamePreRender() == false) return false;
-	m_Timer.Render();
+//	if (GamePreRender() == false) return false;
+//	m_Timer.Render();
 	Render();
-	if (GamePostRender() == false) return false;
+//	if (GamePostRender() == false) return false;
 	return true;
 }
 bool Core::PreInit()
@@ -60,9 +60,9 @@ bool Core::GamePreRender()
 	ID3D11DeviceContext* pContext = getContext();
 	ID3D11RenderTargetView* pRenderTargetView = getRenderTargetView();
 	IDXGISwapChain* pSwapChain = getSwapChain();
-	pContext->OMSetRenderTargets(1, &pRenderTargetView, NULL);
-	float ClearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+	float ClearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	pContext->ClearRenderTargetView(pRenderTargetView, ClearColor);
+	pContext->OMSetRenderTargets(1, &pRenderTargetView, NULL);
 	pSwapChain->Present(0, 0);
 	return true;
 }

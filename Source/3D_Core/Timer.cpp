@@ -1,5 +1,8 @@
 #include "Timer.h"
 
+FLOAT g_fGameTimer = 0.0f;
+FLOAT g_fSecPerFrame = 0.0f;
+
 Timer::Timer() : m_bStarted(false), m_iFramePerSecond(0), m_iFPSElapse(0), m_fSecPerFrame(0.0f), m_fEventTime(0.0f)
 {
 	QueryPerformanceFrequency((LARGE_INTEGER *)&m_Frequency);
@@ -27,7 +30,9 @@ bool Timer::Init()
 bool Timer::Frame()
 {
 	QueryPerformanceCounter(&m_Current);
-	m_fSecPerFrame = static_cast<FLOAT>(m_Current.QuadPart - m_Frame.QuadPart) / static_cast<FLOAT>(m_Frequency.QuadPart);
+	m_fSecPerFrame = g_fSecPerFrame = static_cast<FLOAT>(m_Current.QuadPart - m_Frame.QuadPart) / static_cast<FLOAT>(m_Frequency.QuadPart);
+
+	g_fGameTimer += m_fSecPerFrame;
 
 	if (((m_Current.LowPart - m_FPS.LowPart) / m_Frequency.LowPart) >= 1)
 	{
