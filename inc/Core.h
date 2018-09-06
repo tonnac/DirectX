@@ -11,20 +11,22 @@ class Core : public Window
 public:
 	Core() {};
 public:
-	bool			GameInit		() override;
-	bool			GameRun			() override;
-	bool			GameRelease		() override;
-	bool			GameFrame		();
-	bool			GameRender		();
-	virtual bool	PreInit			();
+	bool			GameInit				() override;
+	bool			GameRun					() override;
+	bool			GameRelease				() override;
+	bool			GameFrame				();
+	bool			GameRender				();
+	virtual bool	PreInit					();
+	virtual void	DeleteDeviceResources	() override;
+	virtual HRESULT	CreateDeviceResources	(const UINT& Width, const UINT& Height) override;
 public:
-	virtual bool	Init			();
-	virtual bool	Frame			();
-	virtual bool	Render			();
-	virtual bool	Release			();
+	virtual bool	Init					();
+	virtual bool	Frame					();
+	virtual bool	Render					();
+	virtual bool	Release					();
 private:
-	bool			PreRender		();
-	bool			PostRender		();
+	bool			PreRender				();
+	bool			PostRender				();
 private:
 	Timer			m_Timer;
 };

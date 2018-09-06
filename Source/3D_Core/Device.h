@@ -15,6 +15,9 @@ public:
 	bool					CleanupDevice();
 public:
 	void					ResizeDevice(const UINT& Width, const UINT& Height);
+	//Direct Write ¼Ò¸ê & »ý¼º
+	virtual void			DeleteDeviceResources();
+	virtual HRESULT			CreateDeviceResources(const UINT& Width, const UINT& Height);
 public:
 	ID3D11Device *			getDevice() const;
 	ID3D11DeviceContext*	getContext() const;

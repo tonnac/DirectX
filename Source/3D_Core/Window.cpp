@@ -1,9 +1,10 @@
 #include "Window.h"
 
-Window * g_pWindow = nullptr;
-HWND	 g_hWnd = nullptr;
-RECT	 g_rtClient = { 0, };
-BOOL	 g_bActiveApp = FALSE;
+Window *	g_pWindow = nullptr;
+HWND		g_hWnd = nullptr;
+RECT		g_rtClient = { 0, };
+BOOL		g_bActiveApp = FALSE;
+HINSTANCE	g_hInstance;
 
 LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -26,7 +27,7 @@ bool Window::InitWindow(HINSTANCE hInstance, UINT width, UINT height
 	winclass.cbSize = sizeof(WNDCLASSEX);
 	winclass.style = CS_HREDRAW | CS_VREDRAW;
 	winclass.lpfnWndProc = StaticWndProc;
-	winclass.hInstance = m_hInstance = hInstance;
+	winclass.hInstance = m_hInstance = g_hInstance = hInstance;
 	winclass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	winclass.lpszMenuName = strWindowTitle;
 	winclass.lpszClassName = L"Window";
@@ -117,6 +118,7 @@ bool Window::Run()
 	if (GameRelease() == false) return false;
 	return true;
 }
+
 LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	IDXGISwapChain* pSwapChain = getSwapChain();
@@ -129,7 +131,7 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 		ResizeDevice(width, height);
 	}
-		break;
+	break;
 	case WM_KEYDOWN:
 		switch (wparam)
 		{

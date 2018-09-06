@@ -60,9 +60,9 @@ bool Timer::Render()
 	Color2 += g_fSecPerFrame / 6;
 	Color3 += g_fSecPerFrame / 8;
 
-	if (Color1 >= 1.0f) Color1 = rand() % 10 / 10;
-	if (Color2 >= 1.0f) Color2 = rand() % 10 / 10;
-	if (Color3 >= 1.0f) Color3 = rand() % 10 / 10;
+	if (Color1 >= 1.0f) Color1 = rand() % 10 / 10.0f;
+	if (Color2 >= 1.0f) Color2 = rand() % 10 / 10.0f;
+	if (Color3 >= 1.0f) Color3 = rand() % 10 / 10.0f;
 
 
 	D2D1_RECT_F rt = D2D1::RectF(5.0f, 0.0f, 500.0f, 30.0f);

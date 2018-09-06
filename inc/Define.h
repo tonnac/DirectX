@@ -1,4 +1,5 @@
 #pragma once
+#define DIRECTINPUT_VERSION 0x800
 #include <windows.h>
 #include <cassert>
 #include <tchar.h>
@@ -15,6 +16,9 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "3D_Core.lib")
 
+#define KEYSTATECOUNT 256
+#define SAMPLE_BUFFER_SIZE 16
+
 namespace std
 {
 	using tstring = std::basic_string<TCHAR>;
@@ -26,11 +30,12 @@ namespace std
 	using tsstream = std::basic_stringstream<TCHAR>;
 }
 
-extern HWND g_hWnd;
-extern RECT g_rtClient;
-extern BOOL g_bActiveApp;
-extern FLOAT g_fGameTimer;
-extern FLOAT g_fSecPerFrame;
+extern HWND			g_hWnd;
+extern HINSTANCE	g_hInstance;
+extern RECT			g_rtClient;
+extern BOOL			g_bActiveApp;
+extern FLOAT		g_fGameTimer;
+extern FLOAT		g_fSecPerFrame;
 
 template <class K>
 class Singleton

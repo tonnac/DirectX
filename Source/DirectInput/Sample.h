@@ -1,6 +1,9 @@
 #pragma once
 #include "Core.h"
-#include "DirectWrite.h"
+#include "DirectInput.h"
+
+extern GameInput g_Input;
+
 class Sample : public Core
 {
 public:
@@ -11,4 +14,5 @@ public:
 	bool		Render	() override;
 	bool		Release	() override;
 private:
+	DirectInput m_Dinput;
 };

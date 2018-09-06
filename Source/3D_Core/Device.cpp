@@ -147,6 +147,10 @@ void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 	HRESULT hr;
 	if (m_pd3dDevice == nullptr) return;
 	m_pImmediateContext->OMSetRenderTargets(0, NULL, NULL);
+
+	// DirectWrite 종속적인 장치 소멸
+	DeleteDeviceResources();
+
 	m_pRenderTargetView->Release();
 
 	m_SwapChainDesc.BufferDesc.Height = Height;
@@ -161,6 +165,17 @@ void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 
 	if (FAILED(SetRendetTargetView())) return;
 	SetViewPort();
+
+	// DirectWrite 종속적인 장치 생성
+	CreateDeviceResources(Width, Height);
+}
+void Device::DeleteDeviceResources()
+{
+	return;
+}
+HRESULT	Device::CreateDeviceResources(const UINT& Width, const UINT& Height)
+{
+	return S_OK;
 }
 ID3D11Device *	Device::getDevice() const
 {
