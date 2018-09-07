@@ -3,7 +3,7 @@
 #include "Enumeration.h"
 #include "Timer.h"
 #include "DirectWrite.h"
-
+#include "DirectInput.h"
 //#define DEVICE_INFO
 
 class Core : public Window

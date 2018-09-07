@@ -19,6 +19,15 @@
 #define KEYSTATECOUNT 256
 #define SAMPLE_BUFFER_SIZE 16
 
+#ifndef V
+#define V(x) {hr = (x);}
+#endif
+
+#ifndef V_RETURN
+#define V_RETURN(x) {hr = (x); if(FAILED(hr)) {return hr;}}
+#endif
+
+
 namespace std
 {
 	using tstring = std::basic_string<TCHAR>;

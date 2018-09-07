@@ -50,8 +50,8 @@ bool Core::GameFrame()
 bool Core::GameRender()
 {
 	if (PreRender() == false) return false;
-	m_Timer.Render();
 	Render();
+	m_Timer.Render();
 	if (PostRender() == false) return false;
 	return true;
 }
