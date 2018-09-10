@@ -71,3 +71,34 @@ bool DirectInput::Release()
 	m_pDi = nullptr;
 	return true;
 }
+bool DirectInput::PostProcess()
+{
+	memcpy(m_BeforeKeyState, m_KeyState, sizeof(BYTE)* KEYSTATECOUNT);
+	memcpy(&m_BeforeMouseState, &m_MouseState, sizeof(DIMOUSESTATE));
+	return true;
+}
+KEYSTATE DirectInput::getKeyState(const DWORD dwKey)
+{
+	if (m_BeforeKeyState[dwKey] & 0x80)
+	{
+		if (KEYDOWN(dwKey))
+		{
+			return KEYSTATE::KEY_HOLD;
+		}
+		else
+		{
+			return KEYSTATE::KEY_UP;
+		}
+	}
+	else
+	{
+		if (KEYDOWN(dwKey))
+		{
+			return KEYSTATE::KEY_PUSH;
+		}
+		else
+		{
+			return KEYSTATE::KEY_FREE;
+		}
+	}
+}

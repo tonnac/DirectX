@@ -1,0 +1,1 @@
+C:\Users\a\source\repos\DirectX\Source\IndexBuffer\VertexShader.txt(27,7): error X3017: cannot implicitly convert from 'const float3' to 'float4'

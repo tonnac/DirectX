@@ -25,6 +25,7 @@ bool Core::GameInit()
 	IDXGIFactory * pFactory = getGIFactory();
 	pFactory->MakeWindowAssociation(g_hWnd, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES); // 윈도우 메시지와 ALT+ENTER로 인한 전체화면을 막음
 	m_Timer.Init();
+	S_Input.Init();
 	Init();
 	return true;
 }
@@ -37,14 +38,17 @@ bool Core::GameRun()
 bool Core::GameRelease()
 {
 	m_Timer.Release();
+	S_Input.Release();
 	Release();
 	if (CleanupDevice() == false) return false;
 	return true;
 }
 bool Core::GameFrame()
 {
+	S_Input.Frame();
 	m_Timer.Frame();
 	Frame();
+	S_Input.PostProcess();
 	return true;
 }
 bool Core::GameRender()

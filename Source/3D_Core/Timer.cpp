@@ -56,14 +56,9 @@ bool Timer::Render()
 	static FLOAT Color2 = 0.0f;
 	static FLOAT Color3 = 0.0f;
 
-	Color1 += g_fSecPerFrame / 4;
-	Color2 += g_fSecPerFrame / 6;
-	Color3 += g_fSecPerFrame / 8;
-
-	if (Color1 >= 1.0f) Color1 = rand() % 10 / 10.0f;
-	if (Color2 >= 1.0f) Color2 = rand() % 10 / 10.0f;
-	if (Color3 >= 1.0f) Color3 = rand() % 10 / 10.0f;
-
+	Color1 = cos(g_fGameTimer) * 0.5f + 0.5f;
+	Color2 = sin(g_fGameTimer) * 0.5f + 0.5f;
+	Color3 = sin(-g_fGameTimer) * 0.5f + 0.5f;
 
 	D2D1_RECT_F rt = D2D1::RectF(5.0f, 0.0f, 500.0f, 30.0f);
 	S_DirectWrite.DrawText(rt, m_Buffer.c_str(), D2D1::ColorF(Color1, Color2, Color3, 1.0f));

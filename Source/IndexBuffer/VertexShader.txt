@@ -5,19 +5,8 @@ cbuffer VS_CB
 	float g_fTimerX	 : packoffset(c1.x);
 	float index		 : packoffset(c1.y);
 	float Angle		 : packoffset(c1.z);
-	float w			 : packoffset(c1.w);
+	float Scale		 : packoffset(c1.w);
 };
-float4 GetPos(in float3 pos, uint index)
-{
-	float3 vPos = pos;
-	switch(index)
-	{
-		case 0: {vPos = vPos * abs(cos(g_fTimerX));} break;
-		case 1: {vPos = float3(1,0,0);} break;
-		case 2: {vPos = float3(1,1,0);} break;
-	}
-	return float4(vPos,1.0f);
-}
 float4 Rotate(in float3 pos)
 {
 	float3 vPos = pos;
@@ -26,9 +15,21 @@ float4 Rotate(in float3 pos)
 	return float4(vPos,1.0f);
 }
 
+float2 GetPos(in float3 pos, in uint index)
+{
+	float4 vPos = float4(pos,1.0f);
+	switch(index)
+	{
+		case 0: {vPos = float4(pos,1.0f);} break;
+		case 1: {vPos = float4(Rotate(pos));} break;
+	}
+	vPos = vPos * Scale;
+	return vPos;
+}
+
 float4 VERTEXSHADER( in float3 pos : POSITION) : SV_POSITION
 {
-	return Rotate(float3(pos));
+	return float4(GetPos(pos,index),0.5f,1.0f);
 }
 
 float4 PIXELSHADER( in float4 pos : SV_POSITION) : SV_Target

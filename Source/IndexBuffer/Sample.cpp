@@ -1,5 +1,5 @@
 #include "Sample.h"
-
+#include "DirectInput.h"
 
 
 Sample::Sample() : m_pVertexBuffer(nullptr), m_pVertexShader(nullptr), m_pPixelShader(nullptr), m_pVertexLayout(nullptr)
@@ -20,10 +20,34 @@ bool Sample::Init()
 }
 bool Sample::Frame()
 {
-	static int iNum = 0;
+	static float fSpeed = 50.0f;
+	static int iNum = 1;
 	static float fAngle = 0.0f;
-	fAngle -= g_fSecPerFrame * 50.0f;
+	fSpeed = 50.0f;
+	static float fScale = 1.0f;
+	m_ConstantData.fTime[3] = cos(DegreeToRadian(fScale));
+	if (S_Input.getKeyState(DIK_INSERT) == KEYSTATE::KEY_PUSH)
+	{
+		iNum *= -1;
+	}
+	if (S_Input.getKeyState(DIK_HOME) == KEYSTATE::KEY_HOLD)
+	{
+		fSpeed = 100.0f;
+	}
+	if (S_Input.getKeyState(DIK_DELETE) == KEYSTATE::KEY_HOLD)
+	{
+		fSpeed = 25.0f;
+	}
+	if (S_Input.getKeyState(DIK_PGUP) == KEYSTATE::KEY_HOLD)
+	{
+		fScale += g_fSecPerFrame * 50.0f;
+	}
+	else
+	{
+		fScale = fScale;
+	}
 
+	fAngle += (iNum)*g_fSecPerFrame * fSpeed;
 	ID3D11DeviceContext* pContext = getContext();
 	m_ConstantData.r = cosf(g_fGameTimer) * 0.5f + 0.5f;
 	m_ConstantData.g = sinf(g_fGameTimer) * 0.5f + 0.5f;
@@ -187,8 +211,6 @@ HRESULT Sample::CreateConstantBuffer()
 #endif
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-	
-
 	ID3D11Device* pDevice = getDevice();
 	hr = pDevice->CreateBuffer(&bd, NULL, &m_pConstantBuffer);
 	if (FAILED(hr))
@@ -208,8 +230,9 @@ HRESULT	Sample::LoadShaderAndInputLayout()
 	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
 		"VERTEXSHADER", "vs_5_0", dwFlag, NULL, NULL, &pVSBuf, &pErrMsg, NULL)))
 	{
-		std::string pe((char*)pErrMsg->GetBufferPointer());
-		OutputDebugString((LPCWSTR)(pErrMsg->GetBufferPointer()));
+		std::string Error((char*)pErrMsg->GetBufferPointer());
+		std::fstream fp("Error.txt",std::ios::out);
+		fp << Error;
 	}
 	// 쉐이더 컴파일 된 결과(오브젝트 파일, 목적파일)
 	V_RETURN(pDevice->CreateVertexShader(pVSBuf->GetBufferPointer(), pVSBuf->GetBufferSize()
@@ -229,8 +252,14 @@ HRESULT	Sample::LoadShaderAndInputLayout()
 	pDevice->CreateInputLayout(&layout, iNum, pVSBuf->GetBufferPointer(), pVSBuf->GetBufferSize(), &m_pVertexLayout);
 
 	ID3DBlob* pPSBuf = nullptr;
-	V_RETURN(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
-		"PIXELSHADER", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL));
+	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
+		"PIXELSHADER", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
+	{
+		std::string Error((char*)pErrMsg->GetBufferPointer());
+		std::fstream fp("Error.txt", std::ios::out);
+		fp << Error;
+	}
+
 	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()
 		, nullptr, &m_pPixelShader));
 

@@ -28,6 +28,13 @@
 #define V_RETURN(x) {hr = (x); if(FAILED(hr)) {return hr;}}
 #endif
 
+enum class KEYSTATE : unsigned char
+{
+	KEY_FREE,
+	KEY_PUSH,
+	KEY_HOLD,
+	KEY_UP
+};
 
 
 namespace std
