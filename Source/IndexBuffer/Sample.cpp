@@ -22,6 +22,8 @@ bool Sample::Frame()
 {
 	static int iNum = 0;
 	static float fAngle = 0.0f;
+	fAngle -= g_fSecPerFrame * 50.0f;
+
 	ID3D11DeviceContext* pContext = getContext();
 	m_ConstantData.r = cosf(g_fGameTimer) * 0.5f + 0.5f;
 	m_ConstantData.g = sinf(g_fGameTimer) * 0.5f + 0.5f;
@@ -30,31 +32,6 @@ bool Sample::Frame()
 	m_ConstantData.fTime[0] = g_fGameTimer;
 	m_ConstantData.fTime[1] = 1.2f;
 	m_ConstantData.fTime[2] = DegreeToRadian(fAngle);
-
-	switch (iNum)
-	{
-	case 0:
-		m_ConstantData.x = -0.5f, m_ConstantData.y = 0.5f, m_ConstantData.z = m_vertexList[0].z;
-		break;
-	case 1:
-		m_ConstantData.x = 0.5f, m_ConstantData.y = 0.5f, m_ConstantData.z = m_vertexList[1].z;
-		break;
-	case 2:
-		m_ConstantData.x = -0.5f, m_ConstantData.y = -0.5f, m_ConstantData.z = m_vertexList[2].z;
-		break;
-	case 3:
-		m_ConstantData.x = 0.5f, m_ConstantData.y = -0.5f, m_ConstantData.z = m_vertexList[3].z;
-		break;
-	}
-	P3VERTEX ple;
-	ple.x = m_ConstantData.x * cos(fAngle) - m_ConstantData.x * sin(fAngle);
-	ple.y = m_ConstantData.y * cos(fAngle) + m_ConstantData.y * sin(fAngle);
-	ple.z = m_ConstantData.z;
-	if (++iNum >= 4)
-	{
-		fAngle += g_fSecPerFrame * 50.0f;
-		iNum = 0;
-	}
 #ifdef GPU
 	//gpu update
 	pContext->UpdateSubresource(m_pConstantBuffer, 0, nullptr, &m_ConstantData, 0, 0);

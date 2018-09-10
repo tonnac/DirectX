@@ -6,10 +6,6 @@ cbuffer VS_CB
 	float index		 : packoffset(c1.y);
 	float Angle		 : packoffset(c1.z);
 	float w			 : packoffset(c1.w);
-	float InitPosX	 : packoffset(c2.x);
-	float InitPosY	 : packoffset(c2.y);
-	float InitPosZ	 : packoffset(c2.z);
-	float InitPosW	 : packoffset(c2.w);
 };
 float4 GetPos(in float3 pos, uint index)
 {
@@ -22,20 +18,17 @@ float4 GetPos(in float3 pos, uint index)
 	}
 	return float4(vPos,1.0f);
 }
-float4 Rotate()
+float4 Rotate(in float3 pos)
 {
-	float2 vPos;
-	vPos.x = InitPosX * cos(Angle) - InitPosY * sin(Angle);
-	vPos.y = InitPosX * sin(Angle) + InitPosY * cos(Angle);
-	return float4(vPos,0.5f,1.0f);
+	float3 vPos = pos;
+	vPos.x = pos.x * cos(Angle) + pos.y * sin(Angle);
+	vPos.y = pos.y * cos(Angle) - pos.x * sin(Angle);
+	return float4(vPos,1.0f);
 }
 
 float4 VERTEXSHADER( in float3 pos : POSITION) : SV_POSITION
 {
-	float4 pPos = float4(1.0f,1.0f,0.5f,1.0f);
-	pPos.x = pos.x * cos(Angle) + pos.y * sin(Angle);
-	pPos.y = -(pos.x * sin(Angle)) + pos.y * cos(Angle);
-	return float4(pPos); 
+	return Rotate(float3(pos));
 }
 
 float4 PIXELSHADER( in float4 pos : SV_POSITION) : SV_Target
