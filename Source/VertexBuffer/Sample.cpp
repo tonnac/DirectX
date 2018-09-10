@@ -30,28 +30,36 @@ bool Sample::Render()
 	pContext->VSSetShader(m_pVertexShader, NULL, 0);
 	pContext->PSSetShader(m_pPixelShader, NULL, 0);
 
-	pContext->Draw(6, 0);
+	pContext->Draw(3, 0);
 	return true;
 }
 bool Sample::Release()
 {
+	if (m_pVertexBuffer) m_pVertexBuffer->Release();
+	if (m_pVertexLayout) m_pVertexLayout->Release();
+	if (m_pPixelShader) m_pPixelShader->Release();
+	if (m_pVertexShader) m_pVertexShader->Release();
+	m_pVertexBuffer = nullptr;
+	m_pVertexLayout = nullptr;
+	m_pPixelShader = nullptr;
+	m_pVertexShader = nullptr;
 	return true;
 }
 HRESULT	Sample::CreateVertexBuffer()
 {
 	HRESULT hr;
-	P3VERTEX vList[6]; // 정점의 저장순서 : 시계방향
+	P3VERTEX vList[3]; // 정점의 저장순서 : 시계방향
 	vList[0].x = -1.0f,	vList[0].y = 1.0f,	vList[0].z = 0.5f;
 	vList[1].x = 1.0f,	vList[1].y = 1.0f,	vList[1].z = 0.5f;
 	vList[2].x = -1.0f, vList[2].y = -1.0f,	vList[2].z = 0.5f;
 
-	vList[3].x = -1.0f, vList[3].y = -1.0f, vList[3].z = 0.5f;
-	vList[4].x = 1.0f, vList[4].y = 1.0f, vList[4].z = 0.5f;
-	vList[5].x = 1.0f, vList[5].y = -1.0f, vList[5].z = 0.5f;
+//	vList[3].x = -1.0f, vList[3].y = -1.0f, vList[3].z = 0.5f;
+//	vList[4].x = 1.0f, vList[4].y = 1.0f, vList[4].z = 0.5f;
+//	vList[5].x = 1.0f, vList[5].y = -1.0f, vList[5].z = 0.5f;
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
-	bd.ByteWidth = 6 * sizeof(P3VERTEX);	 // 36바이트
+	bd.ByteWidth = 3 * sizeof(P3VERTEX);	 // 36바이트
 	bd.Usage = D3D11_USAGE_DEFAULT;			 // GPU에 할당
 
 	//Usage

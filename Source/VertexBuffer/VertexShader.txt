@@ -1,6 +1,6 @@
-float4 VERTEXSHADER( in float4 pos : POSITION) : SV_POSITION
+float4 VERTEXSHADER( in float3 pos : POSITION) : SV_POSITION
 {
-	return pos; // ½ºÀ§Áñ¸µ
+	return float4(pos,1.0f); 
 }
 
 float4 PIXELSHADER( in float4 pos : SV_POSITION) : SV_Target

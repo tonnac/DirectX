@@ -1,0 +1,47 @@
+cbuffer VS_CB
+{
+	//x,y,z,w
+	float4 g_Color	 : packoffset(c0);
+	float g_fTimerX	 : packoffset(c1.x);
+	float index		 : packoffset(c1.y);
+	float Angle		 : packoffset(c1.z);
+	float w			 : packoffset(c1.w);
+	float InitPosX	 : packoffset(c2.x);
+	float InitPosY	 : packoffset(c2.y);
+	float InitPosZ	 : packoffset(c2.z);
+	float InitPosW	 : packoffset(c2.w);
+};
+float4 GetPos(in float3 pos, uint index)
+{
+	float3 vPos = pos;
+	switch(index)
+	{
+		case 0: {vPos = vPos * abs(cos(g_fTimerX));} break;
+		case 1: {vPos = float3(1,0,0);} break;
+		case 2: {vPos = float3(1,1,0);} break;
+	}
+	return float4(vPos,1.0f);
+}
+float4 Rotate()
+{
+	float2 vPos;
+	vPos.x = InitPosX * cos(Angle) - InitPosX * sin(Angle);
+	vPos.y = InitPosY * sin(Angle) + InitPosY * cos(Angle);
+	return float4(vPos,0.5f,1.0f);
+}
+
+float4 VERTEXSHADER( in float3 pos : POSITION) : SV_POSITION
+{
+	float4 pPos = float4(1.0f,1.0f,1.0f,1.0f);
+	pPos.x = pos.x * cos(g_fTimerX) - pos.x * sin(g_fTimerX);
+	pPos.y = pos.y * sin(g_fTimerX) + pos.y * cos(g_fTimerX);
+	return float4(pPos); 
+}
+
+float4 PIXELSHADER( in float4 pos : SV_POSITION) : SV_Target
+{
+	float fColorR = cos(g_fTimerX)*0.5 + 0.5;
+	float fColorG = sin(g_fTimerX)*0.5 + 0.5;
+	float fColorB = cos(g_fTimerX)*0.6 + 0.5;
+	return float4(fColorR, fColorG, fColorB, 1.0f);
+}

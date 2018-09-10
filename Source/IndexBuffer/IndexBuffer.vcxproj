@@ -20,11 +20,11 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{BD7D0E30-FB1F-4236-BF4D-239204B1A8A8}</ProjectGuid>
+    <ProjectGuid>{D313A44F-BE99-4207-AA2E-B927E0BE48ED}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>VertexBuffer</RootNamespace>
+    <RootNamespace>IndexBuffer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
-    <ProjectName>01_VertexBuffer</ProjectName>
+    <ProjectName>01_IndexAndConstantBuffer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -93,6 +93,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)../Dx/inc;$(SolutionDir)../fmod/inc;$(SolutionDir)../inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4005</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -148,13 +149,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Sample.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Sample.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sample.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

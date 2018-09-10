@@ -18,6 +18,7 @@
 
 #define KEYSTATECOUNT 256
 #define SAMPLE_BUFFER_SIZE 16
+#define CASTING(x, y) static_cast<x>((y)) 
 
 #ifndef V
 #define V(x) {hr = (x);}
@@ -26,6 +27,7 @@
 #ifndef V_RETURN
 #define V_RETURN(x) {hr = (x); if(FAILED(hr)) {return hr;}}
 #endif
+
 
 
 namespace std
