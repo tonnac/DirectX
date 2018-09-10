@@ -25,16 +25,16 @@ float4 GetPos(in float3 pos, uint index)
 float4 Rotate()
 {
 	float2 vPos;
-	vPos.x = InitPosX * cos(Angle) - InitPosX * sin(Angle);
-	vPos.y = InitPosY * sin(Angle) + InitPosY * cos(Angle);
+	vPos.x = InitPosX * cos(Angle) - InitPosY * sin(Angle);
+	vPos.y = InitPosX * sin(Angle) + InitPosY * cos(Angle);
 	return float4(vPos,0.5f,1.0f);
 }
 
 float4 VERTEXSHADER( in float3 pos : POSITION) : SV_POSITION
 {
-	float4 pPos = float4(1.0f,1.0f,1.0f,1.0f);
-	pPos.x = pos.x * cos(g_fTimerX) - pos.x * sin(g_fTimerX);
-	pPos.y = pos.y * sin(g_fTimerX) + pos.y * cos(g_fTimerX);
+	float4 pPos = float4(1.0f,1.0f,0.5f,1.0f);
+	pPos.x = pos.x * cos(Angle) + pos.y * sin(Angle);
+	pPos.y = -(pos.x * sin(Angle)) + pos.y * cos(Angle);
 	return float4(pPos); 
 }
 

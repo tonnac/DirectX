@@ -52,7 +52,7 @@ bool Sample::Frame()
 	ple.z = m_ConstantData.z;
 	if (++iNum >= 4)
 	{
-		fAngle += g_fSecPerFrame * 10.0f;
+		fAngle += g_fSecPerFrame * 50.0f;
 		iNum = 0;
 	}
 #ifdef GPU
