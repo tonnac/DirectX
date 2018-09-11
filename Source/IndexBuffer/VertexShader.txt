@@ -10,8 +10,8 @@ cbuffer VS_CB
 float4 Rotate(in float3 pos)
 {
 	float3 vPos = pos;
-	vPos.x = pos.x + (sin(Angle) / 4) + (pos.x * cos(Angle) + pos.y * sin(Angle));
-	vPos.y = pos.y + (sin(Angle) / 4) + (pos.y * cos(Angle) - pos.x * sin(Angle));
+	vPos.x = 0.45f * (cos(g_fTimerX) + sin(g_fTimerX)) + (pos.x * cos(Angle) + pos.y * sin(Angle));
+	vPos.y = 0.45f * (cos(g_fTimerX) - sin(g_fTimerX))+ (pos.y * cos(Angle) - pos.x * sin(Angle));
 	return float4(vPos,1.0f);
 }
 
