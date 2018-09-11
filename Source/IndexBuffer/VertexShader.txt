@@ -10,8 +10,8 @@ cbuffer VS_CB
 float4 Rotate(in float3 pos)
 {
 	float3 vPos = pos;
-	vPos.x = pos.x * cos(Angle) + pos.y * sin(Angle);
-	vPos.y = pos.y * cos(Angle) - pos.x * sin(Angle);
+	vPos.x = pos.x + (sin(Angle) / 4) + (pos.x * cos(Angle) + pos.y * sin(Angle));
+	vPos.y = pos.y + (sin(Angle) / 4) + (pos.y * cos(Angle) - pos.x * sin(Angle));
 	return float4(vPos,1.0f);
 }
 
@@ -36,6 +36,6 @@ float4 PIXELSHADER( in float4 pos : SV_POSITION) : SV_Target
 {
 	float fColorR = cos(g_fTimerX)*0.5 + 0.5;
 	float fColorG = sin(g_fTimerX)*0.5 + 0.5;
-	float fColorB = cos(g_fTimerX)*0.6 + 0.5;
+	float fColorB = abs(cos(g_fTimerX));
 	return float4(fColorR, fColorG, fColorB, 1.0f);
 }

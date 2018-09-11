@@ -25,7 +25,7 @@ bool Sample::Frame()
 	static float fAngle = 0.0f;
 	fSpeed = 50.0f;
 	static float fScale = 1.0f;
-	m_ConstantData.fTime[3] = cos(DegreeToRadian(fScale));
+	m_ConstantData.fTime[3] = cosf(DegreeToRadian(fScale));
 	if (S_Input.getKeyState(DIK_INSERT) == KEYSTATE::KEY_PUSH)
 	{
 		iNum *= -1;
@@ -41,10 +41,6 @@ bool Sample::Frame()
 	if (S_Input.getKeyState(DIK_PGUP) == KEYSTATE::KEY_HOLD)
 	{
 		fScale += g_fSecPerFrame * 50.0f;
-	}
-	else
-	{
-		fScale = fScale;
 	}
 
 	fAngle += (iNum)*g_fSecPerFrame * fSpeed;

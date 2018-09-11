@@ -6,7 +6,7 @@
 #pragma comment(lib,"d3dx11.lib")
 
 #define PI 3.141592
-#define DegreeToRadian(x) (x) / 180 * PI
+#define DegreeToRadian(x) CASTING(FLOAT,(x) / 180 * PI)
 
 #define GPU
 //#define CPU
