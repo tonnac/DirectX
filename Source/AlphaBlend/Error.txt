@@ -1,0 +1,1 @@
+F:\00_36Study\DirectX\Source\AlphaBlend\VertexShader.txt(80,2): error X3000: syntax error: unexpected token '}'

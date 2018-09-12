@@ -5,8 +5,6 @@
 
 #pragma comment(lib,"d3dx11.lib")
 
-#pragma warning( disable : 4005)
-
 #define PI 3.141592
 #define DegreeToRadian(x) CASTING(FLOAT,(x) / 180 * PI)
 
@@ -37,7 +35,8 @@ public:
 	HRESULT						CreateIndexBuffer		();
 	HRESULT						CreateConstantBuffer	();
 	HRESULT						LoadShaderAndInputLayout();
-	HRESULT						LoadTextureFile			(const TCHAR* szFileName);
+	HRESULT						LoadTextureFile			(ID3D11ShaderResourceView** pTexSRV, const TCHAR* szFileName);
+	HRESULT						SetBlendState			();
 	bool						Init					() override;
 	bool						Frame					() override;
 	bool						Render					() override;
@@ -49,9 +48,16 @@ private:
 	ID3D11Buffer*				m_pConstantBuffer;
 	ID3D11VertexShader*			m_pVertexShader;
 	ID3D11PixelShader*			m_pPixelShader;
+	ID3D11PixelShader*			m_pPixelShader1;
+	ID3D11PixelShader*			m_pPixelShader2;
 	ID3D11InputLayout*			m_pVertexLayout;
 	std::vector<P3VERTEX>		m_vertexList;
 	std::vector<DWORD>			m_indexList;
 	ID3D11ShaderResourceView*	m_pTexSRV;
+	ID3D11ShaderResourceView*	m_pTexSRVNoAlpha;
+	ID3D11ShaderResourceView*	m_pTexSRVAlpha;
 	ID3D11SamplerState*			m_pSamplerState;
+	ID3D11BlendState*			m_pAlphaBlend1;
+	ID3D11BlendState*			m_pAlphaBlend2;
+	ID3D11BlendState*			m_pAlphaBlend3;
 };
