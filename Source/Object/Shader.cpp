@@ -1,91 +1,43 @@
 #include "Shader.h"
 
-bool Shader::Init()
-{
-	return true;
-}
-bool Shader::Frame()
-{
-	return true;
-}
-bool Shader::Render()
-{
-	return true;
-}
 bool Shader::Release()
 {
-	if (m_pTexSRV) m_pTexSRV->Release();
-	if (m_pSamplerState) m_pSamplerState->Release();
-	m_pSamplerState = nullptr;
-	m_pTexSRV = nullptr;
+	RELEASE(m_pVertexShader);
+	RELEASE(m_pPixelShader);
+	RELEASE(m_pVSBlob);
 	return true;
 }
 HRESULT Shader::CreateShader(ID3D11Device* pDevice, const std::tstring& Filename, const std::string& vs, const std::string& ps)
 {
 	HRESULT hr;
-	ID3DBlob* pVSBuf = nullptr;
-	ID3DBlob* pErrMsg = nullptr;
-	DWORD dwFlag = D3DCOMPILE_DEBUG;
-	if (FAILED(D3DX11CompileFromFile(Filename.c_str(), NULL, NULL,
-		vs.c_str(), "vs_5_0", dwFlag, NULL, NULL, &pVSBuf, &pErrMsg, NULL)))
-	{
-		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
-	}
+	ID3DBlob* pErrBlob = nullptr;
+	ifShaderFailed(D3DX11CompileFromFile(Filename.c_str(), NULL, NULL, vs.c_str(), "vs_5_0", m_dwFlag, NULL, NULL, &m_pVSBlob, &pErrBlob, NULL));
 	// 쉐이더 컴파일 된 결과(오브젝트 파일, 목적파일)
-	V_RETURN(pDevice->CreateVertexShader(pVSBuf->GetBufferPointer(), pVSBuf->GetBufferSize()
-		, nullptr, &m_pVertexShader));
-
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{"POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	0,	D3D11_INPUT_PER_VERTEX_DATA ,0},
-		{"COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0,	12,	D3D11_INPUT_PER_VERTEX_DATA ,0},
-		{"TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,		0,	28,	D3D11_INPUT_PER_VERTEX_DATA ,0}
-	};
-
-	int iNum = sizeof(layout) / sizeof(D3D11_INPUT_ELEMENT_DESC);
-
-	pDevice->CreateInputLayout(layout, iNum, pVSBuf->GetBufferPointer(), pVSBuf->GetBufferSize(), &m_pVertexLayout);
+	V_RETURN(pDevice->CreateVertexShader(m_pVSBlob->GetBufferPointer(), m_pVSBlob->GetBufferSize(), nullptr, &m_pVertexShader));
 
 	ID3DBlob* pPSBuf = nullptr;
-	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
-		ps.c_str(), "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
-	{
-		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
-	}
+	ifShaderFailed(D3DX11CompileFromFile(Filename.c_str(), NULL, NULL,ps.c_str(), "ps_5_0", m_dwFlag, NULL, NULL, &pPSBuf, &pErrBlob, NULL));
+	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize(), nullptr, &m_pPixelShader));
 
-	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()
-		, nullptr, &m_pPixelShader));
-
-	//
-
-	pPSBuf = nullptr;
-	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
-		"PIXELSHADER1", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
-	{
-		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
-	}
-
-	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()
-		, nullptr, &m_pPixelShader1));
-
-	//
-
-	pPSBuf = nullptr;
-	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
-		"PIXELSHADER2", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
-	{
-		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
-	}
-
-	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()
-		, nullptr, &m_pPixelShader2));
-
-	pVSBuf->Release();
 	pPSBuf->Release();
 	return hr;
-	return hr;
 }
-
+ID3D11VertexShader * Shader::getVertexShader()
+{
+	GETPTR(m_pVertexShader);
+}
+ID3D11PixelShader* Shader::getPixelShader()
+{
+	GETPTR(m_pPixelShader);
+}
+ID3DBlob * Shader::getBlob()
+{
+	GETPTR(m_pVSBlob);
+}
+const std::tstring& Shader::getName() const
+{
+	return m_Name;
+}
 
 //HRESULT Shader::LoadShaderFile(ID3D11ShaderResourceView** pTexSRV, const TCHAR* szFileName)
 //{
@@ -112,3 +64,63 @@ HRESULT Shader::CreateShader(ID3D11Device* pDevice, const std::tstring& Filename
 //
 //	return hr;
 //}
+
+bool ShaderMgr::Release()
+{
+	for (auto it : m_ShaderList)
+	{
+		it.second->Release();
+		delete it.second;
+	}
+	m_ShaderList.clear();
+	return true;
+}
+const std::tstring& ShaderMgr::LoadShader(ID3D11Device * pDevice, const std::tstring& Name, const std::tstring& Filepath, const std::string& vs, const std::string& ps)
+{
+	if (getShaderPtr(Name))
+	{
+		return Name;
+	}
+
+	SharedIter it;
+	it = m_ShaderList.find(Name);
+	if (it != m_ShaderList.end())
+	{
+		AddCache(it->first, it->second);
+		return Name;
+	}
+
+	Shader * newData = new Shader;
+	if (FAILED(newData->CreateShader(pDevice, Filepath, vs, ps))) return nullptr;
+
+	m_ShaderList.insert(std::make_pair(Name, newData));
+	AddCache(Name, newData);
+	return Name;
+}
+
+void ShaderMgr::AddCache(const std::tstring& szName, Shader* pShader)
+{
+	CacheData_<Shader*> Cache_;
+	Cache_.m_Name = szName;
+	Cache_.m_Data = pShader;
+	if (m_CacheList.size() >= 3)
+	{
+		m_CacheList.pop_front();
+	}
+	m_CacheList.push_back(Cache_);
+}
+Shader* ShaderMgr::getShaderPtr(const std::tstring& Name)
+{
+	CacheIter it;
+	auto foo = [&Name](CacheData_<Shader*> pSha) {if (Name == pSha.m_Name) { return true; } return false;};
+	it = std::find_if(m_CacheList.begin(), m_CacheList.end(), foo);
+	if (it != m_CacheList.end())
+	{
+		return it->m_Data;
+	}
+	if (m_ShaderList.find(Name) != m_ShaderList.end())
+	{
+		return m_ShaderList[Name];
+	}
+	return nullptr;
+}

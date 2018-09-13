@@ -1,7 +1,7 @@
 #include "Object.h"
 
 
-HRESULT	Object::CreateVertexBuffer()
+HRESULT	Object::CreateVertexBuffer(ID3D11Device* pDevice)
 {
 	HRESULT hr;
 	const int iNumCount = 4;
@@ -45,7 +45,7 @@ HRESULT	Object::CreateVertexBuffer()
 	//sd.SysMemPitch;
 	//sd.SysMemSlicePitch;
 
-	hr = m_pDevice->CreateBuffer(&bd, &sd, &m_pVertexBuffer);
+	hr = pDevice->CreateBuffer(&bd, &sd, &m_pVertexBuffer);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -53,7 +53,7 @@ HRESULT	Object::CreateVertexBuffer()
 
 	return hr;
 }
-HRESULT Object::CreateIndexBuffer()
+HRESULT Object::CreateIndexBuffer(ID3D11Device* pDevice)
 {
 	HRESULT hr;
 
@@ -89,14 +89,14 @@ HRESULT Object::CreateIndexBuffer()
 	//sd.SysMemPitch;
 	//sd.SysMemSlicePitch;
 
-	hr = m_pDevice->CreateBuffer(&bd, &sd, &m_pIndexBuffer);
+	hr = pDevice->CreateBuffer(&bd, &sd, &m_pIndexBuffer);
 	if (FAILED(hr))
 	{
 		return hr;
 	}
 	return hr;
 }
-HRESULT Object::CreateConstantBuffer()
+HRESULT Object::CreateConstantBuffer(ID3D11Device* pDevice)
 {
 	HRESULT hr;
 	D3D11_BUFFER_DESC bd;
@@ -110,7 +110,7 @@ HRESULT Object::CreateConstantBuffer()
 #endif
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-	hr = m_pDevice->CreateBuffer(&bd, NULL, &m_pConstantBuffer);
+	hr = pDevice->CreateBuffer(&bd, NULL, &m_pConstantBuffer);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -118,73 +118,35 @@ HRESULT Object::CreateConstantBuffer()
 
 	return hr;
 }
-HRESULT	Object::LoadShaderAndInputLayout()
+HRESULT Object::CreateTexture(ID3D11Device* pDevice, const std::tstring Name, const std::tstring Filepath)
+{
+	std::tstring Tex = S_TextureMgr.LoadTexture(pDevice, Name, Filepath);
+	m_pTexture = S_TextureMgr.getTexturePtr(Tex);
+	return S_OK;
+}
+HRESULT Object::CreateShader(ID3D11Device* pDevice, const std::tstring Name, const std::tstring Filepath)
+{
+	std::tstring Shader = S_ShaderMgr.LoadShader(pDevice, Name, Filepath);
+	m_pShader = S_ShaderMgr.getShaderPtr(Shader);
+	return S_OK;
+}
+HRESULT Object::CreateInputLayout(ID3D11Device* pDevice)
 {
 	HRESULT hr;
-	ID3DBlob* pVSBuf = nullptr;
-	ID3DBlob* pErrMsg = nullptr;
-	DWORD dwFlag = D3DCOMPILE_DEBUG;
-	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
-		"VERTEXSHADER", "vs_5_0", dwFlag, NULL, NULL, &pVSBuf, &pErrMsg, NULL)))
-	{
-		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
-	}
-	// 쉐이더 컴파일 된 결과(오브젝트 파일, 목적파일)
-	V_RETURN(m_pDevice->CreateVertexShader(pVSBuf->GetBufferPointer(), pVSBuf->GetBufferSize()
-		, nullptr, &m_pVertexShader));
-
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
-		{"POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	0,	D3D11_INPUT_PER_VERTEX_DATA ,0},
-		{"COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0,	12,	D3D11_INPUT_PER_VERTEX_DATA ,0},
-		{"TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,		0,	28,	D3D11_INPUT_PER_VERTEX_DATA ,0}
+		{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0,	0,	D3D11_INPUT_PER_VERTEX_DATA ,0 },
+		{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0,	12,	D3D11_INPUT_PER_VERTEX_DATA ,0 },
+		{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,		0,	28,	D3D11_INPUT_PER_VERTEX_DATA ,0 }
 	};
 
 	int iNum = sizeof(layout) / sizeof(D3D11_INPUT_ELEMENT_DESC);
 
-	m_pDevice->CreateInputLayout(layout, iNum, pVSBuf->GetBufferPointer(), pVSBuf->GetBufferSize(), &m_pVertexLayout);
-
-	ID3DBlob* pPSBuf = nullptr;
-	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
-		"PIXELSHADER", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
-	{
-		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
-	}
-
-	V_RETURN(m_pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()
-		, nullptr, &m_pPixelShader));
-
-	pVSBuf->Release();
-	pPSBuf->Release();
+	ID3DBlob* pBlob = m_pShader->getBlob();
+	V_RETURN(pDevice->CreateInputLayout(layout, iNum, pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &m_pVertexLayout));
 	return hr;
 }
-HRESULT Object::LoadTextureFile(ID3D11ShaderResourceView** pTexSRV, const TCHAR* szFileName)
-{
-
-	HRESULT hr;
-
-	hr = D3DX11CreateShaderResourceViewFromFile(m_pDevice, szFileName, nullptr, nullptr, pTexSRV, nullptr);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	D3D11_SAMPLER_DESC samplerdesc;
-	ZeroMemory(&samplerdesc, sizeof(D3D11_SAMPLER_DESC));
-	samplerdesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerdesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerdesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerdesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-
-	hr = m_pDevice->CreateSamplerState(&samplerdesc, &m_pSamplerState);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	return hr;
-}
-HRESULT	Object::SetBlendState()
+HRESULT	Object::SetBlendState(ID3D11Device* pDevice)
 {
 	HRESULT hr;
 	D3D11_BLEND_DESC bd;
@@ -201,24 +163,15 @@ HRESULT	Object::SetBlendState()
 
 	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	V_RETURN(m_pDevice->CreateBlendState(&bd, &m_pAlphaBlend1));
+	V_RETURN(pDevice->CreateBlendState(&bd, &m_pAlphaBlend));
 	return hr;
 }
 
 bool Object::Init()
 {
-	LoadTextureFile(&m_pTexSRV, L"../../data/effect/Particle6.dds");
-	CreateVertexBuffer();
-	CreateIndexBuffer();
-	CreateConstantBuffer();
-	SetBlendState();
-	if (FAILED(LoadShaderAndInputLayout()))
-	{
-		return false;
-	}
 	return true;
 }
-bool Object::Frame()
+bool Object::Frame(ID3D11DeviceContext* pContext)
 {
 	static float fSpeed = 50.0f;
 	static int iNum = 1;
@@ -253,78 +206,76 @@ bool Object::Frame()
 	m_ConstantData.fTime[2] = DegreeToRadian(fAngle);
 #ifdef GPU
 	//gpu update
-	m_pContext->UpdateSubresource(m_pConstantBuffer, 0, nullptr, &m_ConstantData, 0, 0);
+	pContext->UpdateSubresource(m_pConstantBuffer, 0, nullptr, &m_ConstantData, 0, 0);
 #endif
 #ifdef CPU
 	//cpu update
 	// MAP	->  자물쇠열고
 	D3D11_MAPPED_SUBRESOURCE address;
-	if (SUCCEEDED(m_pContext->Map(m_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &address)))
+	if (SUCCEEDED(pContext->Map(m_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &address)))
 	{
 		// 상수버퍼 갱신
 		VS_CB* cb = (VS_CB*)address.pData;
 		*cb = m_ConstantData;
 		// UNMAP -> 닫고
-		m_pContext->Unmap(m_pConstantBuffer, 0);
+		pContext->Unmap(m_pConstantBuffer, 0);
 	}
 #endif
 	return true;
 }
-bool Object::Render()
+bool Object::Render(ID3D11DeviceContext* pContext)
 {
 	UINT offset = 0;
 	UINT stride = sizeof(PCT_VERTEX);
-
+	ID3D11VertexShader * pVertexShader = m_pShader->getVertexShader();
+	ID3D11PixelShader* pPixelShader = m_pShader->getPixelShader();
+	ID3D11SamplerState* pSamplerState = m_pTexture->getSamplerState();
+	ID3D11ShaderResourceView* pSRV = m_pTexture->getTexSRV();
 	//블랜드 적용
 	//pContext->OMSetBlendState(m_pAlphaBlend1, 0, -1);
 
-	m_pContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, offset);
-	m_pContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	pContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, offset);
+	pContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 
-	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pContext->IASetInputLayout(m_pVertexLayout);
-	m_pContext->VSSetShader(m_pVertexShader, NULL, 0);
+	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pContext->IASetInputLayout(m_pVertexLayout);
+	pContext->VSSetShader(pVertexShader, NULL, 0);
 	//	pContext->PSSetShader(m_pPixelShader, NULL, 0);
 
 		// 샘플스테이트 적용(픽셀 쉐이더)
-	m_pContext->PSSetSamplers(0, 1, &m_pSamplerState);
+	pContext->PSSetSamplers(0, 1, &pSamplerState);
 	// 텍스쳐버펴 적용(픽셀 쉐이더)
 	// 상수버퍼 적용(픽셀 쉐이더)
-	m_pContext->PSSetConstantBuffers(0, 1, &m_pConstantBuffer);
+	pContext->PSSetConstantBuffers(0, 1, &m_pConstantBuffer);
 	// 상수버퍼 적용(버텍스 쉐이더)
-	m_pContext->VSSetConstantBuffers(
+	pContext->VSSetConstantBuffers(
 		0,	// 슬롯번호(레지스트리 번호)
 		1,	// 상수버퍼 1개
 		&m_pConstantBuffer);
 
-	m_pContext->PSSetShader(m_pPixelShader, NULL, 0);
-	m_pContext->PSSetShaderResources(0, 1, &m_pTexSRV);
-	m_pContext->OMSetBlendState(m_pAlphaBlend1, 0, -1);
-	m_pContext->DrawIndexed(CASTING(UINT32, m_indexList.size()), 0, 0);
+	pContext->PSSetShader(pPixelShader, NULL, 0);
+	pContext->PSSetShaderResources(0, 1, &pSRV);
+	pContext->OMSetBlendState(m_pAlphaBlend, 0, -1);
+	pContext->DrawIndexed(CASTING(UINT32, m_indexList.size()), 0, 0);
 
 	return true;
 }
 bool Object::Release()
 {
-	if (m_pVertexBuffer) m_pVertexBuffer->Release();
-	if (m_pVertexLayout) m_pVertexLayout->Release();
-	if (m_pPixelShader) m_pPixelShader->Release();
-	if (m_pVertexShader) m_pVertexShader->Release();
-	m_pVertexBuffer = nullptr;
-	m_pVertexLayout = nullptr;
-	m_pPixelShader = nullptr;
-	m_pVertexShader = nullptr;
+	RELEASE(m_pVertexBuffer);
+	RELEASE(m_pVertexLayout);
+	RELEASE(m_pConstantBuffer);
+	RELEASE(m_pIndexBuffer);
 	return true;
 }
-bool Object::Create(ID3D11Device* pd3dDevice, std::tstring szShaderName, std::tstring szTexName)
+bool Object::Create(ID3D11Device* pDevice, const std::tstring& Name, const std::tstring& ShaderPath, const std::tstring& TexturePath)
 {
-	m_iTexindex = S_TextureMgr.Load(pd3dDevice, szTexName);
-	m_pTexture = S_TextureMgr.getPtr(m_iTexindex);
-}
-
-
-void Object::Set(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-{
-	m_pDevice = pDevice;
-	m_pContext = pContext;
+	CreateVertexBuffer(pDevice);
+	CreateIndexBuffer(pDevice);
+	CreateConstantBuffer(pDevice);
+	CreateShader(pDevice, Name, ShaderPath);
+	CreateTexture(pDevice, Name, TexturePath);
+	CreateInputLayout(pDevice);
+	SetBlendState(pDevice);
+	return true;
 }

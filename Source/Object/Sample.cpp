@@ -9,18 +9,18 @@ Sample::~Sample()
 
 bool Sample::Init()
 {
-	m_Object.Set(getDevice(), getContext());
+	m_Object.Create(getDevice(), L"EPE", L"VertexShader.txt", L"../../data/effect/Particle6.dds");
 	m_Object.Init();
 	return true;
 }
 bool Sample::Frame()
 {
-	m_Object.Frame();
+	m_Object.Frame(getContext());
 	return true;
 }
 bool Sample::Render()
 {
-	m_Object.Render();
+	m_Object.Render(getContext());
 	return true;
 }
 bool Sample::Release()

@@ -152,9 +152,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Sample.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderMgr.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.txt" />
@@ -163,9 +161,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Sample.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="ShaderMgr.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TextureMgr.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

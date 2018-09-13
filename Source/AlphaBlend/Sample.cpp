@@ -10,8 +10,6 @@ Sample::~Sample()
 bool Sample::Init()
 {
 	LoadTextureFile(&m_pTexSRV, L"../../data/effect/Particle6.dds");
-	LoadTextureFile(&m_pTexSRVNoAlpha, L"../../data/map/Dirt_Diff.dds");
-	LoadTextureFile(&m_pTexSRVAlpha, L"../../data/effect/fwall36.dds");
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 	CreateConstantBuffer();
@@ -358,6 +356,7 @@ HRESULT Sample::LoadTextureFile(ID3D11ShaderResourceView** pTexSRV,const TCHAR* 
 	}
 
 	return hr;
+	return hr;
 }
 HRESULT	Sample::SetBlendState()
 {
@@ -377,37 +376,7 @@ HRESULT	Sample::SetBlendState()
 
 	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	V_RETURN(pDevice->CreateBlendState(&bd, &m_pAlphaBlend1));
-
-	ZeroMemory(&bd, sizeof(bd));
-	bd.RenderTarget[0].BlendEnable = TRUE;
-	// 칼라 블랜드 FINALCOLOR = deskcolor * DestBlend + srccolor * SrcBlend;
-	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	bd.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	// 알파 블랜드 FINALALPHA = deskalpha * DestBlendAlpha + srcalpha * SrcBlendAlpha;
-	bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-	bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	V_RETURN(pDevice->CreateBlendState(&bd, &m_pAlphaBlend2));
-
-	ZeroMemory(&bd, sizeof(bd));
-	bd.RenderTarget[0].BlendEnable = TRUE;
-	// 칼라 블랜드 FINALCOLOR = deskcolor * DestBlend + srccolor * SrcBlend;
-	bd.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	bd.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	// 알파 블랜드 FINALALPHA = deskalpha * DestBlendAlpha + srcalpha * SrcBlendAlpha;
-	bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-	bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-
-	bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	V_RETURN(pDevice->CreateBlendState(&bd, &m_pAlphaBlend3));
+	V_RETURN(pDevice->CreateBlendState(&bd, &m_pAlphaBlend));
 	return hr;
 }
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE prevInst, LPWSTR szCmdLine, int nCmdShow)
