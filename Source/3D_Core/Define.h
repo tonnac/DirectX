@@ -29,6 +29,21 @@
 #define V_RETURN(x) {hr = (x); if(FAILED(hr)) {return hr;}}
 #endif
 
+#define RELEASE(x) if((x)) {((x->Release())); } (x) = nullptr
+
+#ifndef ifShaderFailed
+#define ifShaderFailed(x)									\
+{															\
+	if(FAILED(x))											\
+	{														\
+		std::string Error = "\n\n\n";						\
+		Error += (char*)m_pVSBlob->GetBufferPointer();		\
+		Error += "\n\n\n";									\
+		OutputDebugStringA(Error.c_str());					\
+	}														\
+}
+#endif
+
 enum class KEYSTATE : unsigned char
 {
 	KEY_FREE,
@@ -68,3 +83,4 @@ public:
 		return inst;
 	}
 };
+

@@ -54,7 +54,7 @@ bool Sample::Frame()
 	m_ConstantData.b = cosf(g_fGameTimer) * 0.5f + 0.5f;
 	m_ConstantData.a = 0.3f;
 	m_ConstantData.fTime[0] = g_fGameTimer;
-	m_ConstantData.fTime[1] = 0.2f;
+	m_ConstantData.fTime[1] = 1.2f;
 	m_ConstantData.fTime[2] = DegreeToRadian(fAngle);
 #ifdef GPU
 	//gpu update
@@ -103,20 +103,20 @@ bool Sample::Render()
 	1,	// 상수버퍼 1개
 	&m_pConstantBuffer);
 
-	pContext->PSSetShaderResources(0, 1, &m_pTexSRVNoAlpha);
-	pContext->PSSetShader(m_pPixelShader1, NULL, 0);
-	pContext->OMSetBlendState(m_pAlphaBlend1, 0, -1);
-	pContext->DrawIndexed(CASTING(UINT32, m_indexList.size()), 0, 0);
+	//pContext->PSSetShader(m_pPixelShader1, NULL, 0);
+	//pContext->PSSetShaderResources(0, 1, &m_pTexSRVNoAlpha);
+	//pContext->OMSetBlendState(m_pAlphaBlend1, 0, -1);
+	//pContext->DrawIndexed(CASTING(UINT32, m_indexList.size()), 0, 0);
 
 	pContext->PSSetShader(m_pPixelShader2, NULL, 0);
 	pContext->PSSetShaderResources(0, 1, &m_pTexSRV);
 	pContext->OMSetBlendState(m_pAlphaBlend2, 0, -1);
 	pContext->DrawIndexed(CASTING(UINT32, m_indexList.size()), 0, 0);
 
-	pContext->PSSetShader(m_pPixelShader1, NULL, 0);
-	pContext->PSSetShaderResources(0, 1, &m_pTexSRVAlpha);
-	pContext->OMSetBlendState(m_pAlphaBlend3, 0, -1);
-	pContext->DrawIndexed(CASTING(UINT32, m_indexList.size()), 0, 0);
+	//pContext->PSSetShader(m_pPixelShader1, NULL, 0);
+	//pContext->PSSetShaderResources(0, 1, &m_pTexSRVAlpha);
+	//pContext->OMSetBlendState(m_pAlphaBlend3, 0, -1);
+	//pContext->DrawIndexed(CASTING(UINT32, m_indexList.size()), 0, 0);
 
 	return true;
 }
@@ -263,9 +263,7 @@ HRESULT	Sample::LoadShaderAndInputLayout()
 	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
 		"VERTEXSHADER", "vs_5_0", dwFlag, NULL, NULL, &pVSBuf, &pErrMsg, NULL)))
 	{
-		std::string Error((char*)pErrMsg->GetBufferPointer());
-		std::fstream fp("Error.txt",std::ios::out);
-		fp << Error;
+		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
 	}
 	// 쉐이더 컴파일 된 결과(오브젝트 파일, 목적파일)
 	V_RETURN(pDevice->CreateVertexShader(pVSBuf->GetBufferPointer(), pVSBuf->GetBufferSize()
@@ -286,9 +284,7 @@ HRESULT	Sample::LoadShaderAndInputLayout()
 	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
 		"PIXELSHADER", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
 	{
-		std::string Error((char*)pErrMsg->GetBufferPointer());
-		std::fstream fp("Error.txt", std::ios::out);
-		fp << Error;
+		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
 	}
 
 	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()
@@ -300,9 +296,7 @@ HRESULT	Sample::LoadShaderAndInputLayout()
 	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
 		"PIXELSHADER1", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
 	{
-		std::string Error((char*)pErrMsg->GetBufferPointer());
-		std::fstream fp("Error.txt", std::ios::out);
-		fp << Error;
+		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
 	}
 
 	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()
@@ -314,9 +308,7 @@ HRESULT	Sample::LoadShaderAndInputLayout()
 	if (FAILED(D3DX11CompileFromFile(L"VertexShader.txt", NULL, NULL,
 		"PIXELSHADER2", "ps_5_0", dwFlag, NULL, NULL, &pPSBuf, NULL, NULL)))
 	{
-		std::string Error((char*)pErrMsg->GetBufferPointer());
-		std::fstream fp("Error.txt", std::ios::out);
-		fp << Error;
+		OutputDebugStringA(LPCSTR(pErrMsg->GetBufferPointer()));
 	}
 
 	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize()

@@ -47,16 +47,21 @@ private:
 	ID3D11Buffer*				m_pIndexBuffer;
 	ID3D11Buffer*				m_pConstantBuffer;
 	ID3D11VertexShader*			m_pVertexShader;
+
 	ID3D11PixelShader*			m_pPixelShader;
 	ID3D11PixelShader*			m_pPixelShader1;
 	ID3D11PixelShader*			m_pPixelShader2;
 	ID3D11InputLayout*			m_pVertexLayout;
+
 	std::vector<P3VERTEX>		m_vertexList;
 	std::vector<DWORD>			m_indexList;
+
 	ID3D11ShaderResourceView*	m_pTexSRV;
 	ID3D11ShaderResourceView*	m_pTexSRVNoAlpha;
 	ID3D11ShaderResourceView*	m_pTexSRVAlpha;
+
 	ID3D11SamplerState*			m_pSamplerState;
+
 	ID3D11BlendState*			m_pAlphaBlend1;
 	ID3D11BlendState*			m_pAlphaBlend2;
 	ID3D11BlendState*			m_pAlphaBlend3;

@@ -29,6 +29,8 @@
 #define V_RETURN(x) {hr = (x); if(FAILED(hr)) {return hr;}}
 #endif
 
+#define RELEASE(x) if((x)) {((x->Release())); } (x) = nullptr
+
 enum class KEYSTATE : unsigned char
 {
 	KEY_FREE,
