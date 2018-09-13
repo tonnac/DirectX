@@ -35,4 +35,4 @@ private:
 	std::list<CacheData_<Texture*>>		m_CacheList;
 };
 
-#define S_TextureMgr	TextureMgr::getInstance()
+#define S_Texture TextureMgr::getInstance()

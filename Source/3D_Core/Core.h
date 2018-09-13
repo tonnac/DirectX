@@ -4,6 +4,8 @@
 #include "Timer.h"
 #include "DirectWrite.h"
 #include "DirectInput.h"
+#include "Texture.h"
+#include "Shader.h"
 //#define DEVICE_INFO
 
 class Core : public Window

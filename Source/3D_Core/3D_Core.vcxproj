@@ -167,9 +167,11 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClCompile Include="DirectWrite.cpp" />
     <ClCompile Include="Enumeration.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PlaneObj.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TriangleObj.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,9 +182,11 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClInclude Include="DirectWrite.h" />
     <ClInclude Include="Enumeration.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="PlaneObj.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TriangleObj.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

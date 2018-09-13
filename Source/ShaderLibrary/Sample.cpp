@@ -10,12 +10,11 @@ Sample::~Sample()
 bool Sample::Init()
 {
 	m_Object.Create(getDevice(), L"EPE", L"VertexShader.txt", L"../../data/effect/Particle6.dds");
-	m_Object.Init();
 	return true;
 }
 bool Sample::Frame()
 {
-	m_Object.Frame(getContext());
+	m_Object.Frame();
 	return true;
 }
 bool Sample::Render()

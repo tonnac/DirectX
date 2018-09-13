@@ -37,6 +37,8 @@ bool Core::GameRun()
 }
 bool Core::GameRelease()
 {
+	S_Texture.Release();
+	S_Shader.Release();
 	m_Timer.Release();
 	S_Input.Release();
 	Release();

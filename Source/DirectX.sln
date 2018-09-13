@@ -95,6 +95,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_Object", "Object\Object.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_ShaderLibrary", "ShaderLibrary\ShaderLibrary.vcxproj", "{61E1E625-B7DE-4CD0-9D3B-BFD84E0022D0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{234CCF81-7551-4D7D-8475-F7E4D5CA0787} = {234CCF81-7551-4D7D-8475-F7E4D5CA0787}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

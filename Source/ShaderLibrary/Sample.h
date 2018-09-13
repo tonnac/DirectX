@@ -1,6 +1,7 @@
 #pragma once
 #include "Core.h"
-#include "Object.h"
+#include "PlaneObj.h"
+#include "TriangleObj.h"
 
 class Sample : public Core
 {
@@ -13,5 +14,5 @@ public:
 	bool						Render					() override;
 	bool						Release					() override;
 private:
-	Object						m_Object;
+	PlaneObj					m_Object;
 };

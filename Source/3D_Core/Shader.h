@@ -42,4 +42,4 @@ private:
 	std::list<CacheData_<Shader*>>		m_CacheList;
 };
 
-#define S_ShaderMgr	ShaderMgr::getInstance()
+#define S_Shader ShaderMgr::getInstance()

@@ -35,12 +35,14 @@ public:
 	virtual HRESULT				CreateInputLayout(ID3D11Device* pDevice);
 	virtual HRESULT				SetBlendState(ID3D11Device* pDevice);
 public:
-	bool						Init();
-	bool						Frame(ID3D11DeviceContext* pContext);
-	bool						Render(ID3D11DeviceContext* pContext);
-	bool						Release();
+	virtual bool				Init();
+	virtual bool				Frame();
+	virtual bool				PreRender(ID3D11DeviceContext* pContext);
+	virtual bool				Render(ID3D11DeviceContext* pContext);
+	virtual bool				PostRender(ID3D11DeviceContext* pContext);
+	virtual bool				Release();
 	bool						Create(ID3D11Device* pDevice, const std::tstring& Name ,const std::tstring& ShaderPath, const std::tstring& TexturePath);
-private:
+protected:
 	VS_CB						m_ConstantData;
 	ID3D11Buffer*				m_pVertexBuffer;
 	ID3D11Buffer*				m_pIndexBuffer;
