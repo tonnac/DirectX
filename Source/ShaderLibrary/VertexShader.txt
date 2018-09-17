@@ -14,7 +14,13 @@ float4 Rotate(in float4 pos)
 	vPos.y = 0.45f * (cos(g_fTimerX) - sin(g_fTimerX))+ (pos.y * cos(Angle) - pos.x * sin(Angle));
 	return vPos;
 }
-
+float4 Scale1(in float4 pos)
+{
+	float4 vPos = pos;
+	vPos.x *= sin(g_fTimerX) * 0.5f + 0.5f;
+	vPos.y *= cos(g_fTimerX) * 0.5f + 0.5f;
+	return vPos;
+}
 float4 GetPos(in float4 pos, in uint index)
 {
 	float4 vPos = pos;
@@ -43,7 +49,7 @@ struct VS_OUTPUT
 VS_OUTPUT VS(in VS_INPUT input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
-	output.pos = (GetPos(input.pos,index));
+	output.pos = Rotate(Scale1(input.pos));
 	output.color = input.color;
 	output.tex = input.tex;
 //	output.tex.x = output.tex.x * (cos(Angle) * 0.5f + 0.5f);
@@ -65,9 +71,9 @@ float4 PS( in PS_INPUT input ) : SV_Target
 {
 	float4 fColor = float4(cos(g_fTimerX)*0.5f + 0.5f, sin(Angle)*0.5f + 0.5f, cos(Angle)*0.5f + 0.5f, 1.0f);
 	float4 fTexColor = g_txDiffuse.Sample(g_SamState, input.tex);
-	fColor = input.color * fTexColor * 0.9f;
-	fColor.a = 0.5f;
-	return fTexColor;
+	fColor = input.color;
+	fColor.a = sin(Angle)*0.5f + 0.5f;
+	return fTexColor * fColor;
 }
 float4 PIXELSHADER1( in PS_INPUT input ) : SV_Target
 {

@@ -15,4 +15,5 @@ public:
 	bool						Release					() override;
 private:
 	PlaneObj					m_Object;
+	TriangleObj					m_Triangle;
 };

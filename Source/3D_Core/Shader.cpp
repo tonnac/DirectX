@@ -14,9 +14,8 @@ HRESULT Shader::CreateShader(ID3D11Device* pDevice, const std::tstring& Filename
 	ifShaderFailed(D3DX11CompileFromFile(Filename.c_str(), NULL, NULL, vs.c_str(), "vs_5_0", m_dwFlag, NULL, NULL, &m_pVSBlob, &pErrBlob, NULL));
 	// 쉐이더 컴파일 된 결과(오브젝트 파일, 목적파일)
 	V_RETURN(pDevice->CreateVertexShader(m_pVSBlob->GetBufferPointer(), m_pVSBlob->GetBufferSize(), nullptr, &m_pVertexShader));
-
 	ID3DBlob* pPSBuf = nullptr;
-	ifShaderFailed(D3DX11CompileFromFile(Filename.c_str(), NULL, NULL,ps.c_str(), "ps_5_0", m_dwFlag, NULL, NULL, &pPSBuf, &pErrBlob, NULL));
+	ifShaderFailed(D3DX11CompileFromFile(Filename.c_str(), NULL, NULL, ps.c_str(), "ps_5_0", m_dwFlag, NULL, NULL, &pPSBuf, &pErrBlob, NULL));
 	V_RETURN(pDevice->CreatePixelShader(pPSBuf->GetBufferPointer(), pPSBuf->GetBufferSize(), nullptr, &m_pPixelShader));
 
 	pPSBuf->Release();

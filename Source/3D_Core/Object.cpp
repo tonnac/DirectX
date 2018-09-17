@@ -8,7 +8,13 @@ HRESULT	Object::CreateVertexBuffer(ID3D11Device* pDevice)
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
 	bd.ByteWidth = CASTING(UINT, m_vertexList.size()) * sizeof(PCT_VERTEX);
+
+#ifdef CPU
+	bd.Usage = D3D11_USAGE_DYNAMIC;
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+#elif defined GPU
 	bd.Usage = D3D11_USAGE_DEFAULT;
+#endif
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	
 	D3D11_SUBRESOURCE_DATA sd;
@@ -17,12 +23,7 @@ HRESULT	Object::CreateVertexBuffer(ID3D11Device* pDevice)
 	//sd.SysMemPitch;
 	//sd.SysMemSlicePitch;
 
-	hr = pDevice->CreateBuffer(&bd, &sd, &m_pVertexBuffer);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
+	V_RETURN(pDevice->CreateBuffer(&bd, &sd, &m_pVertexBuffer));
 	return hr;
 }
 HRESULT Object::CreateIndexBuffer(ID3D11Device* pDevice)
@@ -42,11 +43,7 @@ HRESULT Object::CreateIndexBuffer(ID3D11Device* pDevice)
 	ZeroMemory(&sd, sizeof(D3D11_SUBRESOURCE_DATA));
 	sd.pSysMem = &m_indexList.at(0);
 
-	hr = pDevice->CreateBuffer(&bd, &sd, &m_pIndexBuffer);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
+	V_RETURN(pDevice->CreateBuffer(&bd, &sd, &m_pIndexBuffer));
 	return hr;
 }
 HRESULT Object::CreateConstantBuffer(ID3D11Device* pDevice)
@@ -63,12 +60,7 @@ HRESULT Object::CreateConstantBuffer(ID3D11Device* pDevice)
 #endif
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-	hr = pDevice->CreateBuffer(&bd, NULL, &m_pConstantBuffer);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
+	V_RETURN(pDevice->CreateBuffer(&bd, NULL, &m_pConstantBuffer));
 	return hr;
 }
 HRESULT Object::CreateTexture(ID3D11Device* pDevice, const std::tstring Name, const std::tstring Filepath)
