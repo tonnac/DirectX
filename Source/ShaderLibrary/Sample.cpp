@@ -9,7 +9,7 @@ Sample::~Sample()
 
 bool Sample::Init()
 {
-	m_Object.Create(getDevice(), L"EPE", L"VertexShader.txt", L"../../data/effect/Particle6.dds");
+	m_Object.Create(getDevice(), L"EPE", L"VertexShader.txt", L"../../data/effect/Particle5.dds");
 	return true;
 }
 bool Sample::Frame()

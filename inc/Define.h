@@ -75,6 +75,10 @@ namespace std
 	using tsstream = std::basic_stringstream<TCHAR>;
 }
 
+using c_iter = std::basic_string<char>::iterator;
+using w_iter = std::basic_string<wchar_t>::iterator;
+using t_iter = std::tstring::iterator;
+
 extern HWND			g_hWnd;
 extern HINSTANCE	g_hInstance;
 extern RECT			g_rtClient;
