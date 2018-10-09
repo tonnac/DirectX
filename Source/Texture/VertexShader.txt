@@ -43,11 +43,15 @@ struct VS_OUTPUT
 VS_OUTPUT VERTEXSHADER(in VS_INPUT input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
-	output.pos = (GetPos(input.pos,index));
+	output.pos = input.pos;
+	output.pos.x = output.pos.x * (cos(g_fTimerX) * 0.5f + 0.5f);
+	output.pos.x = output.pos.x + sin(g_fTimerX);
+	output.pos.y = output.pos.y * (cos(g_fTimerX) * 0.5f + 0.5f);
+
 	output.color = input.color;
 	output.tex = input.tex;
-	output.tex.x = output.tex.x * (cos(Angle) * 0.5f + 0.5f);
-	output.tex.y = output.tex.y * (cos(Angle) * 0.5f + 0.5f);
+	output.tex.x = output.tex.x;
+	output.tex.y = output.tex.y;
 	return output;
 }
 
@@ -63,8 +67,8 @@ struct PS_INPUT
 };
 float4 PIXELSHADER( in PS_INPUT input ) : SV_Target
 {
-	float4 fColor = float4(cos(g_fTimerX)*0.5f + 0.5f, sin(Angle)*0.5f + 0.5f, cos(Angle)*0.5f + 0.5f, 1.0f);
+	float4 fColor = float4(cos(Angle), sin(Angle), cos(Angle), 1.0f);
 	float4 fTexColor = g_txDiffuse.Sample(g_SamState, input.tex);
 	fColor = input.color * fTexColor * 0.9f;
-	return input.color * fTexColor;
+	return fColor;
 }

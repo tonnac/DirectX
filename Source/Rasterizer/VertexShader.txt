@@ -1,0 +1,95 @@
+cbuffer VS_CB
+{
+	//x,y,z,w
+	float4 g_Color	 : packoffset(c0);
+	float g_fTimerX	 : packoffset(c1.x);
+	float index		 : packoffset(c1.y);
+	float Angle		 : packoffset(c1.z);
+	float Scale		 : packoffset(c1.w);
+};
+float4 Rotate(in float4 pos)
+{
+	float4 vPos = pos;
+//	vPos.x =(pos.x * cos(Angle) + pos.z * sin(Angle));
+//	vPos.z = (pos.z * cos(Angle) - pos.x * sin(Angle));
+	return vPos;
+}
+float4 Scale1(in float4 pos)
+{
+	float4 vPos = pos;
+	vPos.x *= sin(g_fTimerX) * 0.5f + 0.5f;
+//	vPos.y *= cos(g_fTimerX) * 0.5f + 0.5f;
+	return vPos;
+}
+float4 GetPos(in float4 pos, in uint index)
+{
+	float4 vPos = pos;
+	switch(index)
+	{
+		case 0: {vPos = float4(pos);} break;
+		case 1: {vPos = float4(Rotate(pos));} break;
+	}
+	vPos = vPos * Scale;
+	return vPos;
+}
+
+struct VS_INPUT
+{
+	float4 pos		: POSITION;
+	float4 color	: COLOR;
+	float2 tex		: TEXCOORD;
+};
+struct VS_OUTPUT
+{
+	float4 pos		: SV_POSITION; 
+	float4 color	: COLOR;
+	float2 tex		: TEXCOORD;
+};
+
+VS_OUTPUT VS(in VS_INPUT input)
+{
+	VS_OUTPUT output = (VS_OUTPUT)0;
+	output.pos = Rotate(Scale1(input.pos));
+	output.color = input.color;
+	output.tex = input.tex;
+//	output.tex.x = output.tex.x * (cos(Angle) * 0.5f + 0.5f);
+//	output.tex.y = output.tex.y * (cos(Angle) * 0.5f + 0.5f);
+	return output;
+}
+
+/////////////////////////////«»ºø Ω¶¿Ã¥ı//////////////////////
+Texture2D g_txDiffuse : register( t0 );
+SamplerState g_SamState : register( s0 );
+
+struct PS_INPUT
+{
+	float4 pos		: SV_POSITION;
+	float4 color	: COLOR;
+	float2 tex		: TEXCOORD;
+};
+float4 PS( in PS_INPUT input ) : SV_Target
+{
+	float4 fColor = float4(cos(g_fTimerX)*0.5f + 0.5f, sin(Angle)*0.5f + 0.5f, cos(Angle)*0.5f + 0.5f, 1.0f);
+	float4 fTexColor = g_txDiffuse.Sample(g_SamState, input.tex);
+	fColor = input.color;
+	fColor.a = sin(Angle)*0.5f + 0.5f;
+	return fTexColor;
+}
+float4 PIXELSHADER1( in PS_INPUT input ) : SV_Target
+{
+	float4 fColor = float4(cos(g_fTimerX)*0.5f + 0.5f, sin(Angle)*0.5f + 0.5f, cos(Angle)*0.5f + 0.5f, 1.0f);
+	float4 fTexColor = g_txDiffuse.Sample(g_SamState, input.tex);
+	fColor = input.color * fTexColor * 0.9f;
+	if(fTexColor.r < 0.1f && fTexColor.g < 0.1f && fTexColor.b < 0.1f)
+	{
+		discard;
+	}
+	return fTexColor;
+}
+float4 PIXELSHADER2( in PS_INPUT input ) : SV_Target
+{
+	float4 fColor = float4(cos(g_fTimerX)*0.5f + 0.5f, sin(Angle)*0.5f + 0.5f, cos(Angle)*0.5f + 0.5f, 1.0f);
+	float4 fTexColor = g_txDiffuse.Sample(g_SamState, input.tex);
+	fColor = input.color * fTexColor * 0.9f;
+	return fTexColor;
+}

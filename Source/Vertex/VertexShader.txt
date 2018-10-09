@@ -1,0 +1,45 @@
+cbuffer VS_CB
+{
+	float4 g_Color	 : packoffset(c0);
+	float g_fTimerX	 : packoffset(c1.x);
+	float index		 : packoffset(c1.y);
+	float Angle		 : packoffset(c1.z);
+	float Scale		 : packoffset(c1.w);
+	float4 pp		 : packoffset(c2);
+	matrix	g_Proj   : packoffset(c3);
+};
+
+struct VS_INPUT
+{
+	float3 p : POSITION;
+};
+struct VS_OUTPUT
+{
+	float4 p : SV_POSITION;
+};
+
+
+VS_OUTPUT VERTEXSHADER(VS_INPUT vIn)
+{
+	VS_OUTPUT vOut = (VS_OUTPUT)0;
+	float4 vLocal = float4(vIn.p.x, vIn.p.y, 1.0f, 1.0f);
+	vOut.p = mul(vLocal, g_Proj);
+	vOut.p.z = 0.5f;
+	return vOut;
+}
+
+
+struct PS_OUTPUT
+{
+	float4 c : SV_TARGET;	
+};
+
+PS_OUTPUT PIXELSHADER( VS_OUTPUT vIn)
+{
+	PS_OUTPUT vOut = (PS_OUTPUT)0;
+	float fColorR = cos(g_fTimerX)*0.5 + 0.5;
+	float fColorG = sin(g_fTimerX)*0.5 + 0.5;
+	float fColorB = abs(cos(g_fTimerX));
+	vOut.c = float4(fColorR, fColorG, fColorB, 1.0f);
+	return vOut;
+}

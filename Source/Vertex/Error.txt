@@ -1,0 +1,1 @@
+C:\Users\a\source\repos\DirectX\Source\Vertex\VertexShader.txt(27,7): error X3018: invalid subscript 'z'

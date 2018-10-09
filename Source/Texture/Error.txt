@@ -1,1 +1,1 @@
-F:\00_36Study\DirectX\Source\Texture\VertexShader.txt(66,17): error X3018: invalid subscript 'c'
+C:\Users\a\source\repos\DirectX\Source\Texture\VertexShader.txt(66,87): error X3000: syntax error: unexpected integer constant
