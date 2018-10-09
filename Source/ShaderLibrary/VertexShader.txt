@@ -72,18 +72,18 @@ float4 PS( in PS_INPUT input ) : SV_Target
 	float4 fColor = float4(cos(g_fTimerX)*0.5f + 0.5f, sin(Angle)*0.5f + 0.5f, cos(Angle)*0.5f + 0.5f, 1.0f);
 	float4 fTexColor = g_txDiffuse.Sample(g_SamState, input.tex);
 	fColor = input.color;
-	fColor.a = sin(Angle)*0.5f + 0.5f;
-	return fTexColor * fColor;
+	fColor.a = cos(g_fTimerX)*0.5f + 0.5f;
+	return fTexColor;
 }
 float4 PIXELSHADER1( in PS_INPUT input ) : SV_Target
 {
 	float4 fColor = float4(cos(g_fTimerX)*0.5f + 0.5f, sin(Angle)*0.5f + 0.5f, cos(Angle)*0.5f + 0.5f, 1.0f);
 	float4 fTexColor = g_txDiffuse.Sample(g_SamState, input.tex);
-	fColor = input.color * fTexColor * 0.9f;
 	if(fTexColor.r < 0.1f && fTexColor.g < 0.1f && fTexColor.b < 0.1f)
 	{
 		discard;
 	}
+	fColor = input.color * fTexColor * 0.9f;
 	return fTexColor;
 }
 float4 PIXELSHADER2( in PS_INPUT input ) : SV_Target

@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{03C614D0-5775-4A31-A4EF-C15A0849803E}</ProjectGuid>
+    <ProjectGuid>{5131BDB5-15F3-40B7-8CBB-56188519C677}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Rasterizer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
@@ -148,13 +148,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Sample.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Sample.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="VertexShader.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sample.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

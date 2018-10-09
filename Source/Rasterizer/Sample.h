@@ -13,10 +13,10 @@ public:
 	bool						Frame					() override;
 	bool						Render					() override;
 	bool						Release					() override;
-	void						CreateRasterizerState();
+public:
+	HRESULT						SetRasterizerState(const D3D11_FILL_MODE& fill = D3D11_FILL_SOLID);
 private:
-	ID3D11RasterizerState *		m_pWFRasterizer;
-	ID3D11RasterizerState *		m_pRasterizer;
 	PlaneObj					m_Object;
-	TriangleObj					m_Triangle;
+	ID3D11RasterizerState*		m_pRSSolid = nullptr;
+	ID3D11RasterizerState*		m_pRSWireFrame = nullptr;
 };

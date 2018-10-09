@@ -38,17 +38,17 @@ bool PlaneObj::Frame()
 }
 bool PlaneObj::PreRender(ID3D11DeviceContext* pContext)
 {
-	for (int i = 0; i < m_vertexList.size(); ++i)
-	{
-		PCT_VERTEX pe = m_vertexList[i];
-		float S = sinf(g_fGameTimer);
-		float C = cosf(g_fGameTimer);
-		pe.x = m_vertexList[i].x * C + m_vertexList[i].y * S;
-		pe.y = m_vertexList[i].y * C + m_vertexList[i].x * -S;
+	//for (int i = 0; i < m_vertexList.size(); ++i)
+	//{
+	//	PCT_VERTEX pe = m_vertexList[i];
+	//	float S = sinf(g_fGameTimer);
+	//	float C = cosf(g_fGameTimer);
+	//	pe.x = m_vertexList[i].x * C + m_vertexList[i].y * S;
+	//	pe.y = m_vertexList[i].y * C + m_vertexList[i].x * -S;
 
-		m_vertexList[i].x = pe.x;
-		m_vertexList[i].y = pe.y;
-	}
+	//	m_vertexList[i].x = pe.x;
+	//	m_vertexList[i].y = pe.y;
+	//}
 
 	pContext->UpdateSubresource(m_pVertexBuffer, 0, NULL, &m_vertexList[0], 0, 0);
 	return Object::PreRender(pContext);
