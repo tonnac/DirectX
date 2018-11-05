@@ -3,6 +3,7 @@
 HRESULT	PlaneObj::CreateVertexBuffer(ID3D11Device* pDevice)
 {
 	const int iNumCount = 4;
+
 	m_vertexList.resize(iNumCount);
 	m_vertexList[0].x = -0.5f, m_vertexList[0].y = 0.5f, m_vertexList[0].z = 0.5f;
 	m_vertexList[0].u = 0.0f, m_vertexList[0].v = 0.0f;

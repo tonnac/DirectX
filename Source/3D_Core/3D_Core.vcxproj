@@ -165,6 +165,7 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DirectInput.cpp" />
     <ClCompile Include="DirectWrite.cpp" />
+    <ClCompile Include="DxObj.cpp" />
     <ClCompile Include="Enumeration.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PlaneObj.cpp" />
@@ -180,6 +181,7 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClInclude Include="Device.h" />
     <ClInclude Include="DirectInput.h" />
     <ClInclude Include="DirectWrite.h" />
+    <ClInclude Include="DxObj.h" />
     <ClInclude Include="Enumeration.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="PlaneObj.h" />

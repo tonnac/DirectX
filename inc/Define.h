@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <D3DX11.h>
 #include <D3Dcompiler.h>
+#include <array>
 
 
 #define PI 3.141592
