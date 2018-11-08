@@ -73,7 +73,7 @@ namespace DX
 		ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
 		ZeroMemory(&sd, sizeof(D3D11_SUBRESOURCE_DATA));
 
-		if (bDynamic)
+		if (!bDynamic)
 		{
 			bd.Usage = D3D11_USAGE_DEFAULT;
 			bd.CPUAccessFlags = 0;
@@ -188,6 +188,35 @@ namespace DX
 		return pPixelShader;
 	}
 
+	ID3D11GeometryShader* LoadGeometryShaderFile(
+		ID3D11Device* pDevice,
+		const void* pShaderFile,
+		ID3DBlob** ppBlobOut,
+		const char * pFuncName)
+	{
+		ID3D11GeometryShader * pGeometryShader = nullptr;
+		ID3DBlob* pBlob = nullptr;
+
+		if (FAILED(CompileShaderFromFile((TCHAR*)pShaderFile, pFuncName, "gs_5_0", &pBlob)))
+		{
+			return nullptr;
+		}
+		if (FAILED(pDevice->CreateGeometryShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pGeometryShader)))
+		{
+			RELEASE(pBlob);
+			return nullptr;
+		}
+		if (ppBlobOut == nullptr)
+		{
+			RELEASE(pBlob);
+		}
+		else
+		{
+			*ppBlobOut = pBlob;
+		}
+		return pGeometryShader;
+	}
+
 	HRESULT CompileShaderFromFile(
 		const WCHAR* szFileName,
 		LPCSTR szEntryPoint,
@@ -225,16 +254,20 @@ namespace DX
 	bool DxObj::PreRender(ID3D11DeviceContext* pContext,
 		UINT iVertexSize)
 	{
-		pContext->IASetInputLayout(m_pInputLayout);
+		pContext->IASetInputLayout(m_pInputLayout.Get());
 
 		UINT stride = iVertexSize;
 		UINT offset = 0;
-		pContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+		pContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
 
 		pContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		pContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		pContext->VSSetShader(m_pVertexShader, nullptr, 0);
-		pContext->PSSetShader(m_pPixelShader, nullptr, 0);
+		pContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		pContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
+
+		pContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0);
+		pContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
+		pContext->GSSetShader(m_pGeometryShader.Get(), nullptr, 0);
 		return true;
 	}
 	bool DxObj::PostRender(ID3D11DeviceContext* pContext,
@@ -256,12 +289,6 @@ namespace DX
 
 	bool DxObj::Release()
 	{
-		RELEASE(m_pVertexBuffer);
-		RELEASE(m_pIndexBuffer);
-		RELEASE(m_pConstantBuffer);
-		RELEASE(m_pInputLayout);
-		RELEASE(m_pVertexShader);
-		RELEASE(m_pPixelShader);
 		return true;
 	}
 }

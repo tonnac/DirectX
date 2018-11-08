@@ -17,15 +17,18 @@
 #include <D3DX11.h>
 #include <D3Dcompiler.h>
 #include <array>
-
+#include <D3DX10math.h>
+#include <wrl.h>
 
 #define PI 3.141592
 #define DegreeToRadian(x) CASTING(FLOAT,(x) / 180 * PI)
 
+#pragma comment(lib, "d3dx10d.lib") // d3dx10math
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "3D_Core.lib")
 #pragma comment(lib, "d3dx11.lib")
+
 
 #define KEYSTATECOUNT 256
 #define SAMPLE_BUFFER_SIZE 16

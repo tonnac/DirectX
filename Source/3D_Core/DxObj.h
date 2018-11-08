@@ -1,5 +1,8 @@
 #pragma once
+
+
 #include "Define.h"
+
 
 namespace DX
 {
@@ -41,6 +44,11 @@ namespace DX
 		const void* pShaderFile,
 		ID3DBlob** ppBlobOut = nullptr,
 		const char * pFuncName = "PS");
+	ID3D11GeometryShader* LoadGeometryShaderFile(
+		ID3D11Device* pDevice,
+		const void* pShaderFile,
+		ID3DBlob** ppBlobOut = nullptr,
+		const char * pFuncName = "GS");
 
 	HRESULT CompileShaderFromFile(
 		const WCHAR* szFileName,
@@ -50,19 +58,19 @@ namespace DX
 	class DxObj
 	{
 	public:
-		ID3D11Buffer*		m_pVertexBuffer = nullptr;
-		ID3D11Buffer*		m_pIndexBuffer = nullptr;
-		ID3D11Buffer*		m_pConstantBuffer = nullptr;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pVertexBuffer = nullptr;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pIndexBuffer = nullptr;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> m_pConstantBuffer = nullptr;
+				
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_pInputLayout = nullptr;
+		Microsoft::WRL::ComPtr<ID3D11VertexShader> m_pVertexShader = nullptr;
+		Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pPixelShader = nullptr;
+		
+		Microsoft::WRL::ComPtr<ID3D11GeometryShader> m_pGeometryShader = nullptr;
+		Microsoft::WRL::ComPtr<ID3DBlob> m_pVSBlob = nullptr;
 
-		ID3D11InputLayout * m_pInputLayout = nullptr;
-
-		ID3D11VertexShader* m_pVertexShader = nullptr;
-		ID3D11PixelShader*	m_pPixelShader = nullptr;
-
-		ID3DBlob*			m_pVSBlob = nullptr;
-
-		UINT				m_iNumIndex = 0;
-		UINT				m_iNumVertex = 0;
+		UINT m_iNumIndex  = 0;
+		UINT m_iNumVertex = 0;
 	public:
 		bool PreRender(ID3D11DeviceContext* pContext,
 			UINT iVertexSize);
