@@ -2,7 +2,6 @@
 
 namespace DX
 {
-
 	ID3D11Buffer* CreateVertexBuffer(ID3D11Device* pDevice, UINT iNumVertex, UINT iVertexSize, LPVOID pData, ID3D11Buffer** ppBuffer)
 	{
 		ID3D11Buffer* pBuffer = nullptr;
@@ -267,7 +266,7 @@ namespace DX
 
 		pContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0);
 		pContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
-		pContext->GSSetShader(m_pGeometryShader.Get(), nullptr, 0);
+//		pContext->GSSetShader(m_pGeometryShader.Get(), nullptr, 0);
 		return true;
 	}
 	bool DxObj::PostRender(ID3D11DeviceContext* pContext,

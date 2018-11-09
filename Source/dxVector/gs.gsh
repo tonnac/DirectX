@@ -20,7 +20,7 @@ struct GS_OUTPUT
 
 [maxvertexcount(9)]
 void GS( triangle VS_OUTPUT input[3], 
-		inout TriangleStream<GS_OUTPUT> triStream )
+		 inout TriangleStream<GS_OUTPUT> triStream )
 {
 	float3 cPos = (input[0].p.xyz +
 		input[1].p.xyz +
