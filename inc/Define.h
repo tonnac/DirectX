@@ -17,6 +17,7 @@
 #include <D3DX11.h>
 #include <D3Dcompiler.h>
 #include <array>
+#include <unordered_map>
 #include <D3DX10math.h>
 #include <wrl.h>
 

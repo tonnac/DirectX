@@ -149,12 +149,10 @@
   <ItemGroup>
     <ClCompile Include="ObjectPlane.cpp" />
     <ClCompile Include="Sample.cpp" />
-    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectPlane.h" />
     <ClInclude Include="Sample.h" />
-    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="gs.gsh">

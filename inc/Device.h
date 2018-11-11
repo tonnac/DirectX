@@ -10,7 +10,7 @@ public:
 	HRESULT					CreateDevice();
 	HRESULT					CreateGIFactory();
 	HRESULT					CreateSwapChain(HWND hWnd, const UINT& iWidth, const UINT& iHeight);
-	HRESULT					SetRendetTargetView();
+	HRESULT					SetRTVDSV();
 	void					SetViewPort();
 	bool					CleanupDevice();
 public:
@@ -38,6 +38,7 @@ protected:
 	IDXGISwapChain*			m_pSwapChain;
 
 	ID3D11RenderTargetView* m_pRenderTargetView;
+	ID3D11DepthStencilView* m_pDepthStencilView;
 	D3D_FEATURE_LEVEL		m_FeatureLevel;
 	D3D_DRIVER_TYPE			m_DriverType;
 	DXGI_SWAP_CHAIN_DESC	m_SwapChainDesc;

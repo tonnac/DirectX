@@ -5,7 +5,7 @@ bool Core::GameInit()
 	if (FAILED(CreateDevice())) return false;
 	if (FAILED(CreateGIFactory())) return false;
 	if (FAILED(CreateSwapChain(m_hWnd, m_iWindowWidth, m_iWindowHeight))) return false;
-	if (FAILED(SetRendetTargetView())) return false;
+	if (FAILED(SetRTVDSV())) return false;
 	SetViewPort();
 #pragma endregion Device_Init
 
@@ -86,16 +86,14 @@ bool Core::Render() { return true; }
 bool Core::Release() { return true; }
 bool Core::PreRender()
 {
-	ID3D11DeviceContext* pContext = getContext();
-	ID3D11RenderTargetView* pRenderTargetView = getRenderTargetView();
 	D3D11_VIEWPORT& ViewPort = getViewPort();
 	float ClearColor[] = { 0.25f, 0.25f, 0.25f, 1.0f };
-	pContext->ClearRenderTargetView(pRenderTargetView, ClearColor);
+	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, ClearColor);
+	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	return true;
 }
 bool Core::PostRender()
 {
-	IDXGISwapChain* pSwapChain = getSwapChain();
-	pSwapChain->Present(0, 0);
+	m_pSwapChain->Present(0, 0);
 	return true;
 }

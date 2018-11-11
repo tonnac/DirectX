@@ -90,7 +90,7 @@ HRESULT Device::CreateSwapChain(HWND hWnd, const UINT& iWidth, const UINT& iHeig
 	}
 	return hr;
 }
-HRESULT Device::SetRendetTargetView()
+HRESULT Device::SetRTVDSV()
 {
 	HRESULT hr;
 	ID3D11Texture2D* pBackBuffer;
@@ -102,7 +102,34 @@ HRESULT Device::SetRendetTargetView()
 
 	if (FAILED(hr)) return false;
 
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, nullptr);
+	ID3D11Texture2D* pTex;
+	D3D11_TEXTURE2D_DESC td;
+	td.Width = g_rtClient.right;
+	td.Height = g_rtClient.bottom;
+	td.MipLevels = 1;
+	td.ArraySize = 1;
+	td.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	td.SampleDesc.Count = 1;
+	td.SampleDesc.Quality = 0;
+	td.Usage = D3D11_USAGE_DEFAULT;
+	td.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	td.CPUAccessFlags = 0;
+	td.MiscFlags = 0;
+	hr = m_pd3dDevice->CreateTexture2D(&td, nullptr, &pTex);
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
+	dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvd.Flags = 0;
+	dsvd.Texture2D.MipSlice = 0;
+	hr = m_pd3dDevice->CreateDepthStencilView(
+		pTex,
+		&dsvd,
+		&m_pDepthStencilView);
+
+	pTex->Release();
+
+	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
 	return hr;
 }
@@ -134,7 +161,9 @@ bool Device::CleanupDevice()
 	if (m_pImmediateContext) m_pImmediateContext->Release();
 	if (m_pd3dDevice) m_pd3dDevice->Release();
 	if (m_pGIFactory) m_pGIFactory->Release();
+	if (m_pDepthStencilView) m_pDepthStencilView->Release();
 
+	m_pDepthStencilView = nullptr;
 	m_pd3dDevice = nullptr;
 	m_pSwapChain = nullptr;
 	m_pRenderTargetView = nullptr;
@@ -152,6 +181,7 @@ void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 	DeleteDeviceResources();
 
 	m_pRenderTargetView->Release();
+	m_pDepthStencilView->Release();
 
 	m_SwapChainDesc.BufferDesc.Height = Height;
 	m_SwapChainDesc.BufferDesc.Width = Width;
@@ -163,7 +193,7 @@ void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 		m_pSwapChain->GetDesc(&sd);
 	}
 
-	if (FAILED(SetRendetTargetView())) return;
+	if (FAILED(SetRTVDSV())) return;
 	SetViewPort();
 
 	// DirectWrite 辆加利牢 厘摹 积己

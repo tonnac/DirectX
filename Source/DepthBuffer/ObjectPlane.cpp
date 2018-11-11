@@ -44,21 +44,7 @@ bool ObjectPlane::Set(ID3D11Device* pDevice)
 
 	D3DXVec3Normalize(&m_VertexList[8].p, &((vDir0 + vDir1) * -1.0f));
 	m_VertexList[8].c = D3DXVECTOR4(1.0f, 1.0f, 0.0f, 1.0f);
-
-	for (int i = 0; i < 9; ++i)
-	{
-		m_VertexList[i].p.z = 0.5f;
-	}
-
-	// 내적
-	 float fDot = D3DXVec3Dot(
-		 &m_VertexList[1].p,
-		 &m_VertexList[3].p);
-
-	// 외적
-	 D3DXVECTOR3 vRet;
-	 D3DXVec3Cross(&vRet, &m_VertexList[3].p, &m_VertexList[1].p);
-
+   		 
 	m_indicies =
 	{
 		0, 1, 2,

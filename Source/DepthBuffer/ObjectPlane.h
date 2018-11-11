@@ -1,6 +1,5 @@
 #pragma once
 #include "Core.h"
-#include "Vector.h"
 #include "DxObj.h"
 
 struct PC_VERTEX

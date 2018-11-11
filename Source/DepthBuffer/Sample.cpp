@@ -44,6 +44,7 @@ HRESULT Sample::CreateDSV()
 	dsd.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	hr = pDevice->CreateDepthStencilState(&dsd,	&m_pDSVStateEnable);
 
+	dsd.DepthEnable = TRUE;
 	dsd.DepthFunc = D3D11_COMPARISON_GREATER;
 	hr = pDevice->CreateDepthStencilState(&dsd, &m_pDSVStateDisable);
 	return hr;
@@ -73,15 +74,6 @@ bool Sample::Render()
 {
 	m_Obj.m_cbData.vColor = D3DXVECTOR4(0.4579f, 0.32879f, 0.87546f, 1.0f);
 	m_matWorld._43 = 1.0f;
-
-	D3DXMatrixLookAtLH(&m_matView,
-		&D3DXVECTOR3(+0.0f, +0.0f, -80.0f * (cosf(g_fGameTimer) * 0.5f + 0.5f)),
-		&D3DXVECTOR3(+0.0f, +0.0f, +0.0f),
-		&D3DXVECTOR3(+0.0f, +1.0f, +0.0f));
-
-	D3DXMATRIX ll;
-	D3DXMatrixRotationZ(&ll, g_fGameTimer);
-	m_matView = ll * m_matView;
 
 	D3DXMatrixTranspose(&m_Obj.m_cbData.matWorld, &m_matWorld);
 	D3DXMatrixTranspose(&m_Obj.m_cbData.matView, &m_matView);
