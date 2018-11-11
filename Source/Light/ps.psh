@@ -1,0 +1,50 @@
+
+#include "lightutil.hlsl"
+
+cbuffer cb0
+{
+	matrix g_matWorld : packoffset(c0);
+	matrix g_matView  : packoffset(c4);
+	matrix g_matProj  : packoffset(c8);
+	float g_fTimer : packoffset(c12.x);
+	float y : packoffset(c12.y);
+	float z : packoffset(c12.z);
+	float w : packoffset(c12.w);
+	float3 gEyePosW : packoffset(c13);
+	float pad1 : packoffset(c13.w);
+	float4 gAmbientLight : packoffset(c14);
+	float4 gDiffuseAlbedo : packoffset(c15);
+	float3 gFresnelR0 : packoffset(c16);
+	float gRoughness : packoffset(c16.w);
+	Light gLights : packoffset(c17);
+};
+
+
+struct VS_OUTPUT
+{
+	float4 p : SV_POSITION;
+	float3 pW : POSITION;
+	float3 NormalW : NORMAL;
+};
+
+float4 PS(VS_OUTPUT pin) : SV_Target
+{
+	pin.NormalW = normalize(pin.NormalW);
+
+	float3 toEyeW = normalize(gEyePosW - pin.pW);
+
+	float4 ambient = gAmbientLight * gDiffuseAlbedo;
+
+	const float shininess = 1.0f - gRoughness;
+	Material mat = { gDiffuseAlbedo, gFresnelR0, shininess };
+
+	float3 shadowFactor = 1.0f;
+	float4 directLight = ComputeLighting(gLights, mat, pin.pW,
+		pin.NormalW, toEyeW, shadowFactor);
+
+	float4 litColor = ambient + directLight;
+
+	litColor.a = gDiffuseAlbedo.a;
+
+	return litColor;
+}

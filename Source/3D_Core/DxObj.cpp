@@ -263,6 +263,7 @@ namespace DX
 		pContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 		pContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
+		pContext->PSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
 
 		pContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0);
 		pContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
