@@ -1,6 +1,7 @@
 #include "Sample.h"
 #include "DirectInput.h"
 #include "../inc/DxState.h"
+#include <DirectXColors.h>
 
 
 Sample::Sample()
@@ -20,7 +21,7 @@ D3DXVECTOR3 pos(float radius, float theta, float phi)
 
 bool Sample::Init()
 {
-	DxState::SetState(m_pd3dDevice);
+	DxState::InitState(m_pd3dDevice);
 
 	D3D11_RASTERIZER_DESC rasDesc;
 	ZeroMemory(&rasDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -29,12 +30,10 @@ bool Sample::Init()
 	rasDesc.DepthClipEnable = TRUE;
 	
 	{
-		mEyePos = { 0.0f, 5.0f, -10.0f };
-		mMaterial.DiffuseAlbedo = D3DXVECTOR4(0.24f, 0.35f, 0.6f, 1.0f);
-		mMaterial.FresnelR0 = D3DXVECTOR3(0.1f, 0.1f, 0.1f);
+		mEyePos = { 0.0f, 20.0f, -25.0f };
+		mMaterial.DiffuseAlbedo = D3DXVECTOR4(DirectX::Colors::LightSteelBlue);
+		mMaterial.FresnelR0 = D3DXVECTOR3(0.2f, 0.2f, 0.2f);
 		mMaterial.Roughness = 0.125f;
-
-		Light light;
 	}
 
 	D3DXMatrixIdentity(&m_matWorld[0]);
@@ -45,7 +44,7 @@ bool Sample::Init()
 		&D3DXVECTOR3(+0.0f, +1.0f, +0.0f));
 	D3DXMatrixPerspectiveFovLH(&m_matProj, (float)D3DX_PI * 0.25f, g_rtClient.right / (float)g_rtClient.bottom, 1.0f, 100.0f);
 
-	m_sphere.Set(m_pd3dDevice, 2, 20, 20);
+	m_sphere.Set(m_pd3dDevice, 2, 30, 30);
 	return true;
 }
 bool Sample::Frame()
@@ -56,7 +55,7 @@ bool Sample::Frame()
 bool Sample::Render()
 {
 	static float dll = 0.0f;
-	dll += (float)(0.33f * D3DX_PI) * g_fSecPerFrame;
+	dll += (float)(0.25f * D3DX_PI) * g_fSecPerFrame;
 
 
 	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)E_DSS::Default].Get(), 0);
@@ -65,14 +64,20 @@ bool Sample::Render()
 	D3DXMatrixTranspose(&m_sphere.m_cbData.matView, &m_matView);
 	D3DXMatrixTranspose(&m_sphere.m_cbData.matProj, &m_matProj);
 
-	m_sphere.m_cbData.AmbientLight = { 0.25f, 0.25f, 0.25f, 0.25f };
+	m_sphere.m_cbData.AmbientLight = { 0.15f, 0.15f, 0.15f, 1.0f };
 	m_sphere.m_cbData.DiffuseAlbedo = mMaterial.DiffuseAlbedo;
 	m_sphere.m_cbData.FresnelR0 = mMaterial.FresnelR0;
 	m_sphere.m_cbData.Roughness = mMaterial.Roughness;
 
 	m_sphere.m_cbData.EyePosW = mEyePos;
-	m_sphere.m_cbData.Lights.Direction = pos(1.0f, dll, D3DX_PI / 2);
-	m_sphere.m_cbData.Lights.Strength = { 1.0f, 1.0f, 0.9f };
+	m_sphere.m_cbData.Lights[0].Direction = -pos(1.0f, (-(float)D3DX_PI / 4) + dll, (float)D3DX_PI / 3);
+	m_sphere.m_cbData.Lights[0].Strength = { 0.6f, 0.6f, 0.6f };
+
+	m_sphere.m_cbData.Lights[1].Direction = -pos(1.0f, (float)D3DX_PI + dll, (float)D3DX_PI / 3);
+	m_sphere.m_cbData.Lights[1].Strength = { 0.3f, 0.3f, 0.3f };
+
+	m_sphere.m_cbData.Lights[2].Direction = -pos(1.0f, (float)D3DX_PI / 2 + dll, (float)D3DX_PI / 3);
+	m_sphere.m_cbData.Lights[2].Strength = { 0.1f, 0.1f, 0.1f };
 
 	m_sphere.Render(m_pImmediateContext);
 

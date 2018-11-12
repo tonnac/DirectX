@@ -13,7 +13,7 @@ struct Light
 	float SpotPower = 64.0f;
 };
 
-constexpr std::uint16_t MaxLights = 16;
+constexpr std::uint16_t MaxLights = 3;
 
 struct MaterialConstatns
 {
@@ -56,7 +56,7 @@ struct CB_DATA
 	D3DXVECTOR3 FresnelR0 = { 0.01f, 0.01f, 0.01f };
 	float Roughness = 0.25f;
 
-	Light Lights;
+	Light Lights[MaxLights];
 };
 
 class ObjectPlane

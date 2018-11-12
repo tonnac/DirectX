@@ -1,3 +1,6 @@
+#ifndef NUM_DIR_LIGHTS
+	#define NUM_DIR_LIGHTS 3
+#endif
 
 #include "lightutil.hlsl"
 
@@ -16,7 +19,8 @@ cbuffer cb0
 	float4 gDiffuseAlbedo : packoffset(c15);
 	float3 gFresnelR0 : packoffset(c16);
 	float gRoughness : packoffset(c16.w);
-	Light gLights : packoffset(c17);
+
+	Light gLights[MaxLights]: packoffset(c17);
 };
 
 

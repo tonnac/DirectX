@@ -1,4 +1,7 @@
 
+#define MaxLights 3
+
+
 struct Light
 {
 	float3 Strength;
@@ -56,13 +59,20 @@ float3 ComputeDirectionalLight(Light L, Material mat, float3 normal, float3 toEy
 	return BlinnPhong(lightStrength, lightVec, normal, toEye, mat);
 }
 
-float4 ComputeLighting(Light gLights, Material mat,
+float4 ComputeLighting(Light gLights[MaxLights], Material mat,
 	float3 pos, float3 normal, float3 toEye,
 	float3 shadowFactor)
 {
 	float3 result = 0.0f;
 
-	result += shadowFactor * ComputeDirectionalLight(gLights, mat, normal, toEye);
+	int i = 0;
+
+#ifdef NUM_DIR_LIGHTS
+	for (i = 0; i < NUM_DIR_LIGHTS; ++i)
+	{
+		result += shadowFactor[i] * ComputeDirectionalLight(gLights[i], mat, normal, toEye);
+	}
+#endif
 
 	return float4(result, 0.0f);
 }

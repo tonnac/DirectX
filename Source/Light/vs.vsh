@@ -1,6 +1,7 @@
 
 #include "lightutil.hlsl"
 
+
 cbuffer cb0
 {
 	matrix g_matWorld : packoffset(c0);
@@ -17,7 +18,7 @@ cbuffer cb0
 	float3 gFresnelR0 : packoffset(c16);
 	float gRoughness : packoffset(c16.w);
 
-	Light Lights : packoffset(c17);
+	Light Lights[MaxLights]: packoffset(c17);
 };
 
 struct VS_IN
