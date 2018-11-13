@@ -1,4 +1,6 @@
 #include "Core.h"
+#include <DirectXColors.h>
+
 bool Core::GameInit()
 {
 #pragma region
@@ -87,8 +89,7 @@ bool Core::Release() { return true; }
 bool Core::PreRender()
 {
 	D3D11_VIEWPORT& ViewPort = getViewPort();
-	float ClearColor[] = { 0.25f, 0.25f, 0.25f, 1.0f };
-	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, ClearColor);
+	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
 	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	return true;
 }
