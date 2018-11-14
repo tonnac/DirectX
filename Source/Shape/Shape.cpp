@@ -20,11 +20,11 @@ void Shape::Create(ID3D11Device* pDevice, std::tstring szShaderName, std::tstrin
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 	CreateConstantBuffer();
-	LoadVertexShader(L"vs.vsh");
-	LoadPixelShader(L"ps.psh");
+	LoadVertexShader(szShaderName);
+	LoadPixelShader(szShaderName);
 //	LoadGeometryShader(L"gs.psh");
 	CreateInputLayout();
-//	LoadTextureShader(szTextureName);
+	LoadTextureShader(szTextureName);
 }
 
 HRESULT Shape::CreateVertexBuffer()
@@ -112,18 +112,8 @@ HRESULT Shape::LoadTextureShader(std::tstring szName)
 {
 	HRESULT hr = S_OK;
 
-	D3DX11_IMAGE_LOAD_INFO loadinfo;
-	ZeroMemory(&loadinfo, sizeof(D3DX11_IMAGE_LOAD_INFO));
-	loadinfo.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	loadinfo.Format = DXGI_FORMAT_FROM_FILE;
+	m_DxObject.m_pTextureSRV = DX::CreateShaderResourceView(m_pDevice, szName);
 
-	hr = D3DX11CreateShaderResourceViewFromFile(
-		m_pDevice,
-		szName.c_str(),
-		&loadinfo, 
-		nullptr, 
-		&m_pTextureRV,
-		nullptr);
 	return hr;
 }
 

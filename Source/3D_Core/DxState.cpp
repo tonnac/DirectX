@@ -4,7 +4,8 @@ using namespace Microsoft::WRL;
 
 std::array<ComPtr<ID3D11DepthStencilState>, (int)E_DSS::Count> DxState::m_DSS;
 std::array<ComPtr<ID3D11RasterizerState>, (int)E_RSS::Count> DxState::m_RSS;
-std::array<Microsoft::WRL::ComPtr<ID3D11BlendState>, (int)E_BSS::Count> DxState::m_BSS;
+std::array<ComPtr<ID3D11BlendState>, (int)E_BSS::Count> DxState::m_BSS;
+std::array<ComPtr<ID3D11SamplerState>, (int)E_SS::Count> DxState::m_SS;
 
 HRESULT DxState::InitState(ID3D11Device* pd3dDevice)
 {
@@ -12,6 +13,7 @@ HRESULT DxState::InitState(ID3D11Device* pd3dDevice)
 	hr = InitDepthStencliState(pd3dDevice);
 	hr = InitRasterizerState(pd3dDevice);
 	hr = InitBlendState(pd3dDevice);
+	hr = InitSamplerState(pd3dDevice);
 
 	return hr;
 }
@@ -92,8 +94,8 @@ HRESULT DxState::InitBlendState(ID3D11Device* pd3dDevice)
 	bsDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	bsDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 
-	bsDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-	bsDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+	bsDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	bsDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	bsDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 
 	bsDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
@@ -105,6 +107,29 @@ HRESULT DxState::InitBlendState(ID3D11Device* pd3dDevice)
 	bsDesc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
 	pd3dDevice->CreateBlendState(&bsDesc, BSS.GetAddressOf());
 	m_BSS[(int)E_BSS::No] = BSS;
+
+	return hr;
+}
+
+HRESULT DxState::InitSamplerState(ID3D11Device* pd3dDevice)
+{
+	HRESULT hr = S_OK;
+
+	ComPtr<ID3D11SamplerState> pSamplerstate;
+
+	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
+	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sd.MaxLOD = FLT_MAX;
+	sd.MinLOD = FLT_MIN;
+
+	hr = pd3dDevice->CreateSamplerState(&sd, pSamplerstate.GetAddressOf());
+	m_SS[(int)E_SS::Default] = pSamplerstate;
+
+	pSamplerstate.Reset();
 
 	return hr;
 }

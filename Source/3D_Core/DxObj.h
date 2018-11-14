@@ -12,12 +12,14 @@ namespace DX
 		UINT iVertexSize,
 		LPVOID pData,
 		ID3D11Buffer** ppBuffer);
+
 	ID3D11Buffer* CreateIndexBuffer(
 		ID3D11Device* pDevice,
 		UINT iNumCount,
 		UINT iIndexSize,
 		LPVOID pData,
 		ID3D11Buffer** ppBuffer);
+
 	ID3D11Buffer* CreateConstantBuffer(
 		ID3D11Device* pDevice,
 		UINT iNumCount,
@@ -39,11 +41,13 @@ namespace DX
 		const void* pShaderFile,
 		ID3DBlob** ppBlobOut = nullptr,
 		const char * pFuncName = "VS");
+
 	ID3D11PixelShader* LoadPixelShaderFile(
 		ID3D11Device* pDevice,
 		const void* pShaderFile,
 		ID3DBlob** ppBlobOut = nullptr,
 		const char * pFuncName = "PS");
+
 	ID3D11GeometryShader* LoadGeometryShaderFile(
 		ID3D11Device* pDevice,
 		const void* pShaderFile,
@@ -55,6 +59,9 @@ namespace DX
 		LPCSTR szEntryPoint,
 		LPCSTR szShaderModel,
 		ID3DBlob** ppBlobOut);
+
+	ID3D11ShaderResourceView* CreateShaderResourceView(ID3D11Device* pDevice, const std::tstring& filepath);
+
 	class DxObj
 	{
 	public:
@@ -68,6 +75,8 @@ namespace DX
 		
 		Microsoft::WRL::ComPtr<ID3D11GeometryShader> m_pGeometryShader = nullptr;
 		Microsoft::WRL::ComPtr<ID3DBlob> m_pVSBlob = nullptr;
+
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureSRV = nullptr;
 
 		UINT m_iNumIndex  = 0;
 		UINT m_iNumVertex = 0;

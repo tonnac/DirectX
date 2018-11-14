@@ -52,18 +52,20 @@ bool Sample::Init()
 	D3DXMatrixIdentity(&m_matWorld[0]);
 	D3DXMatrixIdentity(&m_matWorld[1]);
 	D3DXMatrixLookAtLH(&m_matView, 
-		&D3DXVECTOR3(0.0f, +5.0f, -10.0f), 
+		&D3DXVECTOR3(0.0f, 5.0f, -10.0f), 
 		&D3DXVECTOR3(+0.0f, +0.0f, +0.0f), 
 		&D3DXVECTOR3(+0.0f, +1.0f, +0.0f));
 	D3DXMatrixPerspectiveFovLH(&m_matProj, (float)D3DX_PI * 0.25f, g_rtClient.right / (float)g_rtClient.bottom, 1.0f, 100.0f);
 
 
-	m_box.Create(m_pd3dDevice, L"ee", L"ee");
+	m_box.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/drain1.dds");
+	m_box1.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/partical_all.dds");
 	return true;
 }
 bool Sample::Frame()
 {
 	m_box.Frame();
+	m_box1.Frame();
 	return true;
 }
 bool Sample::Render()
@@ -75,26 +77,29 @@ bool Sample::Render()
 	D3DXMATRIX rot;
 
 	D3DXMatrixRotationY(&rot, dll);
-	D3DXMatrixTranslation(&m_matWorld[0], 0, 0, -3.0f);
+	D3DXMatrixTranslation(&m_matWorld[0], 0, 0, 0.0f);
 	m_matWorld[0] = m_matWorld[0] * rot;
 	D3DXMatrixTranspose(&m_box.m_cbData.matWorld, &m_matWorld[0]);
-	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)E_RSS::SolidBack].Get());
-	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)E_BSS::No].Get(), 0, 0xffffffff);
-	m_pImmediateContext->OMSetDepthStencilState(m_DSS[0], 1);
-	m_box.Render(m_pImmediateContext);
 
-	m_pImmediateContext->OMSetDepthStencilState(m_DSS[1], 1);
-	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)E_BSS::Default].Get(), 0, 0xffffffff);
-	D3DXMATRIX Scale;
-	D3DXMatrixScaling(&Scale, 10, 10, 1);
-	D3DXMatrixTranslation(&m_matWorld[0], 0, 0, -5.0f);
-	m_matWorld[0] = Scale * m_matWorld[0];
 	D3DXMatrixTranspose(&m_box.m_cbData.matWorld, &m_matWorld[0]);
 	D3DXMatrixTranspose(&m_box.m_cbData.matView, &m_matView);
 	D3DXMatrixTranspose(&m_box.m_cbData.matProj, &m_matProj);
-	m_box.PreRender(m_pImmediateContext);
-//	m_Obj.PostRender(m_pImmediateContext);
-	m_pImmediateContext->DrawIndexed(6, 0, 0);
+	m_box.m_cbData.fTime = g_fGameTimer;
+
+	D3DXMatrixRotationY(&rot, -dll);
+	D3DXMatrixTranslation(&m_matWorld[1], 0, 2.5, 0.0f);
+	m_matWorld[1] = m_matWorld[1] * rot;
+	D3DXMatrixTranspose(&m_box1.m_cbData.matWorld, &m_matWorld[1]);
+	D3DXMatrixTranspose(&m_box1.m_cbData.matView, &m_matView);
+	D3DXMatrixTranspose(&m_box1.m_cbData.matProj, &m_matProj);
+
+	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)E_RSS::Default].Get());
+	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)E_BSS::Default].Get(), 0, -1);
+	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)E_DSS::Default].Get(), 0);
+	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)E_SS::Default].GetAddressOf());
+
+	m_box.Render(m_pImmediateContext);
+	m_box1.Render(m_pImmediateContext);
 	return true;
 }
 bool Sample::Release()

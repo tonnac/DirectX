@@ -22,4 +22,5 @@ private:
 	ID3D11DepthStencilState* m_DSS[3];
 
 	BoxShape m_box;
+	BoxShape m_box1;
 };

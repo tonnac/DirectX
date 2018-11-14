@@ -243,6 +243,25 @@ namespace DX
 		return S_OK;
 	}
 
+	ID3D11ShaderResourceView* CreateShaderResourceView(ID3D11Device* pDevice, const std::tstring& filepath)
+	{
+		HRESULT hr = S_OK;
+		ID3D11ShaderResourceView* pSRV = nullptr;
+
+		D3DX11_IMAGE_LOAD_INFO loadinfo;
+		ZeroMemory(&loadinfo, sizeof(D3DX11_IMAGE_LOAD_INFO));
+		loadinfo.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		loadinfo.Format = DXGI_FORMAT_FROM_FILE;
+
+		if (filepath.empty()) return nullptr;
+		if (FAILED(hr = D3DX11CreateShaderResourceViewFromFile(pDevice, filepath.c_str(), &loadinfo,
+			nullptr, &pSRV, nullptr)))
+		{
+			return nullptr;
+		}
+		return pSRV;
+	}
+
 	DxObj::DxObj()
 	{
 	}
@@ -265,8 +284,11 @@ namespace DX
 		pContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
 		pContext->PSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
 
+		pContext->PSSetShaderResources(0, 1, m_pTextureSRV.GetAddressOf());
+
 		pContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0);
 		pContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);
+
 //		pContext->GSSetShader(m_pGeometryShader.Get(), nullptr, 0);
 		return true;
 	}
