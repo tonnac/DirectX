@@ -33,7 +33,6 @@ public:
 
 public:
 	ID3D11Device* m_pDevice = nullptr;
-	ID3D11ShaderResourceView * m_pTextureRV;
 
 	DX::DxObj m_DxObject;
 

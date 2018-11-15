@@ -1,5 +1,6 @@
 #include "Core.h"
 #include <DirectXColors.h>
+#include "DxState.h"
 
 bool Core::GameInit()
 {
@@ -9,6 +10,7 @@ bool Core::GameInit()
 	if (FAILED(CreateSwapChain(m_hWnd, m_iWindowWidth, m_iWindowHeight))) return false;
 	if (FAILED(SetRTVDSV())) return false;
 	SetViewPort();
+	DxState::InitState(m_pd3dDevice);
 #pragma endregion Device_Init
 
 #ifdef DEVICE_INFO
@@ -70,6 +72,7 @@ bool Core::PreInit()
 void Core::DeleteDeviceResources()
 {
 	S_DirectWrite.DiscardDeviceResources();
+	DeleteResources();
 }
 HRESULT Core::CreateDeviceResources(const UINT& Width, const UINT& Height)
 {
@@ -80,7 +83,18 @@ HRESULT Core::CreateDeviceResources(const UINT& Width, const UINT& Height)
 	if (FAILED(hr)) return false;
 	S_DirectWrite.CreateDeviceResources(pBackBuffer);
 	pBackBuffer->Release();
+
+//	m_pMainCamera->UpdateProjMatrix(Width, Height);
+	CreateResources(Width, Height);
 	return hr;
+}
+void Core::DeleteResources()
+{
+	return;
+}
+HRESULT	Core::CreateResources(const UINT& Width, const UINT& Height)
+{
+	return S_OK;
 }
 bool Core::Init() { return true; }
 bool Core::Frame() { return true; }
@@ -90,6 +104,12 @@ bool Core::PreRender()
 {
 	D3D11_VIEWPORT& ViewPort = getViewPort();
 	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
+
+	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)E_RSS::Default].Get());
+	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)E_BSS::Default].Get(), 0, -1);
+	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)E_DSS::Default].Get(), 0);
+	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)E_SS::Default].GetAddressOf());
+
 	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	return true;
 }

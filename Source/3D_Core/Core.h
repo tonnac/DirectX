@@ -6,6 +6,7 @@
 #include "DirectInput.h"
 #include "Texture.h"
 #include "Shader.h"
+//#include "Camera.h"
 //#define DEVICE_INFO
 
 class Core : public Window
@@ -19,8 +20,10 @@ public:
 	bool			GameFrame				();
 	bool			GameRender				();
 	virtual bool	PreInit					();
-	virtual void	DeleteDeviceResources	() override;
-	virtual HRESULT	CreateDeviceResources	(const UINT& Width, const UINT& Height) override;
+	void			DeleteDeviceResources	() override;
+	HRESULT			CreateDeviceResources	(const UINT& Width, const UINT& Height) override;
+	virtual void	DeleteResources			();
+	virtual HRESULT	CreateResources			(const UINT& Width, const UINT& Height);
 public:
 	virtual bool	Init					();
 	virtual bool	Frame					();
@@ -31,4 +34,6 @@ private:
 	bool			PostRender				();
 private:
 	Timer			m_Timer;
+//	Camera*			m_pMainCamera;
+//	Camera			m_DefaultCamera;
 };

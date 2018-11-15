@@ -4,7 +4,7 @@
 
 Shape::Shape()
 {
-
+	m_Primitive = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 }
 
 Shape::~Shape()
@@ -140,6 +140,7 @@ bool Shape::PostRender(ID3D11DeviceContext* pContext)
 
 bool Shape::Render(ID3D11DeviceContext* pContext)
 {
+	pContext->IASetPrimitiveTopology(m_Primitive);
 	PreRender(pContext);
 	PostRender(pContext);
 	return true;

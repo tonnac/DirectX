@@ -80,6 +80,8 @@ namespace DX
 
 		UINT m_iNumIndex  = 0;
 		UINT m_iNumVertex = 0;
+		UINT m_iVertexSize = 0;
+
 	public:
 		bool PreRender(ID3D11DeviceContext* pContext,
 			UINT iVertexSize);
@@ -90,6 +92,7 @@ namespace DX
 			ID3D11DeviceContext* pContext,
 			UINT iVertexSize, UINT iCount);
 		bool Release();
+
 	public:
 		DxObj();
 		virtual ~DxObj();

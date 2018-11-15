@@ -278,7 +278,6 @@ namespace DX
 		UINT offset = 0;
 		pContext->IASetVertexBuffers(0, 1, m_pVertexBuffer.GetAddressOf(), &stride, &offset);
 
-		pContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		pContext->IASetIndexBuffer(m_pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 		pContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
