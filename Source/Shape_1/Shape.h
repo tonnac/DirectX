@@ -8,7 +8,7 @@ public:
 	virtual ~Shape();
 
 public:
-	void Create(ID3D11Device* pDevice, std::tstring szShaderName, std::tstring szTextureName);
+	void Create(ID3D11Device* pDevice, std::tstring szShaderName, std::tstring szTextureName = std::tstring());
 
 	virtual HRESULT CreateVertexData() { return S_OK; };
 	virtual HRESULT CreateIndexData() { return S_OK; };
@@ -53,8 +53,6 @@ public:
 	D3DXVECTOR3 m_vSide;
 	D3DXVECTOR3 m_vUp;
 
-	UINT m_iVertexSize;
-
 	D3D_PRIMITIVE_TOPOLOGY m_Primitive;
 };
 
@@ -75,11 +73,16 @@ public:
 	LineShape();
 	virtual ~LineShape();
 public:
-//	bool Draw(ID3D11DeviceContext* pContext, )
+	HRESULT	CreateInputLayout()override;
+	HRESULT	CreateVertexData()override;
+	HRESULT	CreateIndexData()override;
+	HRESULT	CreateVertexBuffer()override;
+	HRESULT LoadVertexShader(std::tstring szName)override;
+	HRESULT LoadPixelShader(std::tstring szName)override;
+	bool	Draw(ID3D11DeviceContext* pContext, D3DXVECTOR3 vStart, D3DXVECTOR3 vEnd, D3DXVECTOR4 vColor);
 
 public:
-//	HRESULT CreateVertexData()override;
-	HRESULT CreateIndexData()override;
+	std::array<PC_VERTEX, 2> m_LineVertexList;
 };
 
 class PlaneShape : public Shape
@@ -100,6 +103,13 @@ public:
 	virtual ~DirectionShape();
 
 public:
-	HRESULT CreateVertexData()override;
-	HRESULT CreateIndexData()override;
+	HRESULT	CreateInputLayout()override;
+	HRESULT	CreateVertexData()override;
+	HRESULT	CreateIndexData()override;
+	HRESULT	CreateVertexBuffer()override;
+	HRESULT LoadVertexShader(std::tstring szName)override;
+	HRESULT LoadPixelShader(std::tstring szName)override;
+
+public:
+	std::array<PC_VERTEX, 6> m_LineVertexList;
 };

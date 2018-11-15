@@ -161,22 +161,28 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DirectInput.cpp" />
+    <ClCompile Include="DirectionShape.cpp" />
     <ClCompile Include="DirectWrite.cpp" />
     <ClCompile Include="DxObj.cpp" />
     <ClCompile Include="DxState.cpp" />
     <ClCompile Include="Enumeration.cpp" />
+    <ClCompile Include="LineShape.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PlaneObj.cpp" />
+    <ClCompile Include="PlaneShape.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TriangleObj.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Device.h" />
@@ -186,8 +192,10 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClInclude Include="DxState.h" />
     <ClInclude Include="Enumeration.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="ObjectStd.h" />
     <ClInclude Include="PlaneObj.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Shape.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TriangleObj.h" />

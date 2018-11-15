@@ -11,6 +11,13 @@ bool Core::GameInit()
 	if (FAILED(SetRTVDSV())) return false;
 	SetViewPort();
 	DxState::InitState(m_pd3dDevice);
+
+	m_DefaultCamera.SetViewMatrix({ 5,5,-10.0f });
+	m_DefaultCamera.SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
+
+	m_pMainCamera = &m_DefaultCamera;
+
+	m_Dir.Create(m_pd3dDevice, L"shape.hlsl");
 #pragma endregion Device_Init
 
 #ifdef DEVICE_INFO
@@ -52,6 +59,8 @@ bool Core::GameRelease()
 bool Core::GameFrame()
 {
 	S_Input.Frame();
+	m_pMainCamera->SetProjMatrix(m_pMainCamera->m_fFov, m_pMainCamera->m_fAspect);
+	m_pMainCamera->SetViewMatrix(m_pMainCamera->m_vPos);
 	m_Timer.Frame();
 	Frame();
 	S_Input.PostProcess();
@@ -60,6 +69,8 @@ bool Core::GameFrame()
 bool Core::GameRender()
 {
 	if (PreRender() == false) return false;
+	m_Dir.SetMatrix(nullptr, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+	m_Dir.Render(m_pImmediateContext);
 	Render();
 	m_Timer.Render();
 	if (PostRender() == false) return false;
@@ -102,7 +113,6 @@ bool Core::Render() { return true; }
 bool Core::Release() { return true; }
 bool Core::PreRender()
 {
-	D3D11_VIEWPORT& ViewPort = getViewPort();
 	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
 
 	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)E_RSS::Default].Get());

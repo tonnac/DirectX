@@ -19,8 +19,9 @@ public:
 private:
 	BoxShape	m_boxObj;
 	BoxShape	m_box1;
-//	LineShape	m_box1;
+	LineShape	m_line;
 	PlaneShape	m_plane;
+	DirectionShape m_Dir;
 
 	Camera*		m_pMainCamera;
 	Camera		m_DefaultCamera;

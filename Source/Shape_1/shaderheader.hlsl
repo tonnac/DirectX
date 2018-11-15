@@ -16,6 +16,18 @@ struct VS_OUTPUT
 	float2 t : TEXCOORD;
 };
 
+struct PC_IN
+{
+	float3 p : POSITION;
+	float4 c : COLOR;
+};
+
+struct PC_OUT
+{
+	float4 p : SV_POSITION;
+	float4 c : COLOR;
+};
+
 cbuffer cb0
 {
 	matrix g_matWorld	: packoffset(c0);

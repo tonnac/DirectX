@@ -6,7 +6,9 @@
 #include "DirectInput.h"
 #include "Texture.h"
 #include "Shader.h"
-//#include "Camera.h"
+#include "Camera.h"
+#include "Shape.h"
+
 //#define DEVICE_INFO
 
 class Core : public Window
@@ -32,8 +34,9 @@ public:
 private:
 	bool			PreRender				();
 	bool			PostRender				();
-private:
+protected:
 	Timer			m_Timer;
-//	Camera*			m_pMainCamera;
-//	Camera			m_DefaultCamera;
+	Camera*			m_pMainCamera;
+	Camera			m_DefaultCamera;
+	DirectionShape  m_Dir;
 };

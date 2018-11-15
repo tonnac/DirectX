@@ -32,7 +32,10 @@ void Shape::Create(ID3D11Device* pDevice, std::tstring szShaderName, std::tstrin
 	LoadPixelShader(szShaderName);
 //	LoadGeometryShader(L"gs.psh");
 	CreateInputLayout();
-	LoadTextureShader(szTextureName);
+	if (!szTextureName.empty())
+	{
+		LoadTextureShader(szTextureName);
+	}
 }
 
 HRESULT Shape::CreateVertexBuffer()
@@ -41,7 +44,7 @@ HRESULT Shape::CreateVertexBuffer()
 
 	DX::CreateVertexBuffer(m_pDevice,
 		(UINT)m_VertexList.size(),
-		sizeof(PNCT_VERTEX),
+		m_DxObject.m_iVertexSize,
 		m_VertexList.data(),
 		&m_DxObject.m_pVertexBuffer);
 
@@ -166,13 +169,14 @@ bool Shape::Frame()
 bool Shape::PreRender(ID3D11DeviceContext* pContext)
 {
 	pContext->UpdateSubresource(m_DxObject.m_pConstantBuffer.Get(), 0, nullptr, &m_cbData, 0, 0);
-	return m_DxObject.PreRender(pContext, m_iVertexSize);
+	return m_DxObject.PreRender(pContext, m_DxObject.m_iVertexSize);
 }
 
 bool Shape::PostRender(ID3D11DeviceContext* pContext)
 {
 	pContext->IASetPrimitiveTopology(m_Primitive);
-	return m_DxObject.PostRender(pContext, m_iVertexSize, m_DxObject.m_iNumIndex);
+	m_DxObject.PostRender(pContext, m_DxObject.m_iVertexSize, m_DxObject.m_iNumIndex);
+	return true;
 }
 
 bool Shape::Render(ID3D11DeviceContext* pContext)
@@ -238,6 +242,7 @@ HRESULT BoxShape::CreateVertexData()
 	m_VertexList[23] = PNCT_VERTEX(D3DXVECTOR3(-1.0f, -1.0f, 1.0f), D3DXVECTOR3(0.0f, -1.0f, 0.0f), D3DXVECTOR4(0.0f, 1.0f, 1.0f, 1.0f), D3DXVECTOR2(0.0f, 1.0f));
 
 	m_DxObject.m_iNumVertex = (UINT)m_VertexList.size();
+	m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
 
 	return hr;
 }

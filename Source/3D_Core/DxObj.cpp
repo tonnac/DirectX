@@ -283,7 +283,10 @@ namespace DX
 		pContext->VSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
 		pContext->PSSetConstantBuffers(0, 1, m_pConstantBuffer.GetAddressOf());
 
-		pContext->PSSetShaderResources(0, 1, m_pTextureSRV.GetAddressOf());
+		if (m_pTextureSRV != nullptr)
+		{
+			pContext->PSSetShaderResources(0, 1, m_pTextureSRV.GetAddressOf());
+		}
 
 		pContext->VSSetShader(m_pVertexShader.Get(), nullptr, 0);
 		pContext->PSSetShader(m_pPixelShader.Get(), nullptr, 0);

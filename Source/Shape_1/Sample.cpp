@@ -1,6 +1,7 @@
 #include "Sample.h"
 #include "DirectInput.h"
 #include "../inc/DxState.h"
+#include <DirectXColors.h>
 
 
 Sample::Sample()
@@ -10,13 +11,15 @@ Sample::~Sample()
 
 bool Sample::Init()
 {
-	m_DefaultCamera.SetViewMatrix({ 0,5,-10.0f });
+	m_DefaultCamera.SetViewMatrix({ 5,5,-10.0f });
 	m_DefaultCamera.SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
 
 	m_pMainCamera = &m_DefaultCamera;
 
 	m_boxObj.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/drain1.dds");
-	m_plane.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/fwall36.dds");
+	m_plane.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/drain1.dds");
+//	m_line.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/drain1.dds");
+	m_Dir.Create(m_pd3dDevice, L"shape.hlsl");
 	return true;
 }
 bool Sample::Frame()
@@ -32,8 +35,10 @@ bool Sample::Render()
 	
 	D3DXMATRIX rot;
 	D3DXMatrixRotationY(&rot, dll);
-	D3DXMatrixTranslation(&m_matWorld[0], 0, 0, 0.0f);
-	m_matWorld[0] = m_matWorld[0] * rot;
+
+//	m_pMainCamera->SetViewMatrix(D3DXVECTOR3(1, 2, -10));
+
+	D3DXMatrixIdentity(&m_matWorld[0]);
 
 	m_boxObj.m_cbData.fTime = g_fGameTimer;
 
@@ -43,6 +48,12 @@ bool Sample::Render()
 
 	m_boxObj.Render(m_pImmediateContext);
 	m_plane.Render(m_pImmediateContext);
+
+	m_Dir.SetMatrix(&m_matWorld[0], &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+	m_Dir.Render(m_pImmediateContext);
+//	m_line.Draw(m_pImmediateContext, D3DXVECTOR3(0, 0, 0), D3DXVECTOR3(0, 1000, 0), D3DXVECTOR4(DirectX::Colors::Blue));
+//	m_line.Draw(m_pImmediateContext, D3DXVECTOR3(0, 0, 0), D3DXVECTOR3(0, 0, 1000), D3DXVECTOR4(DirectX::Colors::Green));
+//	m_line.Draw(m_pImmediateContext, D3DXVECTOR3(0, 0, 0), D3DXVECTOR3(1000, 0, 0), D3DXVECTOR4(DirectX::Colors::Red));
 	return true;
 }
 bool Sample::Release()
