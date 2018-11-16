@@ -59,8 +59,24 @@ bool Core::GameRelease()
 bool Core::GameFrame()
 {
 	S_Input.Frame();
-	m_pMainCamera->SetProjMatrix(m_pMainCamera->m_fFov, m_pMainCamera->m_fAspect);
-	m_pMainCamera->SetViewMatrix(m_pMainCamera->m_vPos);
+	if (S_Input.getKeyState(DIK_A) == KEYSTATE::KEY_HOLD)
+	{
+		m_YawPitchRoll.y -= g_fSecPerFrame * 0.5f;
+	}
+	if (S_Input.getKeyState(DIK_D) == KEYSTATE::KEY_HOLD)
+	{
+		m_YawPitchRoll.y += g_fSecPerFrame * 0.5f;
+	}
+	if (S_Input.getKeyState(DIK_W) == KEYSTATE::KEY_HOLD)
+	{
+		m_YawPitchRoll.x -= g_fSecPerFrame * 0.5f;
+	}
+	if (S_Input.getKeyState(DIK_S) == KEYSTATE::KEY_HOLD)
+	{
+		m_YawPitchRoll.x += g_fSecPerFrame * 0.5f;
+	}
+	m_pMainCamera->Update(m_YawPitchRoll);
+	m_pMainCamera->Frame();
 	m_Timer.Frame();
 	Frame();
 	S_Input.PostProcess();
@@ -69,6 +85,8 @@ bool Core::GameFrame()
 bool Core::GameRender()
 {
 	if (PreRender() == false) return false;
+	m_pMainCamera->SetProjMatrix(m_pMainCamera->m_fFov, m_pMainCamera->m_fAspect);
+//	m_pMainCamera->SetViewMatrix(m_pMainCamera->m_vPos);
 	m_Dir.SetMatrix(nullptr, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_Dir.Render(m_pImmediateContext);
 	Render();

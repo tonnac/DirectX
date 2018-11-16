@@ -30,7 +30,8 @@ bool Sample::Render()
 	dll += (float)(0.15f * D3DX_PI) * g_fSecPerFrame;
 	
 
-	D3DXMatrixRotationAxis(&m_boxObj.m_SRTMat.matSpinRotation, &D3DXVECTOR3(cosf(g_fGameTimer), cosf(g_fGameTimer), sinf(g_fGameTimer)), dll);
+	//D3DXMatrixRotationAxis(&m_boxObj.m_SRTMat.matSpinRotation, &D3DXVECTOR3(cosf(g_fGameTimer), cosf(g_fGameTimer), sinf(g_fGameTimer)), dll);
+	D3DXMatrixRotationYawPitchRoll(&m_boxObj.m_SRTMat.matSpinRotation, dll, dll * 2, dll*1.5f);
 
 	m_boxObj.m_SRTMat.matWorld = m_boxObj.m_SRTMat.matSpinRotation;
 
@@ -42,6 +43,7 @@ bool Sample::Render()
 		m_plane.m_SRTMat.matSpinRotation *
 		m_plane.m_SRTMat.matTranslate *
 		m_plane.m_SRTMat.matOrbitRotation *
+
 		m_boxObj.m_SRTMat.matSpinRotation;
 
 
@@ -53,7 +55,7 @@ bool Sample::Render()
 		m_boxObj2.m_SRTMat.matScale *
 		m_boxObj2.m_SRTMat.matSpinRotation *
 		m_boxObj2.m_SRTMat.matTranslate *
-		m_boxObj2.m_SRTMat.matOrbitRotation*
+		m_boxObj2.m_SRTMat.matOrbitRotation *
 
 		m_plane.m_SRTMat.matSpinRotation *
 		m_plane.m_SRTMat.matTranslate *
@@ -69,12 +71,12 @@ bool Sample::Render()
 		m_boxObj3.m_SRTMat.matScale *
 		m_boxObj3.m_SRTMat.matSpinRotation *
 		m_boxObj3.m_SRTMat.matTranslate *
-		m_boxObj3.m_SRTMat.matOrbitRotation*
+		m_boxObj3.m_SRTMat.matOrbitRotation *
 
 		m_boxObj2.m_SRTMat.matScale *
 		m_boxObj2.m_SRTMat.matSpinRotation *
 		m_boxObj2.m_SRTMat.matTranslate *
-		m_boxObj2.m_SRTMat.matOrbitRotation*
+		m_boxObj2.m_SRTMat.matOrbitRotation *
 
 		m_plane.m_SRTMat.matSpinRotation *
 		m_plane.m_SRTMat.matTranslate *
@@ -96,6 +98,10 @@ bool Sample::Render()
 	m_line.Draw(m_pImmediateContext, m_boxObj.m_vPosition, m_plane.m_vPosition, D3DXVECTOR4(DirectX::Colors::Black));
 	m_line.Draw(m_pImmediateContext, m_plane.m_vPosition, m_boxObj2.m_vPosition, D3DXVECTOR4(DirectX::Colors::Black));
 	m_line.Draw(m_pImmediateContext, m_boxObj2.m_vPosition, m_boxObj3.m_vPosition, D3DXVECTOR4(DirectX::Colors::Black));
+
+	m_line.Draw(m_pImmediateContext, m_plane.m_vPosition, m_plane.m_vLook * 1000, D3DXVECTOR4(DirectX::Colors::Red));
+	m_line.Draw(m_pImmediateContext, m_plane.m_vPosition, m_plane.m_vSide * 1000, D3DXVECTOR4(DirectX::Colors::Blue));
+	m_line.Draw(m_pImmediateContext, m_plane.m_vPosition, m_plane.m_vUp * 1000, D3DXVECTOR4(DirectX::Colors::Green));
 	return true;
 }
 bool Sample::Release()

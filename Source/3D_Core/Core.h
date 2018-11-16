@@ -39,4 +39,5 @@ protected:
 	Camera*			m_pMainCamera;
 	Camera			m_DefaultCamera;
 	DirectionShape  m_Dir;
+	D3DXVECTOR4		m_YawPitchRoll;
 };

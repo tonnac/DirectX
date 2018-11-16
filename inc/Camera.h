@@ -14,6 +14,10 @@ public:
 
 	void UpdateProjMatrix(UINT Width, UINT Height);
 
+	bool Frame();
+	bool Update(D3DXVECTOR4 vValue);
+	void UpdateVector();
+
 public:
 	D3DXMATRIX m_matView;
 	D3DXMATRIX m_matProj;
@@ -26,4 +30,8 @@ public:
 	D3DXVECTOR3 m_vPos;
 	D3DXVECTOR3 m_vTarget;
 	D3DXVECTOR3 m_vUp;
+
+	D3DXVECTOR3 m_vLook;
+	D3DXVECTOR3 m_vSide;
+	D3DXVECTOR3 m_vUpvector;
 };
