@@ -8,8 +8,11 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Shape.h"
+#include "DxState.h"
 
 //#define DEVICE_INFO
+
+extern GameInput g_Input;
 
 class Core : public Window
 {
@@ -40,4 +43,6 @@ protected:
 	Camera			m_DefaultCamera;
 	DirectionShape  m_Dir;
 	D3DXVECTOR4		m_YawPitchRoll;
+
+	E_RSS			m_Raster = E_RSS::Default;
 };

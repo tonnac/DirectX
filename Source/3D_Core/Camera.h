@@ -17,6 +17,8 @@ public:
 	bool Frame();
 	bool Update(D3DXVECTOR4 vValue);
 	void UpdateVector();
+	void MoveLook(float fValue);
+	void MoveSide(float fValue);
 
 public:
 	D3DXMATRIX m_matView;
@@ -26,6 +28,7 @@ public:
 	float m_fAspect;
 	float m_fNear;
 	float m_fFar;
+	float m_fSpeed = 1.0f;
 
 	D3DXVECTOR3 m_vPos;
 	D3DXVECTOR3 m_vTarget;

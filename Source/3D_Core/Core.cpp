@@ -1,6 +1,5 @@
 #include "Core.h"
 #include <DirectXColors.h>
-#include "DxState.h"
 
 bool Core::GameInit()
 {
@@ -58,26 +57,43 @@ bool Core::GameRelease()
 }
 bool Core::GameFrame()
 {
-	S_Input.Frame();
-	if (S_Input.getKeyState(DIK_A) == KEYSTATE::KEY_HOLD)
-	{
-		m_YawPitchRoll.y -= g_fSecPerFrame * 0.5f;
-	}
-	if (S_Input.getKeyState(DIK_D) == KEYSTATE::KEY_HOLD)
-	{
-		m_YawPitchRoll.y += g_fSecPerFrame * 0.5f;
-	}
-	if (S_Input.getKeyState(DIK_W) == KEYSTATE::KEY_HOLD)
-	{
-		m_YawPitchRoll.x -= g_fSecPerFrame * 0.5f;
-	}
-	if (S_Input.getKeyState(DIK_S) == KEYSTATE::KEY_HOLD)
-	{
-		m_YawPitchRoll.x += g_fSecPerFrame * 0.5f;
-	}
-	m_pMainCamera->Update(m_YawPitchRoll);
-	m_pMainCamera->Frame();
 	m_Timer.Frame();
+	S_Input.Frame();
+	{
+		if (S_Input.getKeyState(DIK_A) == KEYSTATE::KEY_HOLD)
+		{
+			m_pMainCamera->MoveSide(-g_fSecPerFrame * 5.0f);
+		}
+		if (S_Input.getKeyState(DIK_D) == KEYSTATE::KEY_HOLD)
+		{
+			m_pMainCamera->MoveSide(g_fSecPerFrame * 5.0f);
+		}
+		if (S_Input.getKeyState(DIK_W) == KEYSTATE::KEY_HOLD)
+		{
+			m_pMainCamera->MoveLook(g_fSecPerFrame * 5.0f);
+		}
+		if (S_Input.getKeyState(DIK_S) == KEYSTATE::KEY_HOLD)
+		{
+			m_pMainCamera->MoveLook(-g_fSecPerFrame * 5.0f);
+		}
+		if (S_Input.m_MouseState.rgbButtons[0])
+		{
+			m_YawPitchRoll.x += 0.1f * D3DXToRadian(S_Input.m_MouseState.lY);
+			m_YawPitchRoll.y += 0.1f * D3DXToRadian(S_Input.m_MouseState.lX);
+		}
+		if (S_Input.getKeyState(DIK_SPACE) == KEYSTATE::KEY_HOLD)
+		{
+			m_pMainCamera->m_fSpeed += g_fSecPerFrame * 5.0f;
+		}
+		float fValue = S_Input.m_MouseState.lZ;
+		m_YawPitchRoll.w = fValue * g_fSecPerFrame;
+		m_pMainCamera->Update(m_YawPitchRoll);
+		m_pMainCamera->Frame();
+	}
+	if (S_Input.getKeyState(DIK_5) == KEYSTATE::KEY_PUSH)
+	{
+		m_Raster = (E_RSS)(((int)m_Raster + 1) % (int)E_RSS::Count);
+	}
 	Frame();
 	S_Input.PostProcess();
 	return true;
@@ -85,8 +101,6 @@ bool Core::GameFrame()
 bool Core::GameRender()
 {
 	if (PreRender() == false) return false;
-	m_pMainCamera->SetProjMatrix(m_pMainCamera->m_fFov, m_pMainCamera->m_fAspect);
-//	m_pMainCamera->SetViewMatrix(m_pMainCamera->m_vPos);
 	m_Dir.SetMatrix(nullptr, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_Dir.Render(m_pImmediateContext);
 	Render();
@@ -132,8 +146,8 @@ bool Core::Release() { return true; }
 bool Core::PreRender()
 {
 	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
-
-	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)E_RSS::Default].Get());
+	
+	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_Raster].Get());
 	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)E_BSS::Default].Get(), 0, -1);
 	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)E_DSS::Default].Get(), 0);
 	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)E_SS::Default].GetAddressOf());

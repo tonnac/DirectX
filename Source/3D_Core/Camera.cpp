@@ -41,6 +41,12 @@ void Camera::UpdateProjMatrix(UINT Width, UINT Height)
 
 bool Camera::Frame()
 {
+	//m_fSpeed -= g_fSecPerFrame * 1.0f;
+	//if (m_fSpeed <= 1.0f) m_fSpeed = 1.0f;
+	//else
+	//{
+	//	m_vPos += m_vLook * m_fSpeed * 0.5f;
+	//}
 	return true;
 }
 
@@ -77,4 +83,14 @@ bool Camera::Update(D3DXVECTOR4 vValue)
 
 	UpdateVector();
 	return true;
+}
+
+void Camera::MoveLook(float fValue)
+{
+	m_vPos += m_vLook * fValue * m_fSpeed;
+}
+
+void Camera::MoveSide(float fValue)
+{
+	m_vPos += m_vSide * fValue * m_fSpeed;
 }

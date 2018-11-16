@@ -31,7 +31,7 @@ public:
 	bool					PostProcess	();
 public:
 	KEYSTATE				getKeyState(const DWORD dwKey);
-private:
+public:
 	LPDIRECTINPUT8			m_pDi;
 	LPDIRECTINPUTDEVICE8	m_pKey;
 	LPDIRECTINPUTDEVICE8	m_pMouse;
