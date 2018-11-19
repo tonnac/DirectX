@@ -37,4 +37,7 @@ public:
 	D3DXVECTOR3 m_vLook;
 	D3DXVECTOR3 m_vSide;
 	D3DXVECTOR3 m_vUpvector;
+
+	float m_fCameraYawAngle;
+	float m_fCameraPitchAngle;
 };

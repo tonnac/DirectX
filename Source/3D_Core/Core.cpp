@@ -11,7 +11,7 @@ bool Core::GameInit()
 	SetViewPort();
 	DxState::InitState(m_pd3dDevice);
 
-	m_DefaultCamera.SetViewMatrix({ 5,5,-10.0f });
+	m_DefaultCamera.SetViewMatrix({ 5,5, 25.0f });
 	m_DefaultCamera.SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
 
 	m_pMainCamera = &m_DefaultCamera;
@@ -57,6 +57,7 @@ bool Core::GameRelease()
 }
 bool Core::GameFrame()
 {
+	m_YawPitchRoll = { 0,0,0,0 };
 	m_Timer.Frame();
 	S_Input.Frame();
 	{
