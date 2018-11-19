@@ -1,6 +1,13 @@
 #pragma once
 #include "Define.h"
 
+template <typename X>
+void IncreaseEnum(X& arg)
+{
+	arg = (X)(((int)arg + 1) % (int)X::Count);
+}
+
+
 enum class E_DSS : unsigned char
 {
 	Default = 0,

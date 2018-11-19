@@ -15,7 +15,7 @@ bool Sample::Init()
 	m_boxObj3.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/drain1.dds");
 	m_plane.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/drain1.dds");
 	m_line.Create(m_pd3dDevice, L"shape.hlsl");
-	m_pMainCamera->SetViewMatrix({ 5,5, 25.0f });
+//	m_pMainCamera->SetViewMatrix({ 5,5, 25.0f });
 	return true;
 }
 bool Sample::Frame()

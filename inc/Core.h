@@ -44,5 +44,8 @@ protected:
 	DirectionShape  m_Dir;
 	D3DXVECTOR4		m_YawPitchRoll;
 
-	E_RSS			m_Raster = E_RSS::Default;
+	E_DSS m_DepthStencilState = E_DSS::Default;
+	E_RSS m_RasterizerState = E_RSS::Default;
+	E_BSS m_BlendState = E_BSS::Default;
+	E_SS  m_SampleState = E_SS::Default;
 };

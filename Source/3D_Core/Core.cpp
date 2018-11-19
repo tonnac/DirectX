@@ -11,7 +11,7 @@ bool Core::GameInit()
 	SetViewPort();
 	DxState::InitState(m_pd3dDevice);
 
-	m_DefaultCamera.SetViewMatrix({ 5,5, 25.0f });
+	m_DefaultCamera.SetViewMatrix({ 0,0, -10.0f });
 	m_DefaultCamera.SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
 
 	m_pMainCamera = &m_DefaultCamera;
@@ -79,22 +79,39 @@ bool Core::GameFrame()
 		}
 		if (S_Input.m_MouseState.rgbButtons[0])
 		{
-			m_YawPitchRoll.x += 0.1f * D3DXToRadian(S_Input.m_MouseState.lY);
-			m_YawPitchRoll.y += 0.1f * D3DXToRadian(S_Input.m_MouseState.lX);
+			m_YawPitchRoll.x += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lY);
+			m_YawPitchRoll.y += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lX);
 		}
 		if (S_Input.getKeyState(DIK_SPACE) == KEYSTATE::KEY_HOLD)
 		{
 			m_pMainCamera->m_fSpeed += g_fSecPerFrame * 5.0f;
 		}
-		float fValue = S_Input.m_MouseState.lZ;
+		float fValue = (float)S_Input.m_MouseState.lZ;
 		m_YawPitchRoll.w = fValue * g_fSecPerFrame;
 		m_pMainCamera->Update(m_YawPitchRoll);
 		m_pMainCamera->Frame();
 	}
-	if (S_Input.getKeyState(DIK_5) == KEYSTATE::KEY_PUSH)
+
+	if (S_Input.getKeyState(DIK_1) == KEYSTATE::KEY_PUSH)
 	{
-		m_Raster = (E_RSS)(((int)m_Raster + 1) % (int)E_RSS::Count);
+		IncreaseEnum(m_RasterizerState);
 	}
+
+	if (S_Input.getKeyState(DIK_2) == KEYSTATE::KEY_PUSH)
+	{
+		IncreaseEnum(m_DepthStencilState);
+	}
+
+	if (S_Input.getKeyState(DIK_3) == KEYSTATE::KEY_PUSH)
+	{
+		IncreaseEnum(m_BlendState);
+	}
+
+	if (S_Input.getKeyState(DIK_4) == KEYSTATE::KEY_PUSH)
+	{
+		IncreaseEnum(m_SampleState);
+	}
+
 	Frame();
 	S_Input.PostProcess();
 	return true;
@@ -148,10 +165,10 @@ bool Core::PreRender()
 {
 	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
 	
-	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_Raster].Get());
-	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)E_BSS::Default].Get(), 0, -1);
-	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)E_DSS::Default].Get(), 0);
-	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)E_SS::Default].GetAddressOf());
+	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_RasterizerState].Get());
+	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)m_DepthStencilState].Get(), 0);
+	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)m_SampleState].GetAddressOf());
+	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)m_BlendState].Get(), 0, -1);
 
 	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	return true;

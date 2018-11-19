@@ -103,8 +103,9 @@ HRESULT DxState::InitBlendState(ID3D11Device* pd3dDevice)
 	m_BSS[(int)E_BSS::Default] = BSS;
 
 	BSS.Reset();
-	bsDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
-	bsDesc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
+//	bsDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
+//	bsDesc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
+	bsDesc.RenderTarget[0].BlendEnable = FALSE;
 	pd3dDevice->CreateBlendState(&bsDesc, BSS.GetAddressOf());
 	m_BSS[(int)E_BSS::No] = BSS;
 

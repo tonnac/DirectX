@@ -132,47 +132,6 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		ResizeDevice(width, height);
 	}
 	break;
-	case WM_KEYDOWN:
-		switch (wparam)
-		{
-		case '0':
-			pSwapChain->GetFullscreenState(&isFullMode, NULL);
-			pSwapChain->SetFullscreenState(!isFullMode, NULL);
-			if (isFullMode == TRUE)
-			{
-				ShowWindow(m_hWnd, SW_SHOW);
-			}
-			break;
-		case '1':
-			if (pSwapChain)
-			{
-				DXGI_MODE_DESC desc;
-				ZeroMemory(&desc, sizeof(DXGI_MODE_DESC));
-				desc.Width = 1024;
-				desc.Height = 768;
-				desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-				desc.RefreshRate.Numerator = 60;
-				desc.RefreshRate.Denominator = 1;
-				pSwapChain->ResizeTarget(&desc);
-			}
-			break;
-		case '2':
-			if (pSwapChain)
-			{
-				DXGI_MODE_DESC desc;
-				ZeroMemory(&desc, sizeof(DXGI_MODE_DESC));
-				desc.Width = 800;
-				desc.Height = 600;
-				desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-				desc.RefreshRate.Numerator = 60;
-				desc.RefreshRate.Denominator = 1;
-				pSwapChain->ResizeTarget(&desc);
-			}
-			break;
-		}
-		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
