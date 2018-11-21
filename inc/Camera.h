@@ -15,7 +15,7 @@ public:
 	void UpdateProjMatrix(UINT Width, UINT Height);
 
 	bool Frame();
-	bool Update(D3DXVECTOR4 vValue);
+	virtual bool Update(D3DXVECTOR4 vValue);
 	void UpdateVector();
 	void MoveLook(float fValue);
 	void MoveSide(float fValue);

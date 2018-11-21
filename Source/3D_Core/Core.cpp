@@ -57,60 +57,10 @@ bool Core::GameRelease()
 }
 bool Core::GameFrame()
 {
-	m_YawPitchRoll = { 0,0,0,0 };
 	m_Timer.Frame();
 	S_Input.Frame();
-	{
-		if (S_Input.getKeyState(DIK_A) == KEYSTATE::KEY_HOLD)
-		{
-			m_pMainCamera->MoveSide(-g_fSecPerFrame * 5.0f);
-		}
-		if (S_Input.getKeyState(DIK_D) == KEYSTATE::KEY_HOLD)
-		{
-			m_pMainCamera->MoveSide(g_fSecPerFrame * 5.0f);
-		}
-		if (S_Input.getKeyState(DIK_W) == KEYSTATE::KEY_HOLD)
-		{
-			m_pMainCamera->MoveLook(g_fSecPerFrame * 5.0f);
-		}
-		if (S_Input.getKeyState(DIK_S) == KEYSTATE::KEY_HOLD)
-		{
-			m_pMainCamera->MoveLook(-g_fSecPerFrame * 5.0f);
-		}
-		if (S_Input.m_MouseState.rgbButtons[0])
-		{
-			m_YawPitchRoll.x += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lY);
-			m_YawPitchRoll.y += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lX);
-		}
-		if (S_Input.getKeyState(DIK_SPACE) == KEYSTATE::KEY_HOLD)
-		{
-			m_pMainCamera->m_fSpeed += g_fSecPerFrame * 5.0f;
-		}
-		float fValue = (float)S_Input.m_MouseState.lZ;
-		m_YawPitchRoll.w = fValue * g_fSecPerFrame;
-		m_pMainCamera->Update(m_YawPitchRoll);
-		m_pMainCamera->Frame();
-	}
-
-	if (S_Input.getKeyState(DIK_1) == KEYSTATE::KEY_PUSH)
-	{
-		IncreaseEnum(m_RasterizerState);
-	}
-
-	if (S_Input.getKeyState(DIK_2) == KEYSTATE::KEY_PUSH)
-	{
-		IncreaseEnum(m_DepthStencilState);
-	}
-
-	if (S_Input.getKeyState(DIK_3) == KEYSTATE::KEY_PUSH)
-	{
-		IncreaseEnum(m_BlendState);
-	}
-
-	if (S_Input.getKeyState(DIK_4) == KEYSTATE::KEY_PUSH)
-	{
-		IncreaseEnum(m_SampleState);
-	}
+	m_pMainCamera->Update(OnKeyboardInput());
+	m_pMainCamera->Frame();
 
 	Frame();
 	S_Input.PostProcess();
@@ -161,20 +111,80 @@ bool Core::Init() { return true; }
 bool Core::Frame() { return true; }
 bool Core::Render() { return true; }
 bool Core::Release() { return true; }
+
 bool Core::PreRender()
 {
 	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
-	
+	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_RasterizerState].Get());
 	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)m_DepthStencilState].Get(), 0);
 	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)m_SampleState].GetAddressOf());
 	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)m_BlendState].Get(), 0, -1);
 
-	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	return true;
 }
 bool Core::PostRender()
 {
 	m_pSwapChain->Present(0, 0);
 	return true;
+}
+
+D3DXVECTOR4 Core::OnKeyboardInput()
+{
+	D3DXVECTOR4 YawPitchRoll(0, 0, 0, 0);
+	if (S_Input.getKeyState(DIK_1) == KEYSTATE::KEY_PUSH)
+	{
+		IncreaseEnum(m_RasterizerState);
+	}
+
+	if (S_Input.getKeyState(DIK_2) == KEYSTATE::KEY_PUSH)
+	{
+		IncreaseEnum(m_DepthStencilState);
+	}
+
+	if (S_Input.getKeyState(DIK_3) == KEYSTATE::KEY_PUSH)
+	{
+		IncreaseEnum(m_BlendState);
+	}
+
+	if (S_Input.getKeyState(DIK_4) == KEYSTATE::KEY_PUSH)
+	{
+		IncreaseEnum(m_SampleState);
+	}
+
+	if (S_Input.getKeyState(DIK_A) == KEYSTATE::KEY_HOLD)
+	{
+		m_pMainCamera->MoveSide(-g_fSecPerFrame * 5.0f);
+	}
+
+	if (S_Input.getKeyState(DIK_D) == KEYSTATE::KEY_HOLD)
+	{
+		m_pMainCamera->MoveSide(g_fSecPerFrame * 5.0f);
+	}
+
+	if (S_Input.getKeyState(DIK_W) == KEYSTATE::KEY_HOLD)
+	{
+		m_pMainCamera->MoveLook(g_fSecPerFrame * 5.0f);
+	}
+
+	if (S_Input.getKeyState(DIK_S) == KEYSTATE::KEY_HOLD)
+	{
+		m_pMainCamera->MoveLook(-g_fSecPerFrame * 5.0f);
+	}
+
+	//if (S_Input.m_MouseState.rgbButtons[0])
+	//{
+	//	YawPitchRoll.x += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lY);
+	//	YawPitchRoll.y += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lX);
+	//}
+
+	if (S_Input.getKeyState(DIK_SPACE) == KEYSTATE::KEY_HOLD)
+	{
+		m_pMainCamera->m_fSpeed += g_fSecPerFrame * 5.0f;
+	}
+
+	float fValue = (float)S_Input.m_MouseState.lZ;
+	YawPitchRoll.w = fValue * g_fSecPerFrame;
+	return YawPitchRoll;
 }

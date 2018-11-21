@@ -34,15 +34,18 @@ public:
 	virtual bool	Frame					();
 	virtual bool	Render					();
 	virtual bool	Release					();
+
 private:
 	bool			PreRender				();
 	bool			PostRender				();
+
+	D3DXVECTOR4		OnKeyboardInput();
+
 protected:
 	Timer			m_Timer;
 	Camera*			m_pMainCamera;
 	Camera			m_DefaultCamera;
 	DirectionShape  m_Dir;
-	D3DXVECTOR4		m_YawPitchRoll;
 
 	E_DSS m_DepthStencilState = E_DSS::Default;
 	E_RSS m_RasterizerState = E_RSS::Default;
