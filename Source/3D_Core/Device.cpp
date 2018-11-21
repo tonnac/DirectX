@@ -102,10 +102,13 @@ HRESULT Device::SetRTVDSV()
 
 	if (FAILED(hr)) return false;
 
+	DXGI_SWAP_CHAIN_DESC sd;
+	m_pSwapChain->GetDesc(&sd);
+
 	ID3D11Texture2D* pTex;
 	D3D11_TEXTURE2D_DESC td;
-	td.Width = g_rtClient.right;
-	td.Height = g_rtClient.bottom;
+	td.Width = sd.BufferDesc.Width;
+	td.Height = sd.BufferDesc.Height;
 	td.MipLevels = 1;
 	td.ArraySize = 1;
 	td.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -191,6 +194,7 @@ void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 	{
 		DXGI_SWAP_CHAIN_DESC sd;
 		m_pSwapChain->GetDesc(&sd);
+		m_SwapChainDesc = sd;
 	}
 
 	if (FAILED(SetRTVDSV())) return;

@@ -50,9 +50,8 @@ bool Sample::Render()
 	dll += (float)(0.15f * D3DX_PI) * g_fSecPerFrame;
 
 	D3DXMatrixIdentity(&m_boxObj.m_SRTMat.matWorld);
-	ModelView * pView = dynamic_cast<ModelView*>(m_pMainCamera);
 
-	m_boxObj.SetMatrix(&pView->m_matModelRot, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+	m_boxObj.SetMatrix(&m_pMainCamera->m_matModelRot, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_boxObj.Render(m_pImmediateContext);
 
 	ViewportRender(&m_boxObj);
@@ -87,8 +86,8 @@ void Sample::ViewportRender(Shape * pShape)
 	static D3DXMATRIX matSide;
 
 	D3DXVECTOR3 vAtTop = pShape->m_vPosition;
-	vAtTop.y -= 10.0f;
-	vAtTop.z += 0.1f;
+	vAtTop.y += 10.0f;
+	vAtTop.z -= 0.1f;
 	D3DXVECTOR3 vAtSide = pShape->m_vPosition;
 	vAtSide.x += 10.0f;
 	D3DXVECTOR3 vAtFront = pShape->m_vPosition;

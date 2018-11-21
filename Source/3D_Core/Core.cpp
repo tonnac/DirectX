@@ -156,29 +156,29 @@ D3DXVECTOR4 Core::OnKeyboardInput()
 
 	if (S_Input.getKeyState(DIK_A) == KEYSTATE::KEY_HOLD)
 	{
-		m_pMainCamera->MoveSide(-g_fSecPerFrame * 5.0f);
+		m_pMainCamera->MoveSide(-g_fSecPerFrame * 15.0f);
 	}
 
 	if (S_Input.getKeyState(DIK_D) == KEYSTATE::KEY_HOLD)
 	{
-		m_pMainCamera->MoveSide(g_fSecPerFrame * 5.0f);
+		m_pMainCamera->MoveSide(g_fSecPerFrame * 15.0f);
 	}
 
 	if (S_Input.getKeyState(DIK_W) == KEYSTATE::KEY_HOLD)
 	{
-		m_pMainCamera->MoveLook(g_fSecPerFrame * 5.0f);
+		m_pMainCamera->MoveLook(g_fSecPerFrame * 15.0f);
 	}
 
 	if (S_Input.getKeyState(DIK_S) == KEYSTATE::KEY_HOLD)
 	{
-		m_pMainCamera->MoveLook(-g_fSecPerFrame * 5.0f);
+		m_pMainCamera->MoveLook(-g_fSecPerFrame * 15.0f);
 	}
 
-	//if (S_Input.m_MouseState.rgbButtons[0])
-	//{
-	//	YawPitchRoll.x += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lY);
-	//	YawPitchRoll.y += 0.1f * (float)D3DXToRadian(S_Input.m_MouseState.lX);
-	//}
+	if (S_Input.m_MouseState.rgbButtons[1])
+	{
+		YawPitchRoll.x += 0.3f * (float)D3DXToRadian(S_Input.m_MouseState.lY);
+		YawPitchRoll.y += 0.3f * (float)D3DXToRadian(S_Input.m_MouseState.lX);
+	}
 
 	if (S_Input.getKeyState(DIK_SPACE) == KEYSTATE::KEY_HOLD)
 	{

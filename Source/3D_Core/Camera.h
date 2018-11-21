@@ -40,4 +40,7 @@ public:
 
 	float m_fCameraYawAngle;
 	float m_fCameraPitchAngle;
+
+	D3DXMATRIX m_matModelRot;
+	D3DXMATRIX m_matModelLast;
 };
