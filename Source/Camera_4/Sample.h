@@ -19,7 +19,11 @@ public:
 	HRESULT		CreateResources(const UINT& Width, const UINT& Height)override;
 
 	LRESULT		WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)override;
+
+	void		ViewportRender(Shape * pShape);
 private:
-	BoxShape	m_boxObj;
+	D3D11_VIEWPORT m_vp[3];
+
+	DiceShape	m_boxObj;
 	ModelView*  m_pModelCamera;
 };

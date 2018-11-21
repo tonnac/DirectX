@@ -1,6 +1,6 @@
 #pragma once
 #include "Core.h"
-#include "ObjectPlane.h"
+#include "Shape.h"
 
 class Sample : public Core
 {
@@ -19,5 +19,5 @@ private:
 	
 //	D3D11_VIEWPORT m_vs[2];
 
-	ObjectPlane	m_Obj;
+	PlaneShape	m_Obj;
 };

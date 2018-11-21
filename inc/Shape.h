@@ -51,7 +51,7 @@ public:
 
 	bool PreRender(ID3D11DeviceContext* pContext);
 	bool PostRender(ID3D11DeviceContext* pContext);
-	bool Render(ID3D11DeviceContext* pContext);
+	virtual bool Render(ID3D11DeviceContext* pContext);
 
 	bool Release();
 
@@ -135,4 +135,10 @@ public:
 
 public:
 	std::array<PC_VERTEX, 6> m_LineVertexList;
+};
+
+class DiceShape : public BoxShape
+{
+public:
+	HRESULT	CreateVertexData()override;
 };

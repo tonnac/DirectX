@@ -60,7 +60,8 @@ bool Timer::Render()
 	Color2 = sin(g_fGameTimer) * 0.5f + 0.5f;
 	Color3 = sin(-g_fGameTimer) * 0.5f + 0.5f;
 
-	D2D1_RECT_F rt = D2D1::RectF(5.0f, 0.0f, 500.0f, 30.0f);
+	D2D1_RECT_F rt = D2D1::RectF(0.0f, 0.0f, (float)g_rtClient.right, (float)g_rtClient.bottom);
+	S_DirectWrite.m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 	S_DirectWrite.DrawText(rt, m_Buffer.c_str(), D2D1::ColorF(Color1, Color2, Color3, 1.0f));
 	return true;
 }

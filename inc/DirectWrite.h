@@ -45,7 +45,7 @@ public:
 	void					AddTextList(const TextArray& TextArray_);
 public:
 	IDWriteTextFormat *		getTextFormat();
-private:
+public:
 	ID2D1Factory *			m_pd2dFactory;
 	IDWriteFactory*			m_pWriteFactory;
 	ID2D1RenderTarget*		m_pRenderTarget;

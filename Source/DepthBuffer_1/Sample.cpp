@@ -33,8 +33,9 @@ bool Sample::Init()
 	//m_vs[1].TopLeftX = g_rtClient.right * 0.5f;
 	//m_vs[1].TopLeftY = 0.0f;
 
+
 	m_Obj.Init();
-	m_Obj.Set(m_pd3dDevice);
+	m_Obj.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/effect/drain1.dds");
 	return true;
 }
 bool Sample::Frame()

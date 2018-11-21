@@ -116,6 +116,7 @@ bool Core::PreRender()
 {
 	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
 	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
 
 	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_RasterizerState].Get());
 	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)m_DepthStencilState].Get(), 0);

@@ -19,14 +19,14 @@ void Arcball::OnBegin(int x, int y)
 {
 	m_bDrag = true;
 	m_pDown = m_pNow;
-	m_vDownPt = ScreenToVector(x, y);
+	m_vDownPt = ScreenToVector((float)x, (float)y);
 }
 
 void Arcball::OnMove(int x, int y)
 {
 	if (m_bDrag)
 	{
-		m_vCurPt = ScreenToVector(x, y);
+		m_vCurPt = ScreenToVector((float)x, (float)y);
 		m_pNow = m_pDown * QuatFromBallPoints(m_vDownPt, m_vCurPt);
 	}
 }
@@ -38,9 +38,9 @@ void Arcball::OnEnd()
 
 D3DXVECTOR3 Arcball::ScreenToVector(float fX, float fY)
 {
-	float x = -((fX - (g_rtClient.right * 0.5f)) / g_rtClient.right * 0.5f);
-	float y = (fY - (g_rtClient.bottom * 0.5f)) / g_rtClient.bottom * 0.5f;
-	float z;
+	float x = -((fX - g_rtClient.right * 0.5f) / (g_rtClient.right * 0.5f));
+	float y = (fY - (g_rtClient.bottom * 0.5f)) / (g_rtClient.bottom * 0.5f);
+	float z = 0.0f;
 
 	float fFlag = (x*x) + (y*y);
 

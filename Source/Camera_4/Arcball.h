@@ -19,6 +19,8 @@ public:
 public:
 	bool m_bDrag = false;
 
+	POINT m_ptLastMouse;
+
 	D3DXVECTOR3 m_vDownPt;
 	D3DXVECTOR3 m_vCurPt;
 
