@@ -164,7 +164,6 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Device.cpp" />
-    <ClCompile Include="DiceShape.cpp" />
     <ClCompile Include="DirectInput.cpp" />
     <ClCompile Include="DirectionShape.cpp" />
     <ClCompile Include="DirectWrite.cpp" />

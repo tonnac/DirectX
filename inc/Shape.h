@@ -82,12 +82,16 @@ public:
 class BoxShape : public Shape
 {
 public:
-	BoxShape();
+	BoxShape(bool isDice = false);
 	virtual ~BoxShape();
 
 public:
 	HRESULT CreateVertexData()override;
 	HRESULT CreateIndexData()override;
+
+	void DiceTex();
+public:
+	bool mIsDice = false;
 };
 
 class LineShape : public Shape

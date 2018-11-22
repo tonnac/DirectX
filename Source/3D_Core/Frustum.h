@@ -1,5 +1,6 @@
 #pragma once
 #include "Define.h"
+#include "Shape.h"
 
 struct Plane
 {
@@ -19,7 +20,7 @@ struct Plane
 		a = vNormal.x;
 		b = vNormal.y;
 		c = vNormal.z;
-		c = D3DXVec3Dot(&v0, &vNormal);
+		d = -D3DXVec3Dot(&v0, &vNormal);
 	}
 
 	//void CreatePlane(D3DXVECTOR3 v0, D3DXVECTOR3 v1, D3DXVECTOR3 v2)
@@ -40,17 +41,24 @@ struct Plane
 class Frustum
 {
 public:
+	bool Init(ID3D11Device * pDevice);
+
 	bool CreateFrustum();
-	void SetMatrix(D3DXMATRIX* pWorld, D3DXMATRIX* pView, D3DXMATRIX* pProj);
+	void SetMatrix(D3DXMATRIX* pView, D3DXMATRIX* pProj);
 	bool ClassifyPoint(D3DXVECTOR3 v);
 	bool ClassifySphere(D3DXVECTOR3 v);
+
+	bool Render(ID3D11DeviceContext* pContext);
 
 public:
 	Plane m_Plane[6];
 
 	D3DXVECTOR3 m_vFrustum[8];
 
-	D3DXMATRIX m_World;
-	D3DXMATRIX m_View;
-	D3DXMATRIX m_Proj;
+	std::vector<PNCT_VERTEX> m_VertexList;
+
+	BoxShape m_box;
+
+	const D3DXMATRIX* m_View;
+	const D3DXMATRIX* m_Proj;
 };

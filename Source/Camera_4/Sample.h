@@ -24,6 +24,6 @@ public:
 private:
 	D3D11_VIEWPORT m_vp[3];
 
-	DiceShape	m_boxObj;
+	BoxShape	m_boxObj;
 	ModelView*  m_pModelCamera;
 };

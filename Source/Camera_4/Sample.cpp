@@ -3,14 +3,14 @@
 #include "../inc/DxState.h"
 #include <DirectXColors.h>
 
-Sample::Sample()
+Sample::Sample() : m_boxObj(true)
 {}
 Sample::~Sample()
 {}
 
 bool Sample::Init()
 {
-	m_boxObj.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/misc/dice_unwrap.png");
+	m_boxObj.Create(m_pd3dDevice, L"shape.hlsl", L"../../data/misc/dice_unwrap.dds");
 	m_pModelCamera = new ModelView;
 	m_pMainCamera = m_pModelCamera;
 
@@ -95,7 +95,7 @@ void Sample::ViewportRender(Shape * pShape)
 
 	D3DXMatrixLookAtLH(&matTop,		&vAtTop,	&pShape->m_vPosition, &D3DXVECTOR3(0, 1.0f, 0));
 	D3DXMatrixLookAtLH(&matFront,	&vAtFront,	&pShape->m_vPosition, &D3DXVECTOR3(0, 1.0f, 0));
-	D3DXMatrixLookAtLH(&matSide,	&vAtSide,	&pShape->m_vPosition, &D3DXVECTOR3(0, 1.0f, 0));
+	D3DXMatrixLookAtLH(&matTop	,	&vAtTop,	&pShape->m_vPosition, &D3DXVECTOR3(0, 1.0f, 0));
 
 	m_pImmediateContext->RSSetViewports(1, &m_vp[0]);
 	pShape->SetMatrix(nullptr, &matTop, &m_pMainCamera->m_matProj);
@@ -110,8 +110,8 @@ void Sample::ViewportRender(Shape * pShape)
 	m_Dir.Render(m_pImmediateContext);
 
 	m_pImmediateContext->RSSetViewports(1, &m_vp[2]);
-	pShape->SetMatrix(nullptr, &matSide, &m_pMainCamera->m_matProj);
-	m_Dir.SetMatrix(nullptr, &matSide, &m_pMainCamera->m_matProj);
+	pShape->SetMatrix(nullptr, &matTop, &m_pMainCamera->m_matProj);
+	m_Dir.SetMatrix(nullptr, &matTop, &m_pMainCamera->m_matProj);
 	pShape->Render(m_pImmediateContext);
 	m_Dir.Render(m_pImmediateContext);
 

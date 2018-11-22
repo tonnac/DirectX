@@ -64,6 +64,9 @@ void Camera::UpdateVector()
 	m_vSide.y = m_matView._21;
 	m_vSide.z = m_matView._31;
 
+	D3DXVec3Cross(&m_vUp, &m_vPos, &m_vSide);
+	D3DXVec3Normalize(&m_vUp, &m_vUp);
+
 	D3DXVec3Normalize(&m_vLook, &m_vLook);
 	D3DXVec3Normalize(&m_vUpvector, &m_vUpvector);
 	D3DXVec3Normalize(&m_vSide, &m_vSide);
@@ -75,16 +78,15 @@ void Camera::UpdateVector()
 	m_fCameraYawAngle = atan2f(pZBasis->x, pZBasis->z);
 	float fLen = sqrtf(pZBasis->z * pZBasis->z + pZBasis->x * pZBasis->x);
 	m_fCameraPitchAngle = -atan2f(pZBasis->y, fLen);
-
-	Frustum::SetMatrix(nullptr, &m_matView, &m_matProj);
-	Frustum::CreateFrustum();
 }
 
 bool Camera::Update(D3DXVECTOR4 vValue)
 {
 	D3DXMATRIX matRotation;
 	D3DXQUATERNION qRotation;
-	D3DXQuaternionRotationYawPitchRoll(&qRotation, m_fCameraYawAngle+=vValue.y, m_fCameraPitchAngle+=vValue.x, vValue.z);
+	m_fCameraYawAngle += vValue.y;
+	m_fCameraPitchAngle += vValue.x;
+	D3DXQuaternionRotationYawPitchRoll(&qRotation, m_fCameraYawAngle, m_fCameraPitchAngle, vValue.z);
 
 	m_vPos += m_vLook * vValue.w;
 

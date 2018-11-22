@@ -36,4 +36,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Frustum.hlsl" />
+  </ItemGroup>
 </Project>

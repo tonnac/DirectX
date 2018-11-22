@@ -3,6 +3,7 @@
 #include "Shape.h"
 #include "Camera.h"
 #include "ModelView.h"
+#include "Frustum.h"
 
 class Sample : public Core
 {
@@ -24,6 +25,11 @@ public:
 private:
 	D3D11_VIEWPORT m_vp[3];
 
+	std::array<D3DXMATRIX, 100> m_matWorld;
+
 	BoxShape	m_boxObj;
 	ModelView*  m_pModelCamera;
+	Frustum		m_Frustum;
+
+	int inFrustumCnt = 0;
 };
