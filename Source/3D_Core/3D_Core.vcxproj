@@ -171,6 +171,7 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClCompile Include="DxObj.cpp" />
     <ClCompile Include="DxState.cpp" />
     <ClCompile Include="Enumeration.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="LineShape.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PlaneObj.cpp" />
@@ -192,6 +193,7 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClInclude Include="DxObj.h" />
     <ClInclude Include="DxState.h" />
     <ClInclude Include="Enumeration.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectStd.h" />
     <ClInclude Include="PlaneObj.h" />

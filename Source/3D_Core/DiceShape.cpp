@@ -41,5 +41,9 @@ HRESULT	DiceShape::CreateVertexData()
 	m_VertexList[22].t = { 0.25f, 0.33f };
 	m_VertexList[23].t = { 0.0f, 0.33f };
 	//0.0f, 0.25f, 0.34f, 0.66f
+	//0.0f, 0.66f
+	//0.25f, 0.66f
+	//0.25f, 0.33f
+	//0.0f, 0.33f
 	return S_OK;
 }

@@ -1,7 +1,7 @@
 #pragma once
-#include "Define.h"
+#include "Frustum.h"
 
-class Camera
+class Camera : public Frustum
 {
 
 public:

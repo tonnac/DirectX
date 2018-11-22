@@ -75,6 +75,9 @@ void Camera::UpdateVector()
 	m_fCameraYawAngle = atan2f(pZBasis->x, pZBasis->z);
 	float fLen = sqrtf(pZBasis->z * pZBasis->z + pZBasis->x * pZBasis->x);
 	m_fCameraPitchAngle = -atan2f(pZBasis->y, fLen);
+
+	Frustum::SetMatrix(nullptr, &m_matView, &m_matProj);
+	Frustum::CreateFrustum();
 }
 
 bool Camera::Update(D3DXVECTOR4 vValue)
