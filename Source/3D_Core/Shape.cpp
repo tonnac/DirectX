@@ -89,7 +89,7 @@ HRESULT Shape::CreateInputLayout()
 		{"POSITION"	, 0, DXGI_FORMAT_R32G32B32_FLOAT	, 0, 0	, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL"	, 0, DXGI_FORMAT_R32G32B32_FLOAT	, 0, 12	, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR"	, 0, DXGI_FORMAT_R32G32B32A32_FLOAT	, 0, 24	, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD"	, 0, DXGI_FORMAT_R32G32B32_FLOAT	, 0, 40	, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"TEXCOORD"	, 0, DXGI_FORMAT_R32G32_FLOAT	, 0, 40	, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	DX::CreateInputLayout(m_pDevice,
@@ -325,8 +325,8 @@ void BoxShape::DiceTex()
 
 	//4
 
-	m_VertexList[20].t = { 0.0f, 1.0f };
-	m_VertexList[21].t = { 0.0f, 0.0f };
-	m_VertexList[22].t = { 1.0f, 0.0f };
-	m_VertexList[23].t = { 1.0f, 1.0f };
+	m_VertexList[20].t = { 0.0f, 0.66f };
+	m_VertexList[21].t = { 0.0f, 0.33f };
+	m_VertexList[22].t = { 0.25f, 0.33f };
+	m_VertexList[23].t = { 0.25f, 0.66f };
 }

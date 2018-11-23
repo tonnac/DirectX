@@ -18,6 +18,14 @@ D3DXMATRIX Camera::SetViewMatrix(D3DXVECTOR3 vPos, D3DXVECTOR3 vTarget, D3DXVECT
 		&vTarget,
 		&vUp);
 
+	D3DXMATRIX mInvView;
+	D3DXMatrixInverse(&mInvView, nullptr, &m_matView);
+	D3DXVECTOR3 * pZBasis = (D3DXVECTOR3*)&mInvView._31;
+
+	m_fCameraYawAngle = atan2f(pZBasis->x, pZBasis->z);
+	float fLen = sqrtf(pZBasis->z * pZBasis->z + pZBasis->x * pZBasis->x);
+	m_fCameraPitchAngle = -atan2f(pZBasis->y, fLen);
+
 	UpdateVector();
 	return m_matView;
 }
@@ -70,14 +78,6 @@ void Camera::UpdateVector()
 	D3DXVec3Normalize(&m_vLook, &m_vLook);
 	D3DXVec3Normalize(&m_vUpvector, &m_vUpvector);
 	D3DXVec3Normalize(&m_vSide, &m_vSide);
-
-	D3DXMATRIX mInvView;
-	D3DXMatrixInverse(&mInvView, nullptr, &m_matView);
-	D3DXVECTOR3 * pZBasis = (D3DXVECTOR3*)&mInvView._31;
-
-	m_fCameraYawAngle = atan2f(pZBasis->x, pZBasis->z);
-	float fLen = sqrtf(pZBasis->z * pZBasis->z + pZBasis->x * pZBasis->x);
-	m_fCameraPitchAngle = -atan2f(pZBasis->y, fLen);
 }
 
 bool Camera::Update(D3DXVECTOR4 vValue)

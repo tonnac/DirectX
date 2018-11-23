@@ -19,6 +19,4 @@ public:
 	LRESULT		WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)override;
 private:
 	BoxShape	m_boxObj;
-
-	int inFrustumCnt = 0;
 };
