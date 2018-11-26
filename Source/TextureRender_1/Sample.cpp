@@ -61,20 +61,14 @@ bool Sample::Render()
 
 	m_dxrt1.End(m_pImmediateContext, &m_dxRt);
 
-	m_pImmediateContext->RSSetViewports(1, &m_vp[0]);
-	D3DXMATRIX dx;
 
+	D3DXMATRIX dx;
 	D3DXMatrixIdentity(&dx);
 	m_Plane.SetMatrix(&dx, &dx, &dx);
+	m_pImmediateContext->RSSetViewports(1, &m_vp[0]);
 	m_Plane.PreRender(m_pImmediateContext);
 	m_pImmediateContext->PSSetShaderResources(0, 1, m_dxrt1.m_pShaderResourceView.GetAddressOf());
 	m_Plane.PostRender(m_pImmediateContext);
-
-	D3DXQUATERNION q;
-	D3DXQuaternionRotationAxis(&q, &D3DXVECTOR3(0, 1, 0), g_fGameTimer);
-
-	D3DXMATRIX quatrot1;
-	D3DXMatrixRotationQuaternion(&quatrot1, &q);
 
 	m_boxObj.SetMatrix(&m_Camera["modelview"]->m_matModelRot, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_pImmediateContext->RSSetViewports(1, &m_dxRt.m_Viewport);
