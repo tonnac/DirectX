@@ -24,6 +24,7 @@ private:
 	PlaneShape  m_Plane;
 	BoxShape	m_boxObj;
 	DxRT		m_dxrt1;
+	Frustum		m_Frustum;
 
 	int inFrustumCnt = 0;
 };
