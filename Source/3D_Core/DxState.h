@@ -13,6 +13,7 @@ enum class E_DSS : unsigned char
 	Default = 0,
 	Disable,
 	Greater,
+	DWZero,
 	Count
 };
 
@@ -35,6 +36,7 @@ enum class E_BSS : unsigned char
 enum class E_SS : unsigned char
 {
 	Default = 0,
+	Point,
 	Count
 };
 

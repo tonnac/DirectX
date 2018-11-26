@@ -2,22 +2,22 @@
 #include "Core.h"
 #include "DxObj.h"
 
-struct PC_VERTEX
-{
-	D3DXVECTOR3 p;
-	D3DXVECTOR4 c;
-};
-
-struct CB_DATA
-{
-	D3DXMATRIX matWorld;
-	D3DXMATRIX matView;
-	D3DXMATRIX matProj;
-	float fTime;
-	float fActiveVP;
-	float z, w;
-	D3DXVECTOR4 vColor;
-};
+//struct PC_VERTEX
+//{
+//	D3DXVECTOR3 p;
+//	D3DXVECTOR4 c;
+//};
+//
+//struct CB_DATA
+//{
+//	D3DXMATRIX matWorld;
+//	D3DXMATRIX matView;
+//	D3DXMATRIX matProj;
+//	float fTime;
+//	float fActiveVP;
+//	float z, w;
+//	D3DXVECTOR4 vColor;
+//};
 
 class ObjectPlane
 {

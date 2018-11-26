@@ -10,7 +10,7 @@ Sample::~Sample()
 
 bool Sample::Init()
 {
-	DxState::SetState(m_pd3dDevice);
+//	DxState::SetState(m_pd3dDevice);
 
 	D3D11_RASTERIZER_DESC rasDesc;
 	ZeroMemory(&rasDesc, sizeof(D3D11_RASTERIZER_DESC));

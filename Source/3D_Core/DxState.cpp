@@ -39,9 +39,17 @@ HRESULT DxState::InitDepthStencliState(ID3D11Device* pd3dDevice)
 	m_DSS[(int)E_DSS::Disable] = DSS;
 
 	DSS.Reset();
+	dsDesc.DepthEnable = TRUE;
 	dsDesc.DepthFunc = D3D11_COMPARISON_GREATER;
 	hr = pd3dDevice->CreateDepthStencilState(&dsDesc, DSS.GetAddressOf());
 	m_DSS[(int)E_DSS::Greater] = DSS;
+
+	DSS.Reset();
+	dsDesc.DepthEnable = FALSE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	hr = pd3dDevice->CreateDepthStencilState(&dsDesc, DSS.GetAddressOf());
+	m_DSS[(int)E_DSS::DWZero] = DSS;
 
 	return hr;
 }
@@ -131,6 +139,10 @@ HRESULT DxState::InitSamplerState(ID3D11Device* pd3dDevice)
 	m_SS[(int)E_SS::Default] = pSamplerstate;
 
 	pSamplerstate.Reset();
+
+	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	hr = pd3dDevice->CreateSamplerState(&sd, pSamplerstate.GetAddressOf());
+	m_SS[(int)E_SS::Point] = pSamplerstate;
 
 	return hr;
 }

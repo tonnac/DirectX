@@ -144,10 +144,10 @@ bool Core::PreRender()
 {
 	m_dxRt.Begin(m_pImmediateContext, D3DXVECTOR4(Colors::LightSteelBlue));
 
-//	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_RasterizerState].Get());
-//	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)m_DepthStencilState].Get(), 0);
+	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_RasterizerState].Get());
+	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)m_DepthStencilState].Get(), 0);
 	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)m_SampleState].GetAddressOf());
-//	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)m_BlendState].Get(), 0, -1);
+	m_pImmediateContext->OMSetBlendState(DxState::m_BSS[(int)m_BlendState].Get(), 0, -1);
 
 	return true;
 }
