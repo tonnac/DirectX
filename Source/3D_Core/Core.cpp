@@ -1,6 +1,8 @@
 #include "Core.h"
 #include <DirectXColors.h>
 
+using namespace DirectX;
+
 bool Core::GameInit()
 {
 #pragma region
@@ -8,21 +10,12 @@ bool Core::GameInit()
 	if (FAILED(CreateGIFactory())) return false;
 	if (FAILED(CreateSwapChain(m_hWnd, m_iWindowWidth, m_iWindowHeight))) return false;
 	if (FAILED(SetRTVDSV())) return false;
-	SetViewPort();
 	DxState::InitState(m_pd3dDevice);
-
-	m_DefaultCamera.SetViewMatrix({ 0,0, -10.0f });
-	m_DefaultCamera.SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
-
-	m_pMainCamera = &m_DefaultCamera;
-
-	m_Dir.Create(m_pd3dDevice, L"shape.hlsl");
 #pragma endregion Device_Init
 
 #ifdef DEVICE_INFO
 	Enumeration::CreateDeviceInfo(getGIFactory());
 #endif
-
 #pragma region 
 	IDXGISurface1 * pSurface = nullptr;
 	IDXGISwapChain* pSwapChain = getSwapChain();
@@ -34,6 +27,9 @@ bool Core::GameInit()
 
 	IDXGIFactory * pFactory = getGIFactory();
 	pFactory->MakeWindowAssociation(g_hWnd, DXGI_MWA_NO_ALT_ENTER | DXGI_MWA_NO_WINDOW_CHANGES); // 윈도우 메시지와 ALT+ENTER로 인한 전체화면을 막음
+
+	CreateCamera();
+	m_Dir.Create(m_pd3dDevice, L"shape.hlsl");
 	m_Timer.Init();
 	S_Input.Init();
 	Init();
@@ -59,7 +55,11 @@ bool Core::GameFrame()
 {
 	m_Timer.Frame();
 	S_Input.Frame();
-	m_pMainCamera->Update(OnKeyboardInput());
+	for (auto &x : m_Camera)
+	{
+		auto cam = x.second.get();
+		cam->Update(OnKeyboardInput());
+	}
 	m_pMainCamera->Frame();
 
 	Frame();
@@ -95,7 +95,11 @@ HRESULT Core::CreateDeviceResources(const UINT& Width, const UINT& Height)
 	S_DirectWrite.CreateDeviceResources(pBackBuffer);
 	pBackBuffer->Release();
 
-//	m_pMainCamera->UpdateProjMatrix(Width, Height);
+	for (auto &x : m_Camera)
+	{
+		auto cam = x.second.get();
+		cam->UpdateProjMatrix(Width, Height);
+	}
 	CreateResources(Width, Height);
 	return hr;
 }
@@ -107,18 +111,38 @@ HRESULT	Core::CreateResources(const UINT& Width, const UINT& Height)
 {
 	return S_OK;
 }
+
+LRESULT Core::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	if(m_Camera["modelview"] != nullptr)
+		m_Camera["modelview"]->MsgProc(hwnd, msg, wparam, lparam);
+	return Window::WndProc(hwnd, msg, wparam, lparam);
+}
+
 bool Core::Init() { return true; }
 bool Core::Frame() { return true; }
 bool Core::Render() { return true; }
 bool Core::Release() { return true; }
 
+void Core::CreateCamera()
+{
+	auto defaultcamera = std::make_unique<Camera>();
+	defaultcamera->SetViewMatrix({ 0,0,-10.0f });
+	defaultcamera->SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
+
+	auto modelViewCam = std::make_unique<ModelView>();
+	modelViewCam->SetViewMatrix({ 0,0,-10.0f });
+	modelViewCam->SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
+
+	m_Camera["default"] = std::move(defaultcamera);
+	m_Camera["modelview"] = std::move(modelViewCam);
+
+	m_pMainCamera = m_Camera["default"].get();
+}
+
 bool Core::PreRender()
 {
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
-
-	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, DirectX::Colors::LightSteelBlue);
-	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_dxRt.Begin(m_pImmediateContext, D3DXVECTOR4(Colors::LightSteelBlue));
 
 //	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_RasterizerState].Get());
 //	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)m_DepthStencilState].Get(), 0);
@@ -129,6 +153,7 @@ bool Core::PreRender()
 }
 bool Core::PostRender()
 {
+	m_dxRt.End(m_pImmediateContext);
 	m_pSwapChain->Present(0, 0);
 	return true;
 }

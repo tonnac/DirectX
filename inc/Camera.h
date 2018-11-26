@@ -20,6 +20,7 @@ public:
 	void MoveLook(float fValue);
 	void MoveSide(float fValue);
 
+	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 public:
 	D3DXMATRIX m_matView;
 	D3DXMATRIX m_matProj;

@@ -80,6 +80,11 @@ void Camera::UpdateVector()
 	D3DXVec3Normalize(&m_vSide, &m_vSide);
 }
 
+LRESULT Camera::MsgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	return 1;
+}
+
 bool Camera::Update(D3DXVECTOR4 vValue)
 {
 	D3DXMATRIX matRotation;

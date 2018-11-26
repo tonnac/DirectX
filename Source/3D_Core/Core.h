@@ -6,9 +6,9 @@
 #include "DirectInput.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "Camera.h"
 #include "Shape.h"
 #include "DxState.h"
+#include "ModelView.h"
 
 //#define DEVICE_INFO
 
@@ -17,7 +17,10 @@ extern GameInput g_Input;
 class Core : public Window
 {
 public:
-	Core() {};
+	Core() 
+	{
+		m_Camera.clear();
+	};
 public:
 	bool			GameInit				() override;
 	bool			GameRun					() override;
@@ -29,11 +32,16 @@ public:
 	HRESULT			CreateDeviceResources	(const UINT& Width, const UINT& Height) override;
 	virtual void	DeleteResources			();
 	virtual HRESULT	CreateResources			(const UINT& Width, const UINT& Height);
+
+	virtual LRESULT  WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)override;
 public:
 	virtual bool	Init					();
 	virtual bool	Frame					();
 	virtual bool	Render					();
 	virtual bool	Release					();
+
+protected:
+	void			CreateCamera			();
 
 private:
 	bool			PreRender				();
@@ -44,9 +52,9 @@ private:
 protected:
 	Timer			m_Timer;
 	Camera*			m_pMainCamera;
-	Camera			m_DefaultCamera;
 	DirectionShape  m_Dir;
 
+	std::unordered_map<std::string, std::unique_ptr<Camera>> m_Camera;
 	E_DSS m_DepthStencilState = E_DSS::Default;
 	E_RSS m_RasterizerState = E_RSS::Default;
 	E_BSS m_BlendState = E_BSS::Default;

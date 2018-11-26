@@ -13,29 +13,26 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\Camera">
+      <UniqueIdentifier>{5fda1627-cbd9-4193-9df9-92ad620e7d7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shape">
+      <UniqueIdentifier>{87fcd005-460a-4478-9db5-18b35b3bd5bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Camera">
+      <UniqueIdentifier>{92ed40f2-048e-4fa1-9e18-540131985416}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Shape">
+      <UniqueIdentifier>{3f1cf28d-c280-4a47-be82-04987de7717c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\BasicStructure">
+      <UniqueIdentifier>{86b8e4d0-5533-49b8-b747-dad69cbb6e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\BasicStructure">
+      <UniqueIdentifier>{f42bd998-75c6-4e69-bfdb-683ba3430687}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Window.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Device.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Core.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Enumeration.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectWrite.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectInput.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -45,62 +42,62 @@
     <ClCompile Include="Object.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="PlaneObj.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TriangleObj.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DxObj.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DxState.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="PlaneShape.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Shape.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectionShape.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="LineShape.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Frustum.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelView.cpp">
+      <Filter>소스 파일\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Shape.cpp">
+      <Filter>소스 파일\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaneShape.cpp">
+      <Filter>소스 파일\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="LineShape.cpp">
+      <Filter>소스 파일\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionShape.cpp">
+      <Filter>소스 파일\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Arcball.cpp">
+      <Filter>소스 파일\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="DxObj.cpp">
+      <Filter>소스 파일\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Core.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="Device.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectInput.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectWrite.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="DxRT.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="DxState.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="Enumeration.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>소스 파일\BasicStructure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Window.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Define.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Device.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Core.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Enumeration.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectWrite.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectInput.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Object.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -110,29 +107,56 @@
     <ClInclude Include="Texture.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="PlaneObj.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="TriangleObj.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DxObj.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DxState.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Shape.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Shape</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectStd.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="Arcball.h">
+      <Filter>헤더 파일\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelView.h">
+      <Filter>헤더 파일\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Frustum.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="Device.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectInput.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectWrite.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="DxRT.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="DxState.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="Enumeration.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>헤더 파일\BasicStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="DxObj.h">
+      <Filter>헤더 파일\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectStd.h">
+      <Filter>헤더 파일\Shape</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

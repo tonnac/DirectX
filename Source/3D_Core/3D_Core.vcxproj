@@ -161,6 +161,7 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Arcball.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Device.cpp" />
@@ -168,21 +169,22 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClCompile Include="DirectionShape.cpp" />
     <ClCompile Include="DirectWrite.cpp" />
     <ClCompile Include="DxObj.cpp" />
+    <ClCompile Include="DxRT.cpp" />
     <ClCompile Include="DxState.cpp" />
     <ClCompile Include="Enumeration.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="LineShape.cpp" />
+    <ClCompile Include="ModelView.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="PlaneObj.cpp" />
     <ClCompile Include="PlaneShape.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="TriangleObj.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Arcball.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Define.h" />
@@ -190,17 +192,17 @@ copy "$(TargetDir)/$(TargetName)$(TargetExt)" "$(SolutionDir)../lib"</Command>
     <ClInclude Include="DirectInput.h" />
     <ClInclude Include="DirectWrite.h" />
     <ClInclude Include="DxObj.h" />
+    <ClInclude Include="DxRT.h" />
     <ClInclude Include="DxState.h" />
     <ClInclude Include="Enumeration.h" />
     <ClInclude Include="Frustum.h" />
+    <ClInclude Include="ModelView.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectStd.h" />
-    <ClInclude Include="PlaneObj.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="TriangleObj.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

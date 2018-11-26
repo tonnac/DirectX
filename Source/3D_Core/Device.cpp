@@ -1,7 +1,6 @@
 #include "Device.h"
 
-Device::Device() : m_pd3dDevice(nullptr), m_pSwapChain(nullptr), m_pRenderTargetView(nullptr),
-m_pImmediateContext(nullptr), m_pGIFactory(nullptr), m_bFullScreenMode(false)
+Device::Device() : m_pd3dDevice(nullptr), m_pSwapChain(nullptr), m_pImmediateContext(nullptr), m_pGIFactory(nullptr), m_bFullScreenMode(false)
 {
 	ZeroMemory(&m_SwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 }
@@ -97,79 +96,21 @@ HRESULT Device::SetRTVDSV()
 	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 	if (FAILED(hr)) return false;
 
-	hr = m_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
-	pBackBuffer->Release();
-
-	if (FAILED(hr)) return false;
-
-	DXGI_SWAP_CHAIN_DESC sd;
-	m_pSwapChain->GetDesc(&sd);
-
-	ID3D11Texture2D* pTex;
-	D3D11_TEXTURE2D_DESC td;
-	td.Width = sd.BufferDesc.Width;
-	td.Height = sd.BufferDesc.Height;
-	td.MipLevels = 1;
-	td.ArraySize = 1;
-	td.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	td.SampleDesc.Count = 1;
-	td.SampleDesc.Quality = 0;
-	td.Usage = D3D11_USAGE_DEFAULT;
-	td.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	td.CPUAccessFlags = 0;
-	td.MiscFlags = 0;
-	hr = m_pd3dDevice->CreateTexture2D(&td, nullptr, &pTex);
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
-	dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	dsvd.Flags = 0;
-	dsvd.Texture2D.MipSlice = 0;
-	hr = m_pd3dDevice->CreateDepthStencilView(
-		pTex,
-		&dsvd,
-		&m_pDepthStencilView);
-
-	pTex->Release();
-
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+	hr = m_dxRt.Create(m_pd3dDevice, g_rtClient.right, g_rtClient.bottom, pBackBuffer);
 
 	return hr;
-}
-void Device::SetViewPort()
-{
-	HRESULT hr;
-	DXGI_SWAP_CHAIN_DESC Desc;
-	if (FAILED(hr = m_pSwapChain->GetDesc(&Desc)))
-	{
-		return;
-	}
-	m_ViewPort.Width = static_cast<FLOAT>(Desc.BufferDesc.Width);
-	m_ViewPort.Height = static_cast<FLOAT>(Desc.BufferDesc.Height);
-	m_ViewPort.MinDepth = 0.0f;
-	m_ViewPort.MaxDepth = 1.0f;
-	m_ViewPort.TopLeftX = 0;
-	m_ViewPort.TopLeftY = 0;
-
-	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
-	g_rtClient.right = m_SwapChainDesc.BufferDesc.Width;
-	g_rtClient.bottom = m_SwapChainDesc.BufferDesc.Height;
 }
 bool Device::CleanupDevice()
 {
 	m_pSwapChain->SetFullscreenState(false, NULL);
 	if (m_pImmediateContext) m_pImmediateContext->ClearState();
-	if (m_pRenderTargetView) m_pRenderTargetView->Release();
 	if (m_pSwapChain) m_pSwapChain->Release();
 	if (m_pImmediateContext) m_pImmediateContext->Release();
 	if (m_pd3dDevice) m_pd3dDevice->Release();
 	if (m_pGIFactory) m_pGIFactory->Release();
-	if (m_pDepthStencilView) m_pDepthStencilView->Release();
 
-	m_pDepthStencilView = nullptr;
 	m_pd3dDevice = nullptr;
 	m_pSwapChain = nullptr;
-	m_pRenderTargetView = nullptr;
 	m_pImmediateContext = nullptr;
 	m_pGIFactory = nullptr;
 	return true;
@@ -183,11 +124,10 @@ void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 	// DirectWrite 종속적인 장치 소멸
 	DeleteDeviceResources();
 
-	m_pRenderTargetView->Release();
-	m_pDepthStencilView->Release();
+	m_dxRt.Reset();
 
-	m_SwapChainDesc.BufferDesc.Height = Height;
-	m_SwapChainDesc.BufferDesc.Width = Width;
+	m_SwapChainDesc.BufferDesc.Height = g_rtClient.right = Height;
+	m_SwapChainDesc.BufferDesc.Width = g_rtClient.bottom = Width;
 
 	if (SUCCEEDED(hr = m_pSwapChain->ResizeBuffers(m_SwapChainDesc.BufferCount, m_SwapChainDesc.BufferDesc.Width,
 		m_SwapChainDesc.BufferDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, m_SwapChainDesc.Flags)))
@@ -197,8 +137,9 @@ void Device::ResizeDevice(const UINT& Width, const UINT& Height)
 		m_SwapChainDesc = sd;
 	}
 
-	if (FAILED(SetRTVDSV())) return;
-	SetViewPort();
+	ID3D11Texture2D* pBackbuffer = nullptr;
+	m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackbuffer));
+	m_dxRt.Create(m_pd3dDevice, Width, Height, pBackbuffer);
 
 	// DirectWrite 종속적인 장치 생성
 	CreateDeviceResources(Width, Height);
@@ -229,20 +170,10 @@ IDXGIFactory* Device::getGIFactory() const
 		return m_pGIFactory;
 	return nullptr;
 }
-D3D11_VIEWPORT& Device::getViewPort()
-{
-	return m_ViewPort;
-}
 IDXGISwapChain* Device::getSwapChain() const
 {
 	if (m_pSwapChain)
 		return m_pSwapChain;
-	return nullptr;
-}
-ID3D11RenderTargetView*	Device::getRenderTargetView() const
-{
-	if (m_pRenderTargetView)
-		return m_pRenderTargetView;
 	return nullptr;
 }
 DXGI_SWAP_CHAIN_DESC Device::getSwapChainDesc() const

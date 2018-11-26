@@ -61,8 +61,7 @@ bool Sample::Render()
 	D3DXMATRIX pp;
 	D3DXMatrixLookAtLH(&pp, &D3DXVECTOR3(0, 10.0f, 0.9f), &D3DXVECTOR3(0, 0, 0), &D3DXVECTOR3(0, 1.0f, 0));
 
-
-	D3DXQUATERNION quat = { 0, 1, 0, cosf(g_fGameTimer) };
+	D3DXQUATERNION quat = { 0, sinf(g_fGameTimer * 0.5f), 0, cosf(g_fGameTimer * 0.5f) };
 	D3DXMATRIX quatrot;
 	D3DXMatrixRotationQuaternion(&quatrot, &quat);
 
@@ -75,18 +74,23 @@ bool Sample::Render()
 
 	m_pImmediateContext->RSSetViewports(1, &m_vp[0]);
 	D3DXMATRIX dx;
+
 	D3DXMatrixIdentity(&dx);
 	m_Plane.SetMatrix(&dx, &dx, &dx);
 	m_Plane.PreRender(m_pImmediateContext);
 	m_pImmediateContext->PSSetShaderResources(0, 1, m_dxrt.m_pShaderResourceView.GetAddressOf());
 	m_Plane.PostRender(m_pImmediateContext);
 
-	m_boxObj.SetMatrix(&dx, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+
+	D3DXQUATERNION q;
+	D3DXQuaternionRotationAxis(&q, &D3DXVECTOR3(0, 1, 0), g_fGameTimer);
+
+	D3DXMATRIX quatrot1;
+	D3DXMatrixRotationQuaternion(&quatrot1, &q);
+
+	m_boxObj.SetMatrix(&(dx * quatrot1), &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
 	m_boxObj.Render(m_pImmediateContext);
-	
-	ID3D11ShaderResourceView * pShader = nullptr;
-	m_pImmediateContext->PSSetShaderResources(0, 1, &pShader);
 	return true;
 }
 bool Sample::Release()
