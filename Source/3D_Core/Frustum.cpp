@@ -17,10 +17,10 @@ bool Frustum::Init(ID3D11Device * pDevice)
 	m_VertexList[6] = PNCT_VERTEX(m_vFrustum[4], D3DXVECTOR3(0.0f, 0.0f, 1.0f), D3DXVECTOR4(Colors::Cornsilk), D3DXVECTOR2(1.0f, 1.0f));
 	m_VertexList[7] = PNCT_VERTEX(m_vFrustum[7], D3DXVECTOR3(0.0f, 0.0f, 1.0f), D3DXVECTOR4(Colors::Cornsilk), D3DXVECTOR2(0.0f, 1.0f));
 
-	m_VertexList[8] = PNCT_VERTEX(m_vFrustum[5], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::MediumTurquoise), D3DXVECTOR2(0.0f, 0.0f));
-	m_VertexList[9] = PNCT_VERTEX(m_vFrustum[1], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::MediumTurquoise), D3DXVECTOR2(1.0f, 0.0f));
-	m_VertexList[10] = PNCT_VERTEX(m_vFrustum[0], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::MediumTurquoise), D3DXVECTOR2(1.0f, 1.0f));
-	m_VertexList[11] = PNCT_VERTEX(m_vFrustum[4], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::MediumTurquoise), D3DXVECTOR2(0.0f, 1.0f));
+	m_VertexList[8] = PNCT_VERTEX(m_vFrustum[5], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::Purple), D3DXVECTOR2(0.0f, 0.0f));
+	m_VertexList[9] = PNCT_VERTEX(m_vFrustum[1], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::Purple), D3DXVECTOR2(1.0f, 0.0f));
+	m_VertexList[10] = PNCT_VERTEX(m_vFrustum[0], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::Purple), D3DXVECTOR2(1.0f, 1.0f));
+	m_VertexList[11] = PNCT_VERTEX(m_vFrustum[4], D3DXVECTOR3(1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::Purple), D3DXVECTOR2(0.0f, 1.0f));
 
 	m_VertexList[12] = PNCT_VERTEX(m_vFrustum[2], D3DXVECTOR3(-1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::Olive), D3DXVECTOR2(0.0f, 0.0f));
 	m_VertexList[13] = PNCT_VERTEX(m_vFrustum[6], D3DXVECTOR3(-1.0f, 0.0f, 0.0f), D3DXVECTOR4(Colors::Olive), D3DXVECTOR2(1.0f, 0.0f));

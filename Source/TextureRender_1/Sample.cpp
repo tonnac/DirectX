@@ -32,11 +32,9 @@ bool Sample::Init()
 		m_vp[i].TopLeftX = 0;
 	}
 
-	m_vp[0].TopLeftY = 0;
-	m_vp[1].TopLeftY = g_rtClient.bottom / 3.0f;
-	m_vp[2].Width = g_rtClient.right * 0.35f;
-	m_vp[2].TopLeftY = g_rtClient.bottom * 0.5f;
-	m_vp[2].Height = g_rtClient.bottom - m_vp[2].TopLeftY;
+	m_vp[0].TopLeftY = g_rtClient.bottom * 0.6f;
+	m_vp[0].Width = g_rtClient.right * 0.35f;
+	m_vp[0].Height = g_rtClient.bottom * 0.4f;
 
 	return true;
 }
@@ -49,10 +47,10 @@ bool Sample::Frame()
 bool Sample::Render()
 {
 	static D3DXMATRIX look;
-	D3DXMatrixLookAtLH(&look, &D3DXVECTOR3(0.0f, 100.0f, -0.1f), &D3DXVECTOR3(0, 0, 0), &D3DXVECTOR3(0, 1, 0));
-	m_Frustum.SetMatrix(&look, &m_pMainCamera->m_matProj);
+	D3DXMatrixLookAtLH(&look, &D3DXVECTOR3(0.0f, 150.0f, -0.1f), &D3DXVECTOR3(0, 0, 0), &D3DXVECTOR3(0, 1, 0));
+	m_Frustum.SetMatrix(&m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 
-	D3DXVECTOR4 vColor = D3DXVECTOR4(DirectX::Colors::Khaki);
+	D3DXVECTOR4 vColor = D3DXVECTOR4(DirectX::Colors::White);
 
 	D3DXQUATERNION quat = { 0, sinf(g_fGameTimer * 0.5f), 0, cosf(g_fGameTimer * 0.5f) };
 	D3DXMATRIX quatrot;
@@ -63,7 +61,7 @@ bool Sample::Render()
 	m_boxObj.SetMatrix(&quatrot, &look, &m_pMainCamera->m_matProj);
 	m_boxObj.Render(m_pImmediateContext);
 	m_Frustum.m_box.SetMatrix(nullptr, &look, &m_pMainCamera->m_matProj);
-//	m_Frustum.Render(m_pImmediateContext);
+	m_Frustum.Render(m_pImmediateContext);
 
 	m_dxrt1.End(m_pImmediateContext, &m_dxRt);
 

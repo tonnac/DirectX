@@ -96,6 +96,9 @@
     <ClCompile Include="Window.cpp">
       <Filter>소스 파일\BasicStructure</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="ObjectStd.h">
       <Filter>헤더 파일\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

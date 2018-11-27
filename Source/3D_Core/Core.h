@@ -6,7 +6,7 @@
 #include "DirectInput.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "Shape.h"
+#include "SkyBox.h"
 #include "DxState.h"
 #include "ModelView.h"
 
@@ -53,6 +53,7 @@ protected:
 	Timer			m_Timer;
 	Camera*			m_pMainCamera;
 	DirectionShape  m_Dir;
+	SkyBox			m_SkyBox;
 
 	std::unordered_map<std::string, std::unique_ptr<Camera>> m_Camera;
 	E_DSS m_DepthStencilState = E_DSS::Default;

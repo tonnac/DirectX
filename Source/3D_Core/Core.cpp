@@ -30,6 +30,7 @@ bool Core::GameInit()
 
 	CreateCamera();
 	m_Dir.Create(m_pd3dDevice, L"shape.hlsl");
+	m_SkyBox.Create(m_pd3dDevice, L"sky.hlsl", L"../../data/sky/grassenvmap1024.dds");
 	m_Timer.Init();
 	S_Input.Init();
 	Init();
@@ -143,6 +144,13 @@ void Core::CreateCamera()
 bool Core::PreRender()
 {
 	m_dxRt.Begin(m_pImmediateContext, D3DXVECTOR4(Colors::LightSteelBlue));
+
+	m_pImmediateContext->PSSetSamplers(0, 1, DxState::m_SS[(int)E_SS::Point].GetAddressOf());
+
+	D3DXMATRIX scale;
+	D3DXMatrixScaling(&scale, 20, 20, 20);
+	m_SkyBox.SetMatrix(&scale, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+	m_SkyBox.Render(m_pImmediateContext);
 
 	m_pImmediateContext->RSSetState(DxState::m_RSS[(int)m_RasterizerState].Get());
 	m_pImmediateContext->OMSetDepthStencilState(DxState::m_DSS[(int)m_DepthStencilState].Get(), 0);
