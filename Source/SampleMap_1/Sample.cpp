@@ -10,6 +10,12 @@ Sample::~Sample()
 
 bool Sample::Init()
 {
+	m_Map.Init();
+	MapDesc desc = { 250,250,1.0f,1.0f, L"../../data/misc/checker_with_numbers.bmp", 
+		L"shape.hlsl" };
+	m_Map.Load(m_pd3dDevice, desc);
+
+
 	m_dxrt1.Create(m_pd3dDevice, 1024, 1024);
 
 	D3DXMatrixIdentity(&m_matWorld[0]);
@@ -75,7 +81,9 @@ bool Sample::Render()
 
 	m_boxObj.SetMatrix(&m_Camera["modelview"]->m_matModelRot, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_SkyBox.SetMatrix(&scale, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+	m_Map.SetMatrix(&m_Camera["modelview"]->m_matModelRot, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_pImmediateContext->RSSetViewports(1, &m_dxRt.m_Viewport);
+	m_Map.Render(m_pImmediateContext);
 	m_SkyBox.Render(m_pImmediateContext);
 	m_boxObj.Render(m_pImmediateContext);
 	return true;
