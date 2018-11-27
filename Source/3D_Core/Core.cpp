@@ -55,10 +55,11 @@ bool Core::GameFrame()
 {
 	m_Timer.Frame();
 	S_Input.Frame();
+	D3DXVECTOR4 input = OnKeyboardInput();
 	for (auto &x : m_Camera)
 	{
 		auto cam = x.second.get();
-		cam->Update(OnKeyboardInput());
+		cam->Update(input);
 	}
 	m_pMainCamera->Frame();
 

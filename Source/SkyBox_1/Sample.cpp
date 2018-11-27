@@ -73,11 +73,11 @@ bool Sample::Render()
 	D3DXMATRIX scale;
 	D3DXMatrixScaling(&scale, 20, 20, 20);
 
-//	m_boxObj.SetMatrix(&m_Camera["modelview"]->m_matModelRot, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+	m_boxObj.SetMatrix(&m_Camera["modelview"]->m_matModelRot, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_SkyBox.SetMatrix(&scale, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_pImmediateContext->RSSetViewports(1, &m_dxRt.m_Viewport);
 	m_SkyBox.Render(m_pImmediateContext);
-//	m_boxObj.Render(m_pImmediateContext);
+	m_boxObj.Render(m_pImmediateContext);
 	return true;
 }
 bool Sample::Release()
