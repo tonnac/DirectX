@@ -110,3 +110,8 @@ struct CacheData_
 	std::tstring m_Name;
 	K			 m_Data;
 };
+
+#define randf(x)  (x*rand()) / (float)RAND_MAX)
+#define randf2(x, off) off + randf(x)
+#define randstep(fMin, fMax) (fMin+(((float)fMax - (float)fMin) * rand() / (float)RAND_MAX))
+#define clamp(x, minX, maxX) if(x > maxX) x = maxX; else if(x < minX) x = minX; else x = x;
