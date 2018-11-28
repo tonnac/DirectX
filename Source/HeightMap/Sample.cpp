@@ -11,13 +11,13 @@ Sample::~Sample()
 bool Sample::Init()
 {
 	m_Map.Init();
-	MapDesc desc = { 250,250,1.0f,1.0f, L"../../data/map/baseColor.jpg",
+	MapDesc desc = { 250,250,1.0f,1.0f, L"../../data/map/env3.bmp",
 		L"map.hlsl" };
 
 	m_Map.CreateHeightMap(m_pd3dDevice, m_pImmediateContext, L"../../data/map/heightMap513.bmp");
 	desc.iNumRows = m_Map.m_iNumRows;
 	desc.iNumCols = m_Map.m_iNumCols;
-	desc.fScaleHeight = 1.0f;
+	desc.fScaleHeight = 0.2f;
 	m_Map.Load(m_pd3dDevice, desc);
 
 	m_dxrt1.Create(m_pd3dDevice, 1024, 1024);

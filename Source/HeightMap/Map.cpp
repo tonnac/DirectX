@@ -63,11 +63,6 @@ bool Map::CreateHeightMap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, 
 	m_iNumCols = desc.Width;
 	m_iNumRows = desc.Height;
 
-	for (auto &x : m_fHeightList)
-	{
-		x -= 210;
-	}
-
 	return true;
 }
 

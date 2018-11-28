@@ -10,7 +10,7 @@ VS_OUTPUT VS(VS_IN vIn)
 	vOut.p = vProj;
 	vOut.c = vIn.c;
 	vOut.n = vIn.n;
-	vOut.t = vIn.t * 10;
+	vOut.t = vIn.t;// *10;
 	return vOut;
 }
 
