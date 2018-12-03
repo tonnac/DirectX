@@ -221,7 +221,7 @@ D3DXVECTOR4 Core::OnKeyboardInput()
 		m_pMainCamera->m_fSpeed += g_fSecPerFrame * 5.0f;
 	}
 
-	float fValue = (float)S_Input.m_MouseState.lZ;
+	float fValue = (float)S_Input.m_MouseState.lZ * 20.0f;
 	YawPitchRoll.w = fValue * g_fSecPerFrame;
 	return YawPitchRoll;
 }
