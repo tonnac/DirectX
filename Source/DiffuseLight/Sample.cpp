@@ -19,10 +19,10 @@ bool Sample::Init()
 	MapDesc desc = { 5,5,1.0f,1.0f, L"../../data/map/029_512.jpg",
 		L"maplight.hlsl" };
 
-	m_Map.CreateHeightMap(m_pd3dDevice, m_pImmediateContext, L"../../data/map/heightMap513.bmp");
+	m_Map.CreateHeightMap(m_pd3dDevice, m_pImmediateContext, L"../../data/map/HEIGHT_CASTLE.bmp");
 	desc.iNumRows = m_Map.m_iNumRows;
 	desc.iNumCols = m_Map.m_iNumCols;
-	desc.fScaleHeight = 1.0f;
+	desc.fScaleHeight = 0.1f;
 	m_Map.Load(m_pd3dDevice, desc);
 
 	return true;
