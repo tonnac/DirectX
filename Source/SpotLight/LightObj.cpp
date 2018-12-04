@@ -26,7 +26,7 @@ bool LightObj::Frame()
 	D3DXVECTOR3 vLightDir;
 	float Phi = (float)D3DX_PI * 0.25f;
 	static float Theta = (float)D3DX_PI * 0.25f;
-	Theta += g_fSecPerFrame * (float)D3DX_PI * 0.55f;
+//	Theta += g_fSecPerFrame * (float)D3DX_PI * 0.55f;
 
 	float x = sinf(Phi) * cosf(Theta);
 	float y = cosf(Phi);
@@ -41,13 +41,13 @@ bool LightObj::Frame()
 	}
 	m_cbData.g_vLightColor = { 0.8f, 0.8f, 0.8f, 1.0f };
 
-	x = 100.0f * sinf(Phi) * cosf(Theta);
-	y = 100.0f * cosf(Phi);
-	z = 100.0f * sinf(Phi) * sinf(Theta);
+	x = 10.0f * sinf(Phi) * cosf(Theta);
+	y = 10.0f * cosf(Phi);
+	z = 10.0f * sinf(Phi) * sinf(Theta);
 
 	m_cbData.g_vLightPos = m_vCurrentLightPos;
-	m_cbData.FalloffStart = 10.0f;
-	m_cbData.FalloffEnd = 100.0f;
+	m_cbData.FalloffStart = 5.0f;
+	m_cbData.FalloffEnd = 25.0f;
 	return true;
 }
 
@@ -55,7 +55,7 @@ bool LightObj::Render(ID3D11DeviceContext * pContext)
 {
 	pContext->UpdateSubresource(m_pCBLight.Get(), 0, nullptr, &m_cbData, 0, 0);
 	pContext->PSSetConstantBuffers(1, 1, m_pCBLight.GetAddressOf());
-	return BoxShape::Render(pContext);
+	return SphereShape::Render(pContext);
 }
 
 bool LightObj::Release()

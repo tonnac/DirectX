@@ -76,6 +76,7 @@ bool Map::CreateMap(const MapDesc& desc)
 	m_iNumVertices = m_iNumRows * m_iNumCols;
 	m_fDistanceOffset = desc.fDistance;
 	m_fScaleHeight = desc.fScaleHeight;
+	CopyMemory(&m_Mapdesc, &desc, sizeof(MapDesc));
 	return true;
 }
 
@@ -175,7 +176,7 @@ D3DXVECTOR4 Map::GetColorOfVertex(int iIndex)
 
 D3DXVECTOR3 Map::GetNormalOfVertex(int iIndex)
 {
-	return D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	return m_VertexList[iIndex].n;
 }
 
 
@@ -201,9 +202,47 @@ bool Map::Release()
 	return true;
 }
 
-float Map::GetHeight(float fPosX, float fPosY)
+float Map::GetHeight(float fPosX, float fPosZ)
 {
-	return 0.0f;
+	float fCellX = (float)(m_iNumCellCols * m_fDistanceOffset / 2.0f + fPosX);
+	float fCellZ = (float)(m_iNumCellCols * m_fDistanceOffset / 2.0f + fPosZ);
+
+	fCellX /= m_fDistanceOffset;
+	fCellZ /= m_fDistanceOffset;
+
+	float fVertexCol = floorf(fCellX);
+	float fVertexRow = floorf(fCellZ);
+
+	if (fVertexCol < 0.0f) fVertexCol = 0.0f;
+	if (fVertexRow < 0.0f) fVertexRow = 0.0f;
+	if ((float)m_iNumCols - 2 < fVertexCol) fVertexCol = (float)(m_iNumCols - 2);
+	if ((float)m_iNumRows - 2 < fVertexCol) fVertexCol = (float)(m_iNumRows - 2);
+	
+	float A = GetHeightOfVertex(fVertexRow * m_iNumCols + fVertexCol);
+	float B = GetHeightOfVertex(fVertexRow * m_iNumCols + fVertexCol + 1);
+	float C = GetHeightOfVertex((fVertexRow + 1) * m_iNumCols + fVertexCol);
+	float D = GetHeightOfVertex((fVertexRow + 1)* m_iNumCols + fVertexCol + 1);
+
+	float fDeltaX = fCellX - fVertexCol;
+	float fDeltaZ = fCellZ - fVertexRow;
+
+	float fHeight = 0.0f;
+
+	if (fDeltaX + fDeltaZ < 1.0f)
+	{
+		float uv = B - A;
+		float vy = C - A;
+		
+		fHeight = A + fDeltaX * uv + fDeltaZ * vy;
+	}
+	else
+	{
+		float uv = C - D;
+		float vy = B - D;
+
+		fHeight = D + (1.0f - fDeltaX) * uv + (1.0f - fDeltaZ) * vy;
+	}
+	return fHeight;
 }
 
 bool Map::GenVertexNormal()

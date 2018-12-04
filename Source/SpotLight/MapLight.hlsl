@@ -1,10 +1,10 @@
 
 #ifndef DIR_LIGHTS
-	#define DIR_LIGHTS 1
+	#define DIR_LIGHTS 0
 #endif
 
 #ifndef POINT_LIGHTS
-	#define POINT_LIGHTS 0
+	#define POINT_LIGHTS 1
 #endif
 
 #ifndef SPOT_LIGHTS
@@ -73,15 +73,15 @@ VS_OUTPUT VS(VS_IN vIn)
 
 float4 PS(VS_OUTPUT vOut) : SV_Target
 {
-//	float4 Diffuse = g_txDiffuse.Sample(g_SamState, vOut.t);
+	float4 Diffuse = g_txDiffuse.Sample(g_SamState, vOut.t);
 
 	float4 Color = float4(0.7f, 0.7f, 0.7f, 1.0f);
 
-	float4 ambient = Color * gAmbient;
+	float4 ambient = Diffuse * gAmbient;
 
-	float4 directLight = ComputeLighting(gLights, Color, vOut.n, vOut.w);
+	float4 directLight = ComputeLighting(gLights, Diffuse, vOut.n, vOut.w);
 
-	float4 retColor = ambient +directLight;
+	float4 retColor = ambient + directLight;
 
 	retColor.a = 1.0f;
 

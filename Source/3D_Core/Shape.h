@@ -22,6 +22,12 @@ struct SRTMatrix
 	}
 };
 
+struct MeshData
+{
+	std::vector<PNCT_VERTEX> m_vertices;
+	std::vector<DWORD> m_indices;
+};
+
 class Shape
 {
 public:
@@ -42,6 +48,9 @@ public:
 	virtual HRESULT LoadPixelShader(std::tstring szName);
 	virtual HRESULT LoadGeometryShader(std::tstring szName);
 	virtual HRESULT LoadTextureShader(std::tstring szName);
+
+	void Subdivide(MeshData& mesmeshdatah);
+	PNCT_VERTEX MidPoint(const PNCT_VERTEX& v0, const PNCT_VERTEX& v1);
 
 	void SetMatrix(D3DXMATRIX* pWorld = nullptr, D3DXMATRIX* pView = nullptr, D3DXMATRIX* pProj = nullptr);
 	void SetColor(D3DXVECTOR4 vColor);
@@ -141,8 +150,8 @@ public:
 	std::array<PC_VERTEX, 6> m_LineVertexList;
 };
 
-class DiceShape : public BoxShape
+class SphereShape : public Shape
 {
 public:
-	HRESULT	CreateVertexData()override;
+	HRESULT CreateVertexData()override;
 };

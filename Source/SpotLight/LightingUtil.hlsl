@@ -17,8 +17,8 @@ struct Light
 
 float CalcAttenuation(float d, float falloffStart, float falloffEnd)
 {
-	return saturate((falloffEnd - d) / (falloffEnd - falloffStart));
-//	return smoothstep(falloffStart, d, falloffEnd);
+//	return saturate((falloffEnd - d) / (falloffEnd - falloffStart));
+	return smoothstep(falloffStart, d, falloffEnd);
 }
 
 float3 SpecularLight(float3 normal, float3 halfVec)
@@ -86,7 +86,7 @@ float4 ComputeLighting(Light gLights[MaxLights], float4 color, float3 normal, fl
 #if (POINT_LIGHTS > 0)
 	for (i = DIR_LIGHTS; i < DIR_LIGHTS + POINT_LIGHTS; ++i)
 	{
-//		result += ComputePointLight(gLights[i], color, normal, pos);
+		result += ComputePointLight(gLights[i], color, normal, pos);
 	}
 #endif
 

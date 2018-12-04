@@ -132,15 +132,82 @@ HRESULT Shape::LoadTextureShader(std::tstring szName)
 	return hr;
 }
 
+void Shape::Subdivide(MeshData & meshdata)
+{
+	MeshData mesh = meshdata;
+
+	UINT numFace = (UINT)meshdata.m_indices.size() / 3;
+
+	meshdata.m_vertices.clear();
+	meshdata.m_indices.clear();
+
+	std::vector<PNCT_VERTEX> vertices = mesh.m_vertices;
+	std::vector<DWORD> indices = mesh.m_indices;
+
+	for (UINT i = 0; i < numFace; ++i)
+	{
+		PNCT_VERTEX v0 = vertices[indices[i * 3 + 0]];
+		PNCT_VERTEX v1 = vertices[indices[i * 3 + 1]];
+		PNCT_VERTEX v2 = vertices[indices[i * 3 + 2]];
+
+		PNCT_VERTEX m0 = MidPoint(v0, v1);
+		PNCT_VERTEX m1 = MidPoint(v1, v2);
+		PNCT_VERTEX m2 = MidPoint(v2, v0);
+
+		meshdata.m_vertices.push_back(v0);
+		meshdata.m_vertices.push_back(v1);
+		meshdata.m_vertices.push_back(v2);
+		meshdata.m_vertices.push_back(m0);
+		meshdata.m_vertices.push_back(m1);
+		meshdata.m_vertices.push_back(m2);
+
+		meshdata.m_indices.push_back(i * 6 + 0);
+		meshdata.m_indices.push_back(i * 6 + 3);
+		meshdata.m_indices.push_back(i * 6 + 5);
+
+		meshdata.m_indices.push_back(i * 6 + 3);
+		meshdata.m_indices.push_back(i * 6 + 4);
+		meshdata.m_indices.push_back(i * 6 + 5);
+
+		meshdata.m_indices.push_back(i * 6 + 5);
+		meshdata.m_indices.push_back(i * 6 + 4);
+		meshdata.m_indices.push_back(i * 6 + 2);
+
+		meshdata.m_indices.push_back(i * 6 + 3);
+		meshdata.m_indices.push_back(i * 6 + 1);
+		meshdata.m_indices.push_back(i * 6 + 4);
+	}
+}
+
+PNCT_VERTEX Shape::MidPoint(const PNCT_VERTEX & v0, const PNCT_VERTEX & v1)
+{
+	PNCT_VERTEX v;
+	
+	D3DXVECTOR3 p0 = v0.p;
+	D3DXVECTOR3 p1 = v1.p;
+
+	D3DXVECTOR3 n0 = v0.n;
+	D3DXVECTOR3 n1 = v1.n;
+
+	D3DXVECTOR4 c0 = v0.c;
+	D3DXVECTOR4 c1 = v1.c;
+
+	D3DXVECTOR2 t0 = v0.t;
+	D3DXVECTOR2 t1 = v1.t;
+
+	v.p = (p0 + p1)*0.5f;
+	D3DXVec3Normalize(&v.n, &D3DXVECTOR3((n0 + n1)*0.5f));
+	v.c = (c0 + c1)*0.5f;
+	v.t = (t0 + t1)*0.5f;
+
+	return v;
+}
+
 void Shape::SetMatrix(D3DXMATRIX* pWorld, D3DXMATRIX* pView, D3DXMATRIX* pProj)
 {
 	if (pWorld != nullptr)
 	{
 		m_matWorld = *pWorld;
-	}
-	else
-	{
-		 D3DXMatrixIdentity(&m_matWorld);
 	}
 	if (pView != nullptr)
 	{

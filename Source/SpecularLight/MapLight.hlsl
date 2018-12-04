@@ -25,7 +25,6 @@ struct VS_OUTPUT
 	float3 n : NORMAL;
 	float4 c : COLOR;
 	float2 t : TEXCOORD0;
-	float4 l : TEXCOORD1;
 };
 
 cbuffer cb0 : register(b0)

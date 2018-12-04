@@ -27,15 +27,15 @@ struct LIGHT_CONSTANT_BUFFER
 //	float		m_fPhi;
 //};
 
-class LightObj : public BoxShape  // sphere
+class LightObj : public SphereShape  // sphere
 {
 public:
 	int			m_iType; // 0 : direction, 1 : point, 2 : spot
-	D3DXMATRIX	m_matWorld;
+	D3DXMATRIX	m_matWorld1;
 	D3DXMATRIX	m_vInitPosition;
 	D3DXVECTOR3 m_vScale;
 	D3DXVECTOR3 m_vRotation;
-	float		m_fOffsetHeight = 10.0f;
+	float		m_fOffsetHeight = 5.0f;
 	D3DXVECTOR3 m_vInitPos;
 	D3DXVECTOR3 m_vInitDir;
 	D3DXVECTOR3 m_vCurrentLightPos;
