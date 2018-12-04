@@ -46,4 +46,5 @@ struct CB_DATA
 	float fActiveVP;
 	float z, w;
 	D3DXVECTOR4 vColor;
+	D3DXMATRIX matInvWorld;
 };

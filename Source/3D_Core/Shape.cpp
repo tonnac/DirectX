@@ -138,6 +138,10 @@ void Shape::SetMatrix(D3DXMATRIX* pWorld, D3DXMATRIX* pView, D3DXMATRIX* pProj)
 	{
 		m_matWorld = *pWorld;
 	}
+	else
+	{
+		 D3DXMatrixIdentity(&m_matWorld);
+	}
 	if (pView != nullptr)
 	{
 		m_matView = *pView;
@@ -147,6 +151,10 @@ void Shape::SetMatrix(D3DXMATRIX* pWorld, D3DXMATRIX* pView, D3DXMATRIX* pProj)
 		m_matProj = *pProj;
 	}
 
+	D3DXMATRIX invworld;
+	D3DXMatrixInverse(&invworld, nullptr, &m_matWorld);
+	D3DXMatrixTranspose(&invworld, &invworld);
+
 	m_vLook = { m_matWorld._11, m_matWorld._12 , m_matWorld._13 };
 	m_vSide = { m_matWorld._21, m_matWorld._22 , m_matWorld._23 };
 	m_vUp = { m_matWorld._31, m_matWorld._32 , m_matWorld._33 };
@@ -155,6 +163,7 @@ void Shape::SetMatrix(D3DXMATRIX* pWorld, D3DXMATRIX* pView, D3DXMATRIX* pProj)
 	D3DXMatrixTranspose(&m_cbData.matWorld, &m_matWorld);
 	D3DXMatrixTranspose(&m_cbData.matView, &m_matView);
 	D3DXMatrixTranspose(&m_cbData.matProj, &m_matProj);
+	D3DXMatrixTranspose(&m_cbData.matInvWorld, &invworld);
 }
 
 void Shape::SetColor(D3DXVECTOR4 vColor)
