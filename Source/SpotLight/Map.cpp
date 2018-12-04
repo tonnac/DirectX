@@ -216,12 +216,12 @@ float Map::GetHeight(float fPosX, float fPosZ)
 	if (fVertexCol < 0.0f) fVertexCol = 0.0f;
 	if (fVertexRow < 0.0f) fVertexRow = 0.0f;
 	if ((float)m_iNumCols - 2 < fVertexCol) fVertexCol = (float)(m_iNumCols - 2);
-	if ((float)m_iNumRows - 2 < fVertexCol) fVertexCol = (float)(m_iNumRows - 2);
+	if ((float)m_iNumRows - 2 < fVertexRow) fVertexRow = (float)(m_iNumRows - 2);
 	
 	float A = GetHeightOfVertex(fVertexRow * m_iNumCols + fVertexCol);
 	float B = GetHeightOfVertex(fVertexRow * m_iNumCols + fVertexCol + 1);
 	float C = GetHeightOfVertex((fVertexRow + 1) * m_iNumCols + fVertexCol);
-	float D = GetHeightOfVertex((fVertexRow + 1)* m_iNumCols + fVertexCol + 1);
+	float D = GetHeightOfVertex((fVertexRow + 1) * m_iNumCols + fVertexCol + 1);
 
 	float fDeltaX = fCellX - fVertexCol;
 	float fDeltaZ = fCellZ - fVertexRow;

@@ -32,7 +32,6 @@ class LightObj : public SphereShape  // sphere
 public:
 	int			m_iType; // 0 : direction, 1 : point, 2 : spot
 	D3DXMATRIX	m_matWorld1;
-	D3DXMATRIX	m_vInitPosition;
 	D3DXVECTOR3 m_vScale;
 	D3DXVECTOR3 m_vRotation;
 	float		m_fOffsetHeight = 5.0f;

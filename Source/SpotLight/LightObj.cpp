@@ -23,17 +23,15 @@ void LightObj::Update(D3DXVECTOR3 vEyePos, D3DXVECTOR3 vEyeDir, float intensity,
 
 bool LightObj::Frame()
 {
-	D3DXVECTOR3 vLightDir;
-	float Phi = (float)D3DX_PI * 0.25f;
-	static float Theta = (float)D3DX_PI * 0.25f;
-//	Theta += g_fSecPerFrame * (float)D3DX_PI * 0.55f;
+	D3DXVECTOR3 vLightPos, vLightDir;
+	static float dll = 0.0f;
+	dll += g_fSecPerFrame * 0.125f * D3DX_PI;
 
-	float x = sinf(Phi) * cosf(Theta);
-	float y = cosf(Phi);
-	float z = sinf(Phi) * sinf(Theta);
+	D3DXMATRIX t;
+	D3DXMATRIX r;
+	D3DXMatrixRotationY(&r, dll);
+	D3DXVec3TransformCoord(&vLightPos, &m_vInitPos, &r);
 
-//	D3DXVec3Normalize(&m_vInitDir, &-D3DXVECTOR3(x, y, z));
-	m_cbData.g_vLightDir = {-x, -y, -z};
 	if (m_iType == 2)
 	{
 		m_cbData.g_vLightDir = -vLightDir;
@@ -41,13 +39,12 @@ bool LightObj::Frame()
 	}
 	m_cbData.g_vLightColor = { 0.8f, 0.8f, 0.8f, 1.0f };
 
-	x = 10.0f * sinf(Phi) * cosf(Theta);
-	y = 10.0f * cosf(Phi);
-	z = 10.0f * sinf(Phi) * sinf(Theta);
+	m_vCurrentLightPos.x = vLightPos.x;
+	m_vCurrentLightPos.z = vLightPos.z;
 
 	m_cbData.g_vLightPos = m_vCurrentLightPos;
 	m_cbData.FalloffStart = 5.0f;
-	m_cbData.FalloffEnd = 25.0f;
+	m_cbData.FalloffEnd = 35.0f;
 	return true;
 }
 

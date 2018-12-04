@@ -15,7 +15,7 @@ bool Sample::Init()
 {
 	m_SpotLightObj.Create(m_pd3dDevice, L"maplight.hlsl", L"../../data/effect/Particle6.dds");
 
-	D3DXVECTOR3 vLighsPos = { 100, 100, 100 };
+	D3DXVECTOR3 vLighsPos = { 20, 20, 20 };
 	D3DXVECTOR3 vLightDir;
 	D3DXVec3Normalize(&vLightDir, &vLighsPos);
 	m_SpotLightObj.SetValue(1, vLighsPos, vLightDir);
@@ -34,6 +34,11 @@ bool Sample::Init()
 }
 bool Sample::Frame()
 {
+	float fHeight = m_Map.GetHeight(m_SpotLightObj.m_vCurrentLightPos.x, m_SpotLightObj.m_vCurrentLightPos.z);
+	m_SpotLightObj.m_vCurrentLightPos.y = fHeight + m_SpotLightObj.m_fOffsetHeight;
+
+	D3DXMatrixTranslation(&m_SpotLightObj.m_matWorld, m_SpotLightObj.m_vCurrentLightPos.x, m_SpotLightObj.m_vCurrentLightPos.y, m_SpotLightObj.m_vCurrentLightPos.z);
+
 	m_SpotLightObj.Update(m_pMainCamera->m_vPos, m_pMainCamera->m_vLook);
 	m_SpotLightObj.Frame();
 	return true;
@@ -42,20 +47,6 @@ bool Sample::Render()
 {
 	D3DXMATRIX mat;
 	D3DXMatrixIdentity(&mat);
-	static float dll = 0.0f;
-	dll += g_fSecPerFrame * 0.25 * D3DX_PI;
-
-	D3DXMATRIX t;
-	D3DXMATRIX r;
-	D3DXMATRIX s;
-	D3DXMatrixScaling(&s, 1.7f, 1.7f, 1.7f);
-	D3DXMatrixRotationY(&r, dll);
-	D3DXMatrixTranslation(&t, 20, 0, 20);
-	m_SpotLightObj.m_matWorld = s * t * r;
-
-	m_SpotLightObj.m_matWorld._42 = m_Map.GetHeight(m_SpotLightObj.m_matWorld._41, m_SpotLightObj.m_matWorld._43) + m_SpotLightObj.m_fOffsetHeight;
-
-	m_SpotLightObj.m_vCurrentLightPos = { m_SpotLightObj.m_matWorld._41, m_SpotLightObj.m_matWorld._42, m_SpotLightObj.m_matWorld._43 };
 
 	m_SpotLightObj.SetMatrix(nullptr, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_SpotLightObj.Render(m_pImmediateContext);

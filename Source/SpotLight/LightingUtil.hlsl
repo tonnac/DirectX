@@ -17,8 +17,8 @@ struct Light
 
 float CalcAttenuation(float d, float falloffStart, float falloffEnd)
 {
-//	return saturate((falloffEnd - d) / (falloffEnd - falloffStart));
-	return smoothstep(falloffStart, d, falloffEnd);
+	return saturate((falloffEnd - d) / (falloffEnd - falloffStart));
+//	return smoothstep(falloffStart, d, falloffEnd);
 }
 
 float3 SpecularLight(float3 normal, float3 halfVec)
