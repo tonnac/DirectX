@@ -18,7 +18,7 @@ bool Sample::Init()
 	D3DXVECTOR3 vLighsPos = { 20, 20, 20 };
 	D3DXVECTOR3 vLightDir;
 	D3DXVec3Normalize(&vLightDir, &vLighsPos);
-	m_SpotLightObj.SetValue(1, vLighsPos, vLightDir);
+	m_SpotLightObj.SetValue(2, vLighsPos, vLightDir);
 
 	m_Map.Init();
 	MapDesc desc = { 5,5,1.0f,1.0f, L"../../data/map/castle.jpg",

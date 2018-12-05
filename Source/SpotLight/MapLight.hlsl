@@ -4,11 +4,11 @@
 #endif
 
 #ifndef POINT_LIGHTS
-	#define POINT_LIGHTS 1
+	#define POINT_LIGHTS 0
 #endif
 
 #ifndef SPOT_LIGHTS
-	#define SPOT_LIGHTS 0
+	#define SPOT_LIGHTS 1
 #endif
 
 
