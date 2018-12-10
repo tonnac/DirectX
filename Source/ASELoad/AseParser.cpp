@@ -254,22 +254,18 @@ void AseParser::InputMatrix(size_t& streamIndex, size_t GeomeshIndex, size_t Geo
 		int findType = (int)m_Stream[streamIndex].find(matrixType[k]);
 		if (findType >= 0)
 		{
-			std::istringstream is(m_Stream[streamIndex++]);
 			XMFLOAT4X4 world;
 			XMStoreFloat4x4(&world, XMMatrixIdentity());
-			is >> buffer >> world._11 >> world._12 >> world._13;
 
-			is.seekg(std::ios::beg);
-			is.str(m_Stream[streamIndex++]);
-			is >> buffer >> world._31 >> world._33 >> world._32;
-
-			is.seekg(std::ios::beg);
-			is.str(m_Stream[streamIndex++]);
-			is >> buffer >> world._21 >> world._23 >> world._22;
-
-			is.seekg(std::ios::beg);
-			is.str(m_Stream[streamIndex++]);
-			is >> buffer >> world._41 >> world._43 >> world._42;
+			for (int i = 0; i < 4; ++i)
+			{
+				std::istringstream is(m_Stream[streamIndex++]);
+				is >> buffer >> world.m[i][0] >> world.m[i][2] >> world.m[i][1];
+			}
+			float e[4];
+			CopyMemory(e, world.m[1], sizeof(float) * 4);
+			CopyMemory(world.m[1], world.m[2], sizeof(float) * 4);
+			CopyMemory(world.m[2], e, sizeof(float) * 4);
 
 			m_aseMesh->m_ObjectList[GeomeshIndex].matWorld = world;
 			break;
