@@ -13,8 +13,7 @@ class AseMesh;
 
 class AseParser
 {
-	friend class AseMesh;
-private:
+public:
 	AseParser() = default;
 
 public:
