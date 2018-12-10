@@ -76,7 +76,7 @@ bool Map::CreateMap(const MapDesc& desc)
 	m_iNumVertices = m_iNumRows * m_iNumCols;
 	m_fDistanceOffset = desc.fDistance;
 	m_fScaleHeight = desc.fScaleHeight;
-	CopyMemory(&m_Mapdesc, &desc, sizeof(MapDesc));
+	m_Mapdesc = desc;
 	return true;
 }
 

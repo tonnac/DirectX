@@ -115,7 +115,7 @@ bool Window::Run()
 			GameRun();
 		}
 	}
-	if (GameRelease() == false) return false;
+//	if (GameRelease() == false) return false;
 	return true;
 }
 

@@ -4,12 +4,13 @@
 
 struct MapDesc
 {
+	~MapDesc() {};
 	int iNumCols;
 	int iNumRows;
 	float fDistance;
 	float fScaleHeight;
-	const std::tstring szTextureFile;
-	const std::tstring szShaderFile;
+	std::tstring szTextureFile;
+	std::tstring szShaderFile;
 };
 
 struct Index
@@ -33,6 +34,8 @@ struct IndexTable
 
 class Map : public Shape
 {
+public:
+	virtual ~Map() {};
 public:
 	MapDesc m_Mapdesc;
 	int m_iNumRows;
