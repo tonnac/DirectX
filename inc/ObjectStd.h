@@ -29,6 +29,14 @@ struct PNCT_VERTEX
 		c = rhs.c;
 		t = rhs.t;
 	}
+	bool operator == (const PNCT_VERTEX& rhs)
+	{
+		if (p == rhs.p && n == rhs.n && c == rhs.c && t == rhs.t)
+		{
+			return true;
+		}
+		return false;
+	}
 };
 
 struct PT_VERTEX

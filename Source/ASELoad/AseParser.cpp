@@ -373,12 +373,16 @@ void AseParser::InputVertex(size_t& streamIndex, size_t GeomeshIndex, size_t Geo
 
 		streamIndex += 2;
 
-		ObjList.norList.resize(ObjList.posFaceList.size() * 4);
-		for (size_t i = 0; i < ObjList.norList.size(); ++i, ++streamIndex)
+		ObjList.norList.resize(ObjList.posFaceList.size() * 3);
+		int k = 0;
+		for (size_t i = 0; i < ObjList.posFaceList.size() * 4; ++i, ++streamIndex)
 		{
+			if (i % 4 == 0)
+				continue;
 			is.seekg(std::ios::beg);
 			is.str(m_Stream[streamIndex]);
-			is >> ignore >> ignore >> ObjList.norList[i].x >> ObjList.norList[i].z >> ObjList.norList[i].y;
+			is >> ignore >> ignore >> ObjList.norList[k].x >> ObjList.norList[k].z >> ObjList.norList[k].y;
+			++k;
 		}
 
 		streamIndex += 5;
