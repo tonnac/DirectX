@@ -104,7 +104,7 @@ bool Sample::Init()
 			mesh.m_DxObject.m_iNumIndex = mesh.m_IndexList.size();
 			int iRef = m_obj.m_ObjectList[i].mtrlRef;
 			std::tstring texName = m_obj.m_MateriaList[iRef].Texture[0].Filename;
-			std::tstring texPath = m_obj.m_MateriaList[iRef].Texture[0].Filepath;
+			std::tstring texPath = L"..\\..\\data\\tex\\";
 
 			mesh.m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
 			mesh.Create(m_pd3dDevice, L"shape.hlsl", texPath + texName);

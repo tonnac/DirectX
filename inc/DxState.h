@@ -2,9 +2,16 @@
 #include "Define.h"
 
 template <typename X>
-void IncreaseEnum(X& arg)
+void IncreaseEnum(X& arg, bool isCountOver = false)
 {
-	arg = static_cast<X>(((static_cast<int>(arg) + 1) % static_cast<int>(X::Count)));
+	if (!isCountOver)
+	{
+		arg = static_cast<X>(((static_cast<int>(arg) + 1) % static_cast<int>(X::Count)));
+	}
+	else
+	{
+		arg = static_cast<X>(static_cast<int>(arg) + 1);
+	}
 }
 
 

@@ -11,6 +11,43 @@
 
 class AseMesh;
 struct MaterialList;
+struct GeomMesh;
+
+enum class SceneType : unsigned char
+{
+	FIRSTFRAME = 0,
+	LASTFRAME,
+	FRAMESPEED,
+	TICKSPERFRAME,
+	Count
+};
+
+enum class MaterialType : unsigned char
+{
+	MATERIAL_NAME = 0,
+	MATERIAL_CLASS,
+	MAP_SUBNO,
+	TEX_FILE,
+	Count
+};
+
+enum class MeshType : unsigned char
+{
+	NODE_NAME = 0,
+	NODE_TM,
+	MESH,
+	MATERIAL_REF,
+	Count
+};
+
+enum class VertexType : unsigned char
+{
+	MESH_NUMVERTEX = 0,
+	MESH_NUMTVERTEX,
+	MESH_NUMCVERTEX,
+	MESH_NORMALS,
+	Count
+};
 
 class AseParser
 {
@@ -23,24 +60,30 @@ public:
 private:
 	void LoadScene();
 	void LoadMaterial();
-	void LoadSubMaterial(size_t& streamIndex, MaterialList* material);
+	void LoadSubMaterial(MaterialList* material);
 	void LoadGeomesh();
 
-	void InputScene(std::istringstream& is, size_t SceneTypeIndex);
-	void InputMaterial(std::istringstream& is, size_t& streamIndex ,MaterialList* material, size_t MaterialType);
-	void InputGeomesh(size_t& streamIndex, size_t GeomeshIndex, size_t GeomeshType);
+	void InputScene(SceneType scene);
+	void InputMaterial(MaterialList* material, MaterialType& materialType);
+	void InputMesh(size_t GeomeshIndex, MeshType GeomeshType);
 
-	void InputMatrix(size_t& streamIndex, size_t GeomeshIndex, size_t GeomeshType);
-	void InputVertex(size_t& streamIndex, size_t GeomeshIndex, size_t GeomeshType);
+	void InputMatrix(size_t GeomeshIndex);
+	void InputVertexData(size_t GeomeshIndex);
 
-	void Findstring(size_t& streamIndex ,const std::string& text);
+	void InputVertex(GeomMesh * mesh);
+	void InputTexutre(GeomMesh * mesh);
+	void InputColor(GeomMesh * mesh);
+	void InputNormal(GeomMesh * mesh);
+
+	void Findstring(const std::string& text);
 private:
 	std::vector<std::string> m_Stream;
 
 	AseMesh * m_aseMesh = nullptr;
 
-	size_t m_ScnenIndex;
-	size_t m_MaterialIndex;
+	size_t m_ScnenIndex = 0;
+	size_t m_MaterialIndex = 0;
+	size_t m_Index = 0;
 	std::vector<size_t> m_GeomeshIndex;
 
 	static const std::array<std::string, 3> m_Type;

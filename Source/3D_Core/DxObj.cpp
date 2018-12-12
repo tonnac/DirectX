@@ -300,7 +300,7 @@ namespace DX
 		if (m_pIndexBuffer != nullptr)
 			pContext->DrawIndexed(iCount, 0, 0);
 		else
-			pContext->Draw(iCount, 0);
+			pContext->Draw(m_iNumVertex, 0);
 		return true;
 	}
 	bool DxObj::Render(ID3D11DeviceContext* pContext,

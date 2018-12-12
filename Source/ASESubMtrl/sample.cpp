@@ -33,82 +33,69 @@ bool Sample::Init()
 	duration<double> t;
 
 	bef = c1.now();
-	if (m_obj.Load(L"BOX2.ase"))
+	if (m_obj.Load(L"lll.ase"))
 	{
 		aft = c1.now();
 
 		t = aft - bef;
 
 		bef = c1.now();
+
 		for (size_t i = 0; i < m_obj.m_ObjectList.size(); ++i)
 		{
-			Mesh mesh;
-			m_xObj.m_iNumFaces = m_obj.m_ObjectList[i].posFaceList.size();
-			mesh.m_tmpVertexList.resize(m_xObj.m_iNumFaces * 3);
-			for (int iFace = 0; iFace < m_xObj.m_iNumFaces; ++iFace)
+			m_xObj[i].m_Objectlist.resize(m_obj.m_MateriaList[i].SubMaterial.size());
+			m_xObj[i].m_iNumFaces = (int)m_obj.m_ObjectList[i].posFaceList.size();
+			for (int iFace = 0; iFace < m_xObj[i].m_iNumFaces; ++iFace)
 			{
+				int MtrlIndex = m_obj.m_ObjectList[i].posFaceList[iFace].Mtrl;
+				auto& mesh = m_xObj[i].m_Objectlist[MtrlIndex];
 				for (int iVer = 0; iVer < 3; ++iVer)
 				{
 					int vID = iFace * 3 + iVer;
-
+					PNCT_VERTEX vertex;
 					//pos
 					if (m_obj.m_ObjectList[i].vertexList.size() > 0)
 					{
 						int index = m_obj.m_ObjectList[i].posFaceList[iFace].v[iVer];
-						mesh.m_tmpVertexList[vID].p = (float*)&m_obj.m_ObjectList[i].vertexList[index];
+						vertex.p = (float*)&m_obj.m_ObjectList[i].vertexList[index];
 					}
 
 					//normal
 					if (m_obj.m_ObjectList[i].norList.size() > 0)
 					{
-						mesh.m_tmpVertexList[vID].n = (float*)&m_obj.m_ObjectList[i].norList[vID];
+						vertex.n = (float*)&m_obj.m_ObjectList[i].norList[vID];
 					}
 
 					//color
 					if (m_obj.m_ObjectList[i].colorFaceList.size() > 0)
 					{
 						int index = m_obj.m_ObjectList[i].colorFaceList[iFace].v[iVer];
-						mesh.m_tmpVertexList[vID].c = (float*)&m_obj.m_ObjectList[i].colorList[index];
+						vertex.c = (float*)&m_obj.m_ObjectList[i].colorList[index];
+						vertex.c.w = 1.0f;
 					}
 
 					//tex
 					if (m_obj.m_ObjectList[i].texFaceList.size() > 0)
 					{
 						int index = m_obj.m_ObjectList[i].texFaceList[iFace].v[iVer];
-						mesh.m_tmpVertexList[vID].t = (float*)&m_obj.m_ObjectList[i].texList[index];
+						vertex.t = (float*)&m_obj.m_ObjectList[i].texList[index];
 					}
+					mesh.m_VertexList.push_back(std::move(vertex));
 				}
 			}
 			aft = c1.now();
 			t = bef - aft;
 
 			bef = c1.now();
-			// create ib + vb
-
-			for (int ivb = 0; ivb < m_xObj.m_iNumFaces * 3; ++ivb)
+			for (size_t k = 0; k < m_xObj[i].m_Objectlist.size(); ++k)
 			{
-				PNCT_VERTEX v = mesh.m_tmpVertexList[ivb];
-				int iPos = isEqualVertexList(mesh, v);
-				if (iPos < 0)
-				{
-					mesh.m_VertexList.push_back(v);
-					iPos = mesh.m_VertexList.size() - 1;
-				}
-				mesh.m_IndexList.push_back(iPos);
+				auto& obj = m_xObj[i].m_Objectlist[k];
+				std::tstring texName = m_obj.m_MateriaList[i].SubMaterial[k].Texture[0].Filename;
+				std::tstring texPath = L"..\\..\\data\\tex\\";
+				obj.m_DxObject.m_iNumVertex = (UINT)obj.m_VertexList.size();
+				obj.m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
+				obj.Create(m_pd3dDevice, L"shape.hlsl", texPath + texName);
 			}
-
-			aft = c1.now();
-			t = aft - bef;
-
-			mesh.m_DxObject.m_iNumVertex = mesh.m_VertexList.size();
-			mesh.m_DxObject.m_iNumIndex = mesh.m_IndexList.size();
-			int iRef = m_obj.m_ObjectList[i].mtrlRef;
-			std::tstring texName = m_obj.m_MateriaList[iRef].Texture[0].Filename;
-			std::tstring texPath = m_obj.m_MateriaList[iRef].Texture[0].Filepath;
-
-			mesh.m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
-			mesh.Create(m_pd3dDevice, L"shape.hlsl", texPath + texName);
-			m_xObj.m_Objectlist.push_back(mesh);
 		}
 	}
 	aft = c1.now();
@@ -121,10 +108,13 @@ bool Sample::Frame()
 }
 bool Sample::Render()
 {
-	for (auto& x : m_xObj.m_Objectlist)
+	for (int i = 0; i < 2; ++i)
 	{
-		x.SetMatrix(nullptr, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
-		x.Render(m_pImmediateContext);
+		for (auto& x : m_xObj[i].m_Objectlist)
+		{
+			x.SetMatrix(nullptr, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
+			x.Render(m_pImmediateContext);
+		}
 	}
 	return true;
 }

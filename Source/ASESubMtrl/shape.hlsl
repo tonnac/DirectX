@@ -29,7 +29,7 @@ PC_OUT VS_PC(PC_IN vIn)
 float4 PS(VS_OUTPUT vOut) : SV_Target
 {
 	float4 TexColor = g_txDiffuse.Sample(g_SamState, vOut.t);
-	return TexColor;
+	return TexColor * vOut.c;
 }
 
 float4 PSLine(PC_OUT vOut) : SV_Target
