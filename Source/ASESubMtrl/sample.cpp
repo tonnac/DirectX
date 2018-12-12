@@ -31,12 +31,12 @@ bool Sample::Init()
 	steady_clock::time_point bef;
 	steady_clock::time_point aft;
 	duration<double> t;
-	
+
 	bef = c1.now();
-	if (m_obj.Load(L"eee.ase"))
+	if (m_obj.Load(L"BOX2.ase"))
 	{
 		aft = c1.now();
-		
+
 		t = aft - bef;
 
 		bef = c1.now();
