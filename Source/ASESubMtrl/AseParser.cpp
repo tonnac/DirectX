@@ -50,25 +50,48 @@ bool AseParser::LoadAse(const std::wstring & FileName, AseMesh * mesh)
 	}
 
 	size_t k = 0;
+	//while (!fp.eof())
+	//{
+	//	std::getline(fp, buffer);
+	//	int findType = (int)buffer.find(m_Type[k]);
+	//	if (findType >= 0)
+	//	{
+	//		switch (k)
+	//		{
+	//		case 0:
+	//			m_ScnenIndex = m_Stream.size();
+	//			break;
+	//		case 1:
+	//			m_MaterialIndex = m_Stream.size();
+	//			break;
+	//		case 2:
+	//			m_GeomeshIndex.push_back(m_Stream.size());
+	//			break;
+	//		}
+	//		k = (k + 1 >= m_Type.size()) ? m_Type.size() - 1 : k + 1;
+	//	}
+	//	m_Stream.push_back(buffer);
+	//}
+
 	while (!fp.eof())
 	{
+		int num = 0;
 		std::getline(fp, buffer);
-		int findType = (int)buffer.find(m_Type[k]);
-		if (findType >= 0)
+		m_func(buffer, num);
+
+		switch (num)
 		{
-			switch (k)
-			{
-			case 0:
-				m_ScnenIndex = m_Stream.size();
-				break;
-			case 1:
-				m_MaterialIndex = m_Stream.size();
-				break;
-			case 2:
-				m_GeomeshIndex.push_back(m_Stream.size());
-				break;
-			}
-			k = (k + 1 >= m_Type.size()) ? m_Type.size() - 1 : k + 1;
+		case 0:
+			m_ScnenIndex = m_Stream.size();
+			break;
+		case 1:
+			m_MaterialIndex = m_Stream.size();
+			break;
+		case 2:
+			m_GeomeshIndex.push_back(m_Stream.size());
+			break;
+		default:
+			break;
 		}
 		m_Stream.push_back(buffer);
 	}
@@ -89,13 +112,9 @@ void AseParser::LoadScene()
 
 	while (m_Index != m_MaterialIndex && (int)scene != m_SceneType.size())
 	{
-		int findType = (int)m_Stream[m_Index].find(m_SceneType[(int)scene]);
-		if (findType >= 0)
-		{
-			InputScene(scene);
-			IncreaseEnum(scene, true);
-		}
-		++m_Index;
+		Findstring(m_SceneType[(int)scene]);
+		InputScene(scene);
+		IncreaseEnum(scene, true);
 	}
 }
 

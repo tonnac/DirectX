@@ -90,4 +90,19 @@ private:
 	static const std::array<std::string, 4> m_SceneType;
 	static const std::array<std::string, 4> m_MaterialType;
 	static const std::array<std::string, 4> m_GeomeshType;
+
+	std::function<bool(const std::string&, int&)> m_func = [this](const std::string& text, int& num) -> bool
+	{
+		for (size_t i = 0; i < m_Type.size(); ++i)
+		{
+			int findType = (int)text.find(m_Type[i]);
+			if (findType >= 0)
+			{
+				num = (int)i;
+				return true;
+			}
+		}
+		num = -1;
+		return false;
+	};
 };

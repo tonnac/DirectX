@@ -27,13 +27,14 @@ int Sample::isEqualVertexList(Mesh& mesh, PNCT_VERTEX& v)
 bool Sample::Init()
 {
 	steady_clock c1;
+	
 	steady_clock::time_point bef0 = c1.now();
 	steady_clock::time_point bef;
 	steady_clock::time_point aft;
 	duration<double> t;
 
 	bef = c1.now();
-	if (m_obj.Load(L"lll.ase"))
+	if (m_obj.Load(L"eee.ase"))
 	{
 		aft = c1.now();
 
@@ -108,7 +109,7 @@ bool Sample::Frame()
 }
 bool Sample::Render()
 {
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < (int)m_xObj.size(); ++i)
 	{
 		for (auto& x : m_xObj[i].m_Objectlist)
 		{

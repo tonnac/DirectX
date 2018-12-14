@@ -17,5 +17,5 @@ public:
 	bool	   	Release() override;
 private:
 	AseMesh m_obj;
-	Mesh m_xObj[2];
+	std::array<Mesh, 2> m_xObj;
 };
