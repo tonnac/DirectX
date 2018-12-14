@@ -4,10 +4,11 @@
 
 using namespace DirectX;
 
-const std::array<std::string, 3> AseParser::m_Type =
+const std::array<std::string, 4> AseParser::m_Type =
 {
 	"*SCENE {",
 	"*MATERIAL_LIST {",
+	"*HELPEROBJECT {",
 	"*GEOMOBJECT {"
 };
 
@@ -23,8 +24,8 @@ const std::array<std::string, 4> AseParser::m_MaterialType =
 {
 	"*MATERIAL_NAME",
 	"*MATERIAL_CLASS",
-	"*MAP_SUBNO",
-	"\\"
+	"*MAP_DIFFUSE",
+	"*MAP_REFLECT",
 };
 
 const std::array<std::string, 4> AseParser::m_GeomeshType =
@@ -33,6 +34,12 @@ const std::array<std::string, 4> AseParser::m_GeomeshType =
 	"*NODE_TM {",
 	"*MESH {",
 	"*MATERIAL_REF"
+};
+
+const std::array<std::string, 2> AseParser::m_TextureType =
+{
+	"*MAP_SUBNO",
+	"\\",
 };
 
 bool AseParser::LoadAse(const std::wstring & FileName, AseMesh * mesh)
@@ -53,31 +60,57 @@ bool AseParser::LoadAse(const std::wstring & FileName, AseMesh * mesh)
 	while (!fp.eof())
 	{
 		std::getline(fp, buffer);
-		int findType = (int)buffer.find(m_Type[k]);
-		if (findType >= 0)
+		for (size_t i = 0; i < m_Type.size(); ++i)
 		{
-			switch (k)
+			int findType = (int)buffer.find(m_Type[i]);
+			if (findType >= 0)
 			{
-			case 0:
-				m_ScnenIndex = m_Stream.size();
-				break;
-			case 1:
-				m_MaterialIndex = m_Stream.size();
-				break;
-			case 2:
-				m_GeomeshIndex.push_back(m_Stream.size());
+				k = i;
 				break;
 			}
-			k = (k + 1 >= m_Type.size()) ? m_Type.size() - 1 : k + 1;
+			k = -1;
 		}
+
+		switch (k)
+		{
+		case 0:
+			m_ScnenIndex = m_Stream.size();
+			break;
+		case 1:
+			m_MaterialIndex = m_Stream.size();
+			break;
+		case 2:
+			m_ObjectIndex.insert(std::pair<size_t, bool>(m_Stream.size(), false));
+			++m_HelperObjSize;
+			break;
+		case 3:
+			m_ObjectIndex.insert(std::pair<size_t, bool>(m_Stream.size(), true));
+			++m_GeomeshSize;
+			break;
+		}		
+
 		m_Stream.push_back(buffer);
 	}
-	
+
 	fp.close();
+
+	m_aseMesh->m_ObjectList.resize(m_GeomeshSize);
 
 	LoadScene();
 	LoadMaterial();
-	LoadGeomesh();
+	size_t meshindex = -1;
+	size_t helperindex = -1;
+	for (auto& x : m_ObjectIndex)
+	{
+		if (!x.second)
+		{
+			LoadHelperObject(x.first, ++helperindex);
+		}
+		else
+		{
+			LoadGeomesh(x.first, ++meshindex);
+		}
+	}
 
 	return true;
 }
@@ -98,7 +131,7 @@ void AseParser::LoadScene()
 void AseParser::LoadMaterial()
 {
 	size_t Cnt = 0;
-	MaterialType mtrl = MaterialType::MATERIAL_NAME;
+	MaterialType mtrl = (MaterialType)0;
 	m_Index = m_MaterialIndex + 1;
 
 	std::string buffer;
@@ -110,14 +143,14 @@ void AseParser::LoadMaterial()
 
 	while (Cnt < MatirialCount)
 	{
+		Findstring("*MATERIAL ");
 		MaterialList * materialList = &m_aseMesh->m_MateriaList[Cnt];
-		while (m_Index != m_GeomeshIndex[0] && (int)mtrl <= m_MaterialType.size())
+
+		for (;FindType(m_MaterialType.data(), mtrl); ++m_Index)
 		{
-			Findstring(m_MaterialType[(int)mtrl]);
 			InputMaterial(materialList, mtrl);
-			IncreaseEnum(mtrl, true);
 		}
-		mtrl = MaterialType::MATERIAL_NAME;
+		mtrl = (MaterialType)0;
 		++Cnt;
 	}
 }
@@ -125,7 +158,7 @@ void AseParser::LoadMaterial()
 void AseParser::LoadSubMaterial(MaterialList* material)
 {
 	std::string buffer;
-	MaterialType mtrl = MaterialType::MATERIAL_NAME;
+	MaterialType mtrl = (MaterialType)0;
 	int Cnt = 0;
 	int SubMaterialNum = 0;
 	Findstring("*NUMSUBMTLS");
@@ -136,37 +169,32 @@ void AseParser::LoadSubMaterial(MaterialList* material)
 
 	while (Cnt < SubMaterialNum)
 	{
-		while ((int)mtrl != m_MaterialType.size())
+		Findstring("*SUBMATERIAL");
+		for (;FindType(m_MaterialType.data(), mtrl); ++m_Index)
 		{
-			Findstring(m_MaterialType[(int)mtrl]);
 			InputMaterial(&material->SubMaterial[Cnt], mtrl);
-			IncreaseEnum(mtrl, true);
 		}
+		mtrl = (MaterialType)0;
 		++Cnt;
-		mtrl = MaterialType::MATERIAL_NAME;
 	}
 }
 
-void AseParser::LoadGeomesh()
+void AseParser::LoadGeomesh(size_t index, size_t meshIndex)
 {
-	m_Index = m_GeomeshIndex[0] + 1;
+	m_Index = index + 1;
 
-	size_t GeomeshCount = m_GeomeshIndex.size();
-	m_aseMesh->m_ObjectList.resize(GeomeshCount);
-	size_t Cnt = 0;
-	MeshType meshtype = MeshType::NODE_NAME;
+	MeshType meshtype = (MeshType)0;
 
-	while (Cnt < GeomeshCount)
+	while ((int)meshtype != m_GeomeshType.size())
 	{
-		while ((int)meshtype != m_GeomeshType.size())
-		{
-			Findstring(m_GeomeshType[(int)meshtype]);
-			InputMesh(Cnt, meshtype);
-			IncreaseEnum(meshtype, true);
-		}
-		++Cnt;
-		meshtype = MeshType::NODE_NAME;
+		Findstring(m_GeomeshType[(int)meshtype]);
+		InputMesh(meshIndex, meshtype);
+		IncreaseEnum(meshtype, true);
 	}
+}
+
+void AseParser::LoadHelperObject(size_t index, size_t helperIndex)
+{
 }
 
 void AseParser::InputScene(SceneType scene)
@@ -220,24 +248,45 @@ void AseParser::InputMaterial(MaterialList* material, MaterialType& materialType
 		}
 	}
 	break;
-	case MaterialType::MAP_SUBNO:
+	case MaterialType::MAP_DIFFUSE:
+	case MaterialType::MAP_REFLECT:
 	{
-		is >> buffer >> material->SubNo;
-	}
-	break;
-	case MaterialType::TEX_FILE:
-	{
-		is >> buffer;
-		std::getline(is, buffer);
-		std::string filepath(buffer, buffer.find_first_of('"') + 1, buffer.find_last_of('\\') - 1);
-		std::string filename(buffer, buffer.find_last_of('\\') + 1, buffer.find_last_of('"') - 1 - buffer.find_last_of('\\'));
-		TexMap tex;
-		tex.Filename = std::wstring(filename.begin(), filename.end());
-		tex.Filepath = std::wstring(filepath.begin(), filepath.end());
-		material->Texture.push_back(tex);
+		InputMap(material);
 	}
 	break;
 	}
+}
+
+void AseParser::InputMap(MaterialList * material)
+{
+	int Num = 0;
+	TexType textype = (TexType)0;
+	TexMap Tex;
+	for (;FindType(m_TextureType.data(), textype); ++m_Index)
+	{
+		std::istringstream is(m_Stream[m_Index]);
+		std::string buffer;
+		switch (textype)
+		{
+			case TexType::MAP_SUBNO:
+			{
+				is >> buffer >> Tex.SubNo;
+			}
+			break;
+			case TexType::FILE_PATH:
+			{
+				is >> buffer;
+				std::getline(is, buffer);
+				std::string filepath(buffer, buffer.find_first_of('"') + 1, buffer.find_last_of('\\') - 1);
+				std::string filename(buffer, buffer.find_last_of('\\') + 1, buffer.find_last_of('"') - 1 - buffer.find_last_of('\\'));
+				Tex.Filename = std::wstring(filename.begin(), filename.end());
+				Tex.Filepath = std::wstring(filepath.begin(), filepath.end());
+			}
+			break;
+		}
+	}
+	if(!Tex.empty())
+		material->Texture.push_back(Tex);
 }
 
 void AseParser::InputMesh(size_t GeomeshIndex, MeshType GeomeshType)
@@ -416,6 +465,11 @@ void AseParser::InputColor(GeomMesh * mesh)
 	is >> ignore >> Num;
 
 	mesh->colorList.resize(Num);
+
+	if (Num == 0)
+	{
+		return;
+	}
 
 	++m_Index;
 
