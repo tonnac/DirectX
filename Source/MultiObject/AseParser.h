@@ -11,8 +11,10 @@
 #include <map>
 
 class AseMesh;
+struct AseConverter;
 struct MaterialList;
 struct GeomMesh;
+struct Helper;
 
 enum class SceneType : unsigned char
 {
@@ -35,8 +37,10 @@ enum class MaterialType : unsigned char
 enum class MeshType : unsigned char
 {
 	NODE_NAME = 0,
+	NODE_PARENT,
 	NODE_TM,
 	MESH,
+	TM_ANIMATION,
 	MATERIAL_REF,
 	Count
 };
@@ -50,10 +54,38 @@ enum class VertexType : unsigned char
 	Count
 };
 
+enum class HelperType : unsigned char
+{
+	NODE_NAME = 0,
+	NODE_PARENT,
+	HELPER_CLASS,
+	NODE_TM,
+	BOUNDINGBOX_MIN,
+	TM_ANIMATION,
+	Count
+};
+
 enum class TexType : unsigned char
 {
 	MAP_SUBNO = 0,
 	FILE_PATH,
+	Count
+};
+
+enum class MatrixType : unsigned char
+{
+	TM_ROW = 0,
+	TM_POS,
+	TM_ROTAXIS,
+	TM_SCALE,
+	Count
+};
+
+enum class AnimationType : unsigned char
+{
+	CONTROL_POS = 0,
+	CONTROL_ROT,
+	CONTROL_SCALE,
 	Count
 };
 
@@ -76,8 +108,13 @@ private:
 	void InputMaterial(MaterialList* material, MaterialType& materialType);
 	void InputMap(MaterialList* material);
 	void InputMesh(size_t GeomeshIndex, MeshType GeomeshType);
+	void InputHelper(size_t HelperIndex, HelperType helperType);
 
-	void InputMatrix(size_t GeomeshIndex);
+	void InputMatrix(Helper* helper);
+	void InputAnimation(Helper* helper);
+	void InputPosTrack(Helper* helper);
+	void InputRotTrack(Helper* helper);
+	void InputScaleTrack(Helper* helper);
 	void InputVertexData(size_t GeomeshIndex);
 
 	void InputVertex(GeomMesh * mesh);
@@ -126,7 +163,10 @@ private:
 	static const std::array<std::string, 4> m_Type;
 	static const std::array<std::string, 4> m_SceneType;
 	static const std::array<std::string, 4> m_MaterialType;
-	static const std::array<std::string, 4> m_GeomeshType;
+	static const std::array<std::string, 6> m_GeomeshType;
+	static const std::array<std::string, 6> m_HelperType;
 	static const std::array<std::string, 2> m_TextureType;
+	static const std::array<std::string, 4> m_MatrixType;
+	static const std::array<std::string, 3> m_AnimationType;
 	const std::string m_EndText = "}";
 };

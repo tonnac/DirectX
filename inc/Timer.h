@@ -1,7 +1,6 @@
 #pragma once
 #include "Define.h"
 #include "DirectWrite.h"
-#include <chrono>
 
 class Timer
 {
@@ -37,10 +36,4 @@ private:
 	FLOAT				m_fEventTime;
 
 	std::tstring		m_Buffer;
-
-
-	std::chrono::system_clock m_sysClock;
-	std::chrono::system_clock::time_point m_CurTick;
-	std::chrono::system_clock::time_point m_BefTick;
-	std::chrono::system_clock::time_point m_OneSecTick;
 };

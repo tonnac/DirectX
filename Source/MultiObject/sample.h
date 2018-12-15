@@ -18,4 +18,6 @@ public:
 private:
 	AseMesh m_obj;
 	std::array<Mesh, 2> m_xObj;
+
+	std::unique_ptr<Mesh> m_mesh = nullptr;
 };

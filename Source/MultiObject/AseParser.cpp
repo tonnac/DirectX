@@ -28,18 +28,45 @@ const std::array<std::string, 4> AseParser::m_MaterialType =
 	"*MAP_REFLECT",
 };
 
-const std::array<std::string, 4> AseParser::m_GeomeshType =
+const std::array<std::string, 6> AseParser::m_GeomeshType =
 {
 	"*NODE_NAME",
+	"*NODE_PARENT",
 	"*NODE_TM {",
 	"*MESH {",
+	"*TM_ANIMATION {",
 	"*MATERIAL_REF"
+};
+
+const std::array<std::string, 6> AseParser::m_HelperType =
+{
+	"*NODE_NAME",
+	"*NODE_PARENT",
+	"*HELPER_CLASS",
+	"*NODE_TM {",
+	"*BOUNDINGBOX_MIN",
+	"*TM_ANIMATION",
 };
 
 const std::array<std::string, 2> AseParser::m_TextureType =
 {
 	"*MAP_SUBNO",
 	"\\",
+};
+
+const std::array<std::string, 4> AseParser::m_MatrixType
+{
+	"*TM_ROW0",
+	"*TM_POS",
+	"*TM_ROTAXIS",
+	"*TM_SCALE "
+};
+
+const std::array<std::string, 3> AseParser::m_AnimationType
+{
+	"*CONTROL_POS_TRACK",
+	"*CONTROL_ROT_TRACK",
+	"*CONTROL_SCALE_TRACK"
 };
 
 bool AseParser::LoadAse(const std::wstring & FileName, AseMesh * mesh)
@@ -95,6 +122,7 @@ bool AseParser::LoadAse(const std::wstring & FileName, AseMesh * mesh)
 	fp.close();
 
 	m_aseMesh->m_ObjectList.resize(m_GeomeshSize);
+	m_aseMesh->m_HelperList.resize(m_HelperObjSize);
 
 	LoadScene();
 	LoadMaterial();
@@ -185,16 +213,22 @@ void AseParser::LoadGeomesh(size_t index, size_t meshIndex)
 
 	MeshType meshtype = (MeshType)0;
 
-	while ((int)meshtype != m_GeomeshType.size())
+	for (;FindType(m_GeomeshType.data(), meshtype); ++m_Index)
 	{
-		Findstring(m_GeomeshType[(int)meshtype]);
 		InputMesh(meshIndex, meshtype);
-		IncreaseEnum(meshtype, true);
 	}
 }
 
 void AseParser::LoadHelperObject(size_t index, size_t helperIndex)
 {
+	m_Index = index + 1;
+
+	HelperType helpertype = (HelperType)0;
+
+	for (;FindType(m_HelperType.data(), helpertype); ++m_Index)
+	{
+		InputHelper(helperIndex, helpertype);
+	}
 }
 
 void AseParser::InputScene(SceneType scene)
@@ -303,9 +337,19 @@ void AseParser::InputMesh(size_t GeomeshIndex, MeshType GeomeshType)
 			m_aseMesh->m_ObjectList[GeomeshIndex].Name = std::wstring(name.begin(), name.end());
 		}
 		break;
+		case MeshType::NODE_PARENT:
+		{
+			std::string buffer;
+			std::istringstream is(m_Stream[m_Index]);
+			is >> buffer;
+			std::getline(is, buffer);
+			std::string name(buffer, buffer.find_first_of('"') + 1, buffer.find_last_of('"') - 2);
+			m_aseMesh->m_ObjectList[GeomeshIndex].ParentName = name;
+		}
+		break;
 		case MeshType::NODE_TM:
 		{
-			InputMatrix(GeomeshIndex);
+			InputMatrix(&m_aseMesh->m_ObjectList[GeomeshIndex].m_Helper);
 		}
 		break;
 		case MeshType::MESH:
@@ -320,46 +364,235 @@ void AseParser::InputMesh(size_t GeomeshIndex, MeshType GeomeshType)
 			is >> buffer >> m_aseMesh->m_ObjectList[GeomeshIndex].mtrlRef;
 		}
 		break;
+		case MeshType::TM_ANIMATION:
+		{
+			std::unique_ptr<Helper> helper = std::make_unique<Helper>();
+			helper->m_ObjType = ObjectType::GEOMESH;
+			InputAnimation(helper.get());
+			m_aseMesh->m_ObjectList[GeomeshIndex].m_AniHelper = std::move(helper);
+		}
+		break;	
 	}
 }
 
-void AseParser::InputMatrix(size_t GeomeshIndex)
+void AseParser::InputHelper(size_t HelperIndex, HelperType helperType)
+{
+	auto& helper = m_aseMesh->m_HelperList[HelperIndex];
+
+	std::string buffer;
+	std::istringstream is(m_Stream[m_Index]);
+
+	switch (helperType)
+	{
+	case HelperType::NODE_NAME:
+	{
+		is >> buffer;
+		std::getline(is, buffer);
+		std::string name(buffer, buffer.find_first_of('"') + 1, buffer.find_last_of('"') - 2);
+		helper.Name = name;
+	}break;
+	case HelperType::NODE_PARENT:
+	{
+		is >> buffer;
+		std::getline(is, buffer);
+		std::string name(buffer, buffer.find_first_of('"') + 1, buffer.find_last_of('"') - 2);
+		helper.ParentName = name;
+	}break;
+	case HelperType::HELPER_CLASS:
+	{
+		is >> buffer;
+		std::getline(is, buffer);
+		int findType0 = (int)buffer.find("bone");
+		if (findType0 >= 0)
+		{
+			helper.m_ObjType = ObjectType::BONE;
+		}
+		else
+		{
+			helper.m_ObjType = ObjectType::DUMMY;
+		}
+	}break;
+	case HelperType::NODE_TM:
+	{
+		InputMatrix(&helper);
+	}break;
+	case HelperType::BOUNDINGBOX_MIN:
+	{
+		XMFLOAT3 Min;
+		XMFLOAT3 Max;
+		is >> buffer >> Min.x >> Min.z >> Min.y;
+		is.clear();
+		is.str(m_Stream[++m_Index]);
+
+		is >> buffer >> Max.x >> Max.z >> Max.y;
+
+		XMVECTOR min = XMLoadFloat3(&Min);
+		XMVECTOR max = XMLoadFloat3(&Max);
+
+		XMVECTOR c = (max + min) * 0.5f;
+
+		BoundingBox box;
+		XMStoreFloat3(&box.Center, c);
+		XMStoreFloat3(&box.Extents, c - min);
+		helper.m_BoundingBox = box;
+	}break;
+	case HelperType::TM_ANIMATION:
+	{
+		InputAnimation(&helper);
+	}break;
+	}
+}
+
+void AseParser::InputMatrix(Helper* helper)
 {
 	std::string buffer;
 
-	Findstring("*TM_ROW0");
+	MatrixType matType = (MatrixType)0;
 
 	XMFLOAT4X4 world;
 	XMStoreFloat4x4(&world, XMMatrixIdentity());
 
-	for (int i = 0; i < 4; ++i)
+	for (;FindType(m_MatrixType.data(), matType); ++m_Index)
 	{
-		std::istringstream is(m_Stream[m_Index++]);
-		is >> buffer >> world.m[i][0] >> world.m[i][2] >> world.m[i][1];
-	}
-	float e[4];
-	CopyMemory(e, world.m[1], sizeof(float) * 4);
-	CopyMemory(world.m[1], world.m[2], sizeof(float) * 4);
-	CopyMemory(world.m[2], e, sizeof(float) * 4);
+		switch (matType)
+		{
+			case MatrixType::TM_ROW:
+			{
+				XMFLOAT4X4 world;
+				XMStoreFloat4x4(&world, XMMatrixIdentity());
+				for (int i = 0; i < 4; ++i)
+				{
+					std::istringstream is(m_Stream[m_Index++]);
+					is >> buffer >> world.m[i][0] >> world.m[i][2] >> world.m[i][1];
+				}
+				float e[4];
+				CopyMemory(e, world.m[1], sizeof(float) * 4);
+				CopyMemory(world.m[1], world.m[2], sizeof(float) * 4);
+				CopyMemory(world.m[2], e, sizeof(float) * 4);
 
-	m_aseMesh->m_ObjectList[GeomeshIndex].matWorld = world;
+				helper->matWorld = world;
+				--m_Index;
+			}break;
+			case MatrixType::TM_POS:
+			{
+				std::istringstream is(m_Stream[m_Index]);
+				is >> buffer >> helper->Position.x >> helper->Position.z >> helper->Position.y;
+
+			}break;
+			case MatrixType::TM_ROTAXIS:
+			{
+				std::istringstream is(m_Stream[m_Index]);
+				is >> buffer >> helper->Rotation.x >> helper->Rotation.z >> helper->Rotation.y;
+
+				is.clear();
+				is.str(m_Stream[++m_Index]);
+
+				is >> buffer >> helper->Rotation.w;
+			}break;
+			case MatrixType::TM_SCALE:
+			{
+				std::istringstream is(m_Stream[m_Index]);
+				is >> buffer >> helper->Scale.x >> helper->Scale.z >> helper->Scale.y;
+
+				is.clear();
+				is.str(m_Stream[++m_Index]);
+
+				is >> buffer >> helper->QuatScale.x >> helper->QuatScale.z >> helper->QuatScale.y;
+
+				is.clear();
+				is.str(m_Stream[++m_Index]);
+
+				is >> buffer >> helper->QuatScale.w;
+			}break;
+		}
+	}
+}
+
+void AseParser::InputAnimation(Helper * helper)
+{
+	AnimationType aniType = (AnimationType)0;
+
+	for (;FindType(m_AnimationType.data(), aniType); ++m_Index)
+	{
+		switch (aniType)
+		{
+			case AnimationType::CONTROL_POS:
+			{
+				InputPosTrack(helper);
+			}break;
+			case AnimationType::CONTROL_ROT:
+			{
+				InputRotTrack(helper);
+			}break;
+			case AnimationType::CONTROL_SCALE:
+			{
+				InputScaleTrack(helper);
+			}break;
+		}
+	}
+}
+
+void AseParser::InputPosTrack(Helper * helper)
+{
+	++m_Index;
+	std::string buffer;
+	int findType = -1;
+
+	for (;findType < 0; findType = (int)m_Stream[++m_Index].find('}'))
+	{
+		std::istringstream is(m_Stream[m_Index]);
+		AniTrack posTrack;
+		is >> buffer >> posTrack.mTick >> posTrack.mPosition.x >> posTrack.mPosition.z >> posTrack.mPosition.y;
+		helper->m_Position.push_back(posTrack);
+	}
+}
+
+void AseParser::InputRotTrack(Helper * helper)
+{
+	++m_Index;
+	std::string buffer;
+	int findType = -1;
+
+	for (;findType < 0; findType = (int)m_Stream[++m_Index].find('}'))
+	{
+		std::istringstream is(m_Stream[m_Index]);
+		AniTrack posTrack;
+		is >> buffer >> posTrack.mTick >> posTrack.mQuatRotation.x >> posTrack.mQuatRotation.z >> posTrack.mQuatRotation.y >> posTrack.mQuatRotation.w;
+		helper->m_Rotation.push_back(posTrack);
+	}
+}
+
+void AseParser::InputScaleTrack(Helper * helper)
+{
+	++m_Index;
+	std::string buffer;
+	int findType = -1;
+
+	for (;findType < 0; findType = (int)m_Stream[++m_Index].find('}'))
+	{
+		std::istringstream is(m_Stream[m_Index]);
+		AniTrack posTrack;
+		is >> buffer >> posTrack.mTick >> posTrack.mQuatRotation.x >> posTrack.mQuatRotation.z >> posTrack.mQuatRotation.y >> posTrack.mQuatRotation.w;
+		helper->m_Scale.push_back(posTrack);
+	}
 }
 
 void AseParser::InputVertexData(size_t GeomeshIndex)
 {
-	static const std::array<std::string, 4> vertexType = 
+	static const std::array<std::string, 5> vertexType = 
 	{ 
 		"*MESH_NUMVERTEX",
 		"*MESH_NUMTVERTEX",
 		"*MESH_NUMCVERTEX",
-		"*MESH_NORMALS"
+		"*MESH_NORMALS",
 	};
 
  	auto& ObjList = m_aseMesh->m_ObjectList[GeomeshIndex];
+	VertexType vType = (VertexType)0;
 
-	for (VertexType vType = VertexType::MESH_NUMVERTEX; vType < VertexType::Count; IncreaseEnum(vType, true))
+
+	for (;FindType(vertexType.data(), vType); ++m_Index)
 	{
-		Findstring(vertexType[(int)vType]);
 		switch (vType)
 		{
 		case VertexType::MESH_NUMVERTEX:
@@ -410,11 +643,12 @@ void AseParser::InputVertex(GeomMesh * mesh)
 		is.clear();
 		is.str(m_Stream[m_Index]);
 		is >> ignore >> ignore >> ignore >> index.i0 >> ignore >> index.i2 >> ignore >> index.i1;
-		for (int k = 0; k < 8; ++k)
-		{
-			is >> ignore;
-		}
-		is >> ignore >> index.Mtrl;
+
+		std::getline(is, ignore);
+
+		std::string Mtrl(ignore, ignore.find_last_of('D') + 2, ignore.length());
+
+		index.Mtrl = std::stoi(Mtrl);
 		mesh->posFaceList[i] = index;
 	}
 }
@@ -468,6 +702,7 @@ void AseParser::InputColor(GeomMesh * mesh)
 
 	if (Num == 0)
 	{
+		--m_Index;
 		return;
 	}
 
@@ -516,6 +751,7 @@ void AseParser::InputNormal(GeomMesh * mesh)
 		is.clear();
 		is >> ignore >> ignore >> mesh->norList[++t].x >> mesh->norList[t].z >> mesh->norList[t].y;
 	}
+	--m_Index;
 }
 
 void AseParser::Findstring(const std::string & text)

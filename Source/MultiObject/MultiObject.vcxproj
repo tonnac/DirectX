@@ -153,6 +153,7 @@
     <ClInclude Include="sample.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AseConverter.cpp" />
     <ClCompile Include="AseMesh.cpp" />
     <ClCompile Include="AseParser.cpp" />
     <ClCompile Include="Mesh.cpp" />

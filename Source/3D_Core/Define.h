@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iomanip>
 #include <list>
+#include <memory>
 #include <algorithm>
 #include <D3DX11.h>
 #include <D3Dcompiler.h>

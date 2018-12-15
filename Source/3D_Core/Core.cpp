@@ -136,7 +136,7 @@ void Core::CreateCamera()
 	modelViewCam->SetViewMatrix({ 0,0,-10.0f });
 	modelViewCam->SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
 
-	m_Camera["default"] = std::move(defaultcamera);
+	m_Camera.insert(std::make_pair("default", std::move(defaultcamera)));
 	m_Camera["modelview"] = std::move(modelViewCam);
 
 	m_pMainCamera = m_Camera["default"].get();

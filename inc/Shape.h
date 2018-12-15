@@ -55,8 +55,8 @@ public:
 	void SetMatrix(D3DXMATRIX* pWorld = nullptr, D3DXMATRIX* pView = nullptr, D3DXMATRIX* pProj = nullptr);
 	void SetColor(D3DXVECTOR4 vColor);
 
-	bool Init();
-	bool Frame();
+	virtual bool Init();
+	virtual bool Frame();
 
 	bool PreRender(ID3D11DeviceContext* pContext);
 	bool PostRender(ID3D11DeviceContext* pContext);
