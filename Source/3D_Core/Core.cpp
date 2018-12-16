@@ -129,7 +129,7 @@ bool Core::Release() { return true; }
 void Core::CreateCamera()
 {
 	auto defaultcamera = std::make_unique<Camera>();
-	defaultcamera->SetViewMatrix({ 0,150,-10.0f });
+	defaultcamera->SetViewMatrix({ 0,0,-60.0f });
 	defaultcamera->SetProjMatrix((float)D3DX_PI * 0.25f, (float)g_rtClient.right / g_rtClient.bottom);
 
 	auto modelViewCam = std::make_unique<ModelView>();

@@ -52,7 +52,7 @@ public:
 	void Subdivide(MeshData& mesmeshdatah);
 	PNCT_VERTEX MidPoint(const PNCT_VERTEX& v0, const PNCT_VERTEX& v1);
 
-	void SetMatrix(D3DXMATRIX* pWorld = nullptr, D3DXMATRIX* pView = nullptr, D3DXMATRIX* pProj = nullptr);
+	virtual void SetMatrix(D3DXMATRIX* pWorld = nullptr, D3DXMATRIX* pView = nullptr, D3DXMATRIX* pProj = nullptr);
 	void SetColor(D3DXVECTOR4 vColor);
 
 	virtual bool Init();

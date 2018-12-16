@@ -29,7 +29,7 @@ bool Sample::Init()
 	steady_clock::time_point bef0 = steady_clock::now();
 	steady_clock::time_point aft;
 	duration<double> t;
-	if (m_obj.Load(L"Turret_Deploy.ase"))
+	if (m_obj.Load(L"turret.ase"))
 	{
 		m_mesh = m_obj.Convert(m_pd3dDevice);
 	}
@@ -44,6 +44,7 @@ bool Sample::Frame()
 }
 bool Sample::Render()
 {
+	m_mesh->SetMatrix(nullptr, &m_pMainCamera->m_matView, &m_pMainCamera->m_matProj);
 	m_mesh->Render(m_pImmediateContext);
 	return true;
 }

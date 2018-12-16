@@ -15,15 +15,17 @@ public:
 	virtual bool Frame()override;
 	virtual bool Render(ID3D11DeviceContext* pContext)override;
 
+	virtual void SetMatrix(D3DXMATRIX* pWorld = nullptr, D3DXMATRIX* pView = nullptr, D3DXMATRIX* pProj = nullptr)override;
+
 	void InitMatrix();
 	bool UpdateAnimaitions();
 public:
+	std::string Name;
+	std::string ParentName;
+
 	sScene m_Scene;
 	float m_fElapsedTime = 0.0f;
 	float m_fTickSpeed = 1.0f;
-
-	std::string Name;
-	std::string ParentName;
 
 	int m_iNumFaces = 0;
 	std::vector<PNCT_VERTEX> m_tmpVertexList;
@@ -32,7 +34,9 @@ public:
 	std::vector<AniTrack> m_Rotation;
 	std::vector<AniTrack> m_Scale;
 
-	int m_TrackIndex = 0;
+	int m_PosTrackIndex = 0;
+	int m_RotTrackIndex = 0;
+	int m_ScaleTrackIndex = 0;
 	ObjectType m_Type = ObjectType::BONE;
 
 	D3DXMATRIX InvWorld;

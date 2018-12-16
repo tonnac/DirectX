@@ -311,8 +311,13 @@ void AseParser::InputMap(MaterialList * material)
 			{
 				is >> buffer;
 				std::getline(is, buffer);
-				std::string filepath(buffer, buffer.find_first_of('"') + 1, buffer.find_last_of('\\') - 1);
+				std::string filepath(buffer, buffer.find_first_of('"') + 1, buffer.find_last_of('\\') - 2);
 				std::string filename(buffer, buffer.find_last_of('\\') + 1, buffer.find_last_of('"') - 1 - buffer.find_last_of('\\'));
+				std::string filePath0(filepath, filepath.find_last_of('\\') + 1, filepath.length());
+				if ((int)filePath0.find("data") < 0)
+				{
+					filename = filePath0 + '\\' + filename;
+				}
 				Tex.Filename = std::wstring(filename.begin(), filename.end());
 				Tex.Filepath = std::wstring(filepath.begin(), filepath.end());
 			}
@@ -556,9 +561,27 @@ void AseParser::InputRotTrack(Helper * helper)
 	for (;findType < 0; findType = (int)m_Stream[++m_Index].find('}'))
 	{
 		std::istringstream is(m_Stream[m_Index]);
-		AniTrack posTrack;
-		is >> buffer >> posTrack.mTick >> posTrack.mQuatRotation.x >> posTrack.mQuatRotation.z >> posTrack.mQuatRotation.y >> posTrack.mQuatRotation.w;
-		helper->m_Rotation.push_back(posTrack);
+		AniTrack rotTrack;
+		XMFLOAT3 rot;
+		float angle = 0.0f;
+		is >> buffer >> rotTrack.mTick >> rot.x >> rot.z >> rot.y >> angle;
+		XMVECTOR quatRot = XMQuaternionRotationAxis(XMLoadFloat3(&rot), angle);
+		XMStoreFloat4(&rotTrack.mQuatRotation, quatRot);
+		helper->m_Rotation.push_back(rotTrack);
+	}
+
+	for (size_t i = 0; i < helper->m_Rotation.size(); ++i)
+	{
+		XMFLOAT4 quat = helper->m_Rotation[i].mQuatRotation;
+		if (i != 0)
+		{
+			XMFLOAT4 prevQuat = helper->m_Rotation[i - 1].mQuatRotation;
+			XMVECTOR prevVec = XMLoadFloat4(&prevQuat);
+			XMVECTOR curVec = XMLoadFloat4(&quat);
+			curVec = XMQuaternionMultiply(prevVec, curVec);
+			XMStoreFloat4(&quat, curVec);
+		}
+		helper->m_Rotation[i].mQuatRotation = quat;
 	}
 }
 
@@ -571,9 +594,20 @@ void AseParser::InputScaleTrack(Helper * helper)
 	for (;findType < 0; findType = (int)m_Stream[++m_Index].find('}'))
 	{
 		std::istringstream is(m_Stream[m_Index]);
-		AniTrack posTrack;
-		is >> buffer >> posTrack.mTick >> posTrack.mQuatRotation.x >> posTrack.mQuatRotation.z >> posTrack.mQuatRotation.y >> posTrack.mQuatRotation.w;
-		helper->m_Scale.push_back(posTrack);
+		AniTrack scaleTrack;
+		XMFLOAT3 rot;
+		float angle = 0.0f;
+		is >> buffer >> scaleTrack.mTick >> scaleTrack.mPosition.x >> scaleTrack.mPosition.z >> scaleTrack.mPosition.y >> rot.x >> rot.z >> rot.y >> angle;
+		if (XMVector3Equal(XMVectorZero(), XMLoadFloat3(&rot)))
+		{
+			XMStoreFloat4(&scaleTrack.mQuatRotation, XMVectorZero());
+		}
+		else
+		{
+			XMVECTOR quatRot = XMQuaternionRotationAxis(XMLoadFloat3(&rot), angle);
+			XMStoreFloat4(&scaleTrack.mQuatRotation, quatRot);
+		}
+		helper->m_Scale.push_back(scaleTrack);
 	}
 }
 

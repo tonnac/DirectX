@@ -34,6 +34,8 @@ namespace DX
 		LPVOID pData,
 		ID3D11Buffer** ppBuffer)
 	{
+		if (iNumCount <= 0)
+			return nullptr;
 		ID3D11Buffer* pBuffer = nullptr;
 		D3D11_BUFFER_DESC bd;
 		D3D11_SUBRESOURCE_DATA sd;

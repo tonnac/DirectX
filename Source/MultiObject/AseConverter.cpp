@@ -93,6 +93,8 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 		submesh->m_BoundingBox = helper.m_BoundingBox;
 		submesh->m_matWorld = (float*)&helper.matWorld;
 
+		D3DXMatrixInverse(&submesh->InvWorld, nullptr, &submesh->m_matWorld);
+
 		CopyMemory(&submesh->Rotation.m[0], &helper.Rotation, sizeof(float) * 4);
 		CopyMemory(&submesh->Scale.m[0], &helper.Scale, sizeof(float) * 3);
 		CopyMemory(&submesh->Scale.m[1], &helper.QuatScale, sizeof(float) * 4);
@@ -118,13 +120,20 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 		subMesh->m_Type = ObjectType::GEOMESH;
 		subMesh->m_matWorld = (float*)&geoObj.m_Helper.matWorld;
 
+		D3DXMatrixInverse(&subMesh->InvWorld, nullptr, &subMesh->m_matWorld);
+
 		CopyMemory(&subMesh->Rotation.m[0], &geoObj.m_Helper.Rotation, sizeof(float) * 4);
 		CopyMemory(&subMesh->Scale.m[0], &geoObj.m_Helper.Scale, sizeof(float) * 3);
 		CopyMemory(&subMesh->Scale.m[1], &geoObj.m_Helper.QuatScale, sizeof(float) * 4);
 		CopyMemory(&subMesh->Translation.m[0], &geoObj.m_Helper.Position, sizeof(float) * 3);
 
 
-		subMesh->m_ObjectList.resize(aseMesh->m_MateriaList[mtrlRef].SubMaterial.size());
+		if(aseMesh->m_MateriaList[mtrlRef].SubMaterial.size() != 0)
+			subMesh->m_ObjectList.resize(aseMesh->m_MateriaList[mtrlRef].SubMaterial.size());
+		else
+		{
+			subMesh->m_ObjectList.resize(aseMesh->m_MateriaList.size());
+		}
 		for (int k = 0; k < (int)subMesh->m_ObjectList.size(); ++k)
 		{
 			subMesh->m_ObjectList[k] = std::make_unique<Mesh>();
@@ -148,6 +157,7 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 				{
 					int index = aseMesh->m_ObjectList[i].posFaceList[iFace].v[iVer];
 					vertex.p = (float*)&aseMesh->m_ObjectList[i].vertexList[index];
+					D3DXVec3TransformCoord(&vertex.p, &vertex.p, &subMesh->InvWorld);
 				}
 
 				//normal
@@ -157,6 +167,7 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 				}
 
 				//color
+				vertex.c = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 				if (aseMesh->m_ObjectList[i].colorFaceList.size() > 0)
 				{
 					int index = aseMesh->m_ObjectList[i].colorFaceList[iFace].v[iVer];
@@ -178,10 +189,19 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 		{
 			auto& obj = subMesh->m_ObjectList[k];
 			std::tstring texName;
-			std::tstring texPath = L"..\\..\\data\\tex\\";
-			if (aseMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture.size() != 0)
+			std::tstring texPath = L"..\\..\\data\\";
+			if (aseMesh->m_MateriaList[mtrlRef].SubMaterial.size() != 0)
 			{
-				texName = aseMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture[0].Filename;
+				if(!aseMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture.empty())
+					texName = aseMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture[0].Filename;
+				else
+				{
+					texName = std::tstring();
+				}
+			}
+			else if(aseMesh->m_MateriaList.size() != 0)
+			{
+				texName = aseMesh->m_MateriaList[mtrlRef].Texture[0].Filename;
 			}
 			else
 			{
@@ -190,7 +210,8 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 			}
 			obj->m_DxObject.m_iNumVertex = (UINT)obj->m_VertexList.size();
 			obj->m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
-			obj->Create(device, L"shape.hlsl", texPath + texName);
+			if(obj->m_DxObject.m_iNumVertex > 0)
+				obj->Create(device, L"shape.hlsl", texPath + texName);
 		}
 
 		std::vector<std::unique_ptr<Mesh>>::iterator iter = subMesh->m_ObjectList.begin();
@@ -220,11 +241,24 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 	}
 
 	std::unordered_map<std::string, std::unique_ptr<Mesh>>::const_iterator iter = rMesh.begin();
+	std::vector<Mesh*>::const_iterator childiter;
 
 	for (;iter != rMesh.end();)
 	{
 		if (iter->second->m_ChildList.size() == 0 && iter->second->m_Type < ObjectType::GEOMESH)
 		{
+			if (iter->second->m_Parent != nullptr)
+			{
+				childiter = iter->second->m_Parent->m_ChildList.begin();
+				for (;childiter != iter->second->m_Parent->m_ChildList.end(); ++childiter)
+				{
+					if ((*childiter)->Name == iter->second->Name)
+					{
+						childiter = iter->second->m_Parent->m_ChildList.erase(childiter);
+						break;
+					}
+				}
+			}
 			iter = rMesh.erase(iter);
 		}
 		else
@@ -255,5 +289,6 @@ std::unique_ptr<Mesh> AseConverter::Convert0(AseMesh * aseMesh, ID3D11Device * d
 	}
 
 	rMesh[RootName]->Init();
+
 	return std::move(rMesh[RootName]);
 }
