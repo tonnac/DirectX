@@ -34,7 +34,7 @@ bool Mesh::Frame()
 	}
 
 	if (m_Parent != nullptr)
-		m_matWorld = m_matWorld * m_Parent->m_matWorld;
+		m_matWorld *= m_Parent->m_matWorld;
 
 	D3DXVECTOR3 v0, v1, v2, v3;
 	v0 = m_matWorld.m[0];
