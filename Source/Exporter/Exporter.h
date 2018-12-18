@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Header.h"
+#include "ZXCExporter.h"
 
 #define Export_Class_ID Class_ID(0x4f9662a2, 0x5936834)
 

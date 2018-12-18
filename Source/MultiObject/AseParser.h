@@ -10,6 +10,7 @@
 #include <functional>
 #include <map>
 
+
 class AseMesh;
 struct AseConverter;
 struct MaterialList;

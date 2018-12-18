@@ -1,7 +1,6 @@
 #include "Exporter.h"
 
 
-
 Exporter::Exporter()
 {
 }
@@ -17,19 +16,19 @@ int Exporter::ExtCount()
 	return 1;
 }
 
-const MCHAR *Exporter::Ext(int /*i*/)
+const MCHAR *Exporter::Ext(int )
 {
-	return L"ggg";
+	return L"zxc";
 }
 
 const MCHAR *Exporter::LongDesc()
 {
-	return L"Exporter 1.0";
+	return L"ZXCExporter V1.0";
 }
 
 const MCHAR *Exporter::ShortDesc()
 {
-	return L"Exporter";
+	return L"ZXCExporter";
 }
 
 const MCHAR *Exporter::AuthorName()
@@ -57,11 +56,11 @@ unsigned int Exporter::Version()
 	return 100;
 }
 
-void Exporter::ShowAbout(HWND /*hWnd*/)
+void Exporter::ShowAbout(HWND)
 {
 }
 
-BOOL Exporter::SupportsOptions(int /*ext*/, DWORD /*options*/)
+BOOL Exporter::SupportsOptions(int, DWORD )
 {
 	return TRUE;
 }
@@ -70,5 +69,13 @@ BOOL Exporter::SupportsOptions(int /*ext*/, DWORD /*options*/)
 int	Exporter::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i,
 	BOOL suppressPrompts, DWORD options)
 {
-	return FALSE;
+	ZXCExporter exporter;
+	
+	if (!exporter.Initialize(i, name, LongDesc()))
+	{
+		return FALSE;
+	}
+	exporter.Run();
+
+	return TRUE;
 }
