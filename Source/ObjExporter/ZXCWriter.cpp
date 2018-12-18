@@ -70,7 +70,6 @@ void ZXCWriter::InputMaterial(const std::vector<ZXCMaterial>& material, std::wof
 					}
 				}
 			}
-			os << std::endl;
 		}
 		else
 		{
@@ -84,10 +83,8 @@ void ZXCWriter::InputMaterial(const std::vector<ZXCMaterial>& material, std::wof
 					os << TexInfo;
 				}
 			}
-			os << std::endl;
 		}
 	}
-	os << std::endl;
 }
 
 std::wstring ZXCWriter::Savetime()
