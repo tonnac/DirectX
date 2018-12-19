@@ -236,45 +236,37 @@ void ZXCWriter::InputVBIB(ZXCObject& mesh, int mtrlRef, std::wofstream & os)
 
 		std::sort(vec.begin(), vec.end());
 
-		indices[i * 3 + 0] = vec[0];
-		indices[i * 3 + 1] = vec[1];
-		indices[i * 3 + 2] = vec[2];
-	}
+		indices[i * 3 + 0] = vec[0] = i0;
+		indices[i * 3 + 1] = vec[1] = i1;
+		indices[i * 3 + 2] = vec[2] = i2;
 
-	for (int i = 0; i < (int)(indices.size() / 3) - 1; ++i)
-	{
-		std::uint32_t i0 = indices[i * 3 + 0];
-		std::uint32_t i1 = indices[i * 3 + 1];
-		std::uint32_t i2 = indices[i * 3 + 2];
-
-
-		for (int k = 0; k < (int)i; ++k)
+		for (int k = i - 1; k >= 0; --k)
 		{
 			std::uint32_t n0 = indices[k * 3 + 0];
 			std::uint32_t n1 = indices[k * 3 + 1];
 			std::uint32_t n2 = indices[k * 3 + 2];
 
-			if (n0 < i0)
+			if (n0 > i0)
 			{
-				std::swap(indices[i * 3 + 0], indices[(i + 1) * 3 + 0]);
-				std::swap(indices[i * 3 + 1], indices[(i + 1) * 3 + 1]);
-				std::swap(indices[i * 3 + 2], indices[(i + 1) * 3 + 2]);
+				std::swap(indices[i * 3 + 0], indices[k * 3 + 0]);
+				std::swap(indices[i * 3 + 1], indices[k * 3 + 1]);
+				std::swap(indices[i * 3 + 2], indices[k * 3 + 2]);
 				continue;
 			}
 
-			if (n0 == i0 && n1 < i1)
+			if (n0 == i0 && n1 > i1)
 			{
-				std::swap(indices[i * 3 + 0], indices[(i + 1) * 3 + 0]);
-				std::swap(indices[i * 3 + 1], indices[(i + 1) * 3 + 1]);
-				std::swap(indices[i * 3 + 2], indices[(i + 1) * 3 + 2]);
+				std::swap(indices[i * 3 + 0], indices[k * 3 + 0]);
+				std::swap(indices[i * 3 + 1], indices[k * 3 + 1]);
+				std::swap(indices[i * 3 + 2], indices[k * 3 + 2]);
 				continue;
 			}
 
-			if (n0 == i0 && n1 == i1 && n2 < i2)
+			if (n0 == i0 && n1 == i1 && n2 > i2)
 			{
-				std::swap(indices[i * 3 + 0], indices[(i + 1) * 3 + 0]);
-				std::swap(indices[i * 3 + 1], indices[(i + 1) * 3 + 1]);
-				std::swap(indices[i * 3 + 2], indices[(i + 1) * 3 + 2]);
+				std::swap(indices[i * 3 + 0], indices[k * 3 + 0]);
+				std::swap(indices[i * 3 + 1], indices[k * 3 + 1]);
+				std::swap(indices[i * 3 + 2], indices[k * 3 + 2]);
 				continue;
 			}
 		}
