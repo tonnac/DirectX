@@ -75,7 +75,6 @@ int	Exporter::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i,
 	{
 		return FALSE;
 	}
-	exporter.Run();
-
-	return TRUE;
+	
+	return exporter.Run();
 }

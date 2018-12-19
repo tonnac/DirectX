@@ -61,9 +61,12 @@ void ZXCExporter::AddObject(INode * node)
 	switch (os.obj->SuperClassID())
 	{
 		case GEOMOBJECT_CLASS_ID:
-		case HELPER_CLASS_ID:
 		{
 			// Object√ﬂ∞°
+		}break;
+		case HELPER_CLASS_ID:
+		{
+
 		}break;
 	}
 
