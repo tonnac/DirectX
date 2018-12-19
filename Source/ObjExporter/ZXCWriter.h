@@ -3,14 +3,6 @@
 #include "Header.h"
 #include <chrono>
 
-struct LessFunctor
-{
-	bool operator()(VertexTri & lhs, VertexTri & rhs)
-	{
-		return lhs.mSubMtrl < rhs.mSubMtrl;
-	}
-};
-
 class ZXCWriter
 {
 public:
@@ -39,6 +31,6 @@ private:
 	const std::wstring& mFilename;
 	const SceneInfo& mSceneInfo;
 	const std::vector<ZXCMaterial>& mMaterial;
-	std::vector<ZXCObject>& mMesh;
-	std::vector<ZXCObject>& mHelper;
+	std::vector<ZXCObject> mMesh;
+	std::vector<ZXCObject> mHelper;
 };

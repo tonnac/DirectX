@@ -9,15 +9,15 @@ ZXCWriter::ZXCWriter(
 	const std::wstring & Filename,
 	const SceneInfo & sceneInfo,
 	const std::vector<ZXCMaterial>& material,
-	std::vector<ZXCObject>& mMesh,
+	std::vector<ZXCObject>& mesh,
 	std::vector<ZXCObject>& helper)
 	: mExporterVersion(ExporterVersion),
 	mFilename(Filename),
 	mSceneInfo(sceneInfo),
-	mMaterial(material), 
-	mMesh(mMesh),
-	mHelper(helper)
+	mMaterial(material)
 {
+	mMesh = std::move(mesh);
+	mHelper = std::move(helper);
 }
 
 bool ZXCWriter::Savefile()
@@ -132,7 +132,7 @@ void ZXCWriter::InputMesh(std::wofstream & os)
 
 		os << MeshInfo << worldMatrix;
 
-		std::sort(mMesh[i].mTriangles.begin(), mMesh[i].mTriangles.end(), LessFunctor());
+		std::sort(mMesh[i].mTriangles.begin(), mMesh[i].mTriangles.end());
 
 		int mtrlRef = mMesh[i].mMaterialRef;
 		if (mtrlRef >= 0 && !mMaterial[mtrlRef].SubMaterial.empty())
@@ -229,46 +229,46 @@ void ZXCWriter::InputVBIB(ZXCObject& mesh, int mtrlRef, std::wofstream & os)
 		std::uint32_t i1 = indices[i * 3 + 1];
 		std::uint32_t i2 = indices[i * 3 + 2];
 
-		std::vector<std::uint32_t> vec;
-		vec.push_back(i0);
-		vec.push_back(i1);
-		vec.push_back(i2);
+		std::set<std::uint32_t> index;
+		index.insert(i0);
+		index.insert(i1);
+		index.insert(i2);
 
-		std::sort(vec.begin(), vec.end());
+		indices[i * 3 + 0] = *index.begin();
+		indices[i * 3 + 1] = *std::next(index.begin(), 1);
+		indices[i * 3 + 2] = *std::next(index.begin(), 2);
 
-		indices[i * 3 + 0] = vec[0] = i0;
-		indices[i * 3 + 1] = vec[1] = i1;
-		indices[i * 3 + 2] = vec[2] = i2;
-
-		for (int k = i - 1; k >= 0; --k)
+		for (int k = i; k >= 1; --k)
 		{
 			std::uint32_t n0 = indices[k * 3 + 0];
 			std::uint32_t n1 = indices[k * 3 + 1];
 			std::uint32_t n2 = indices[k * 3 + 2];
 
-			if (n0 > i0)
+			std::uint32_t p0 = indices[(k - 1) * 3 + 0];
+			std::uint32_t p1 = indices[(k - 1) * 3 + 1];
+			std::uint32_t p2 = indices[(k - 1) * 3 + 2];
+
+			if (n0 < p0)
 			{
-				std::swap(indices[i * 3 + 0], indices[k * 3 + 0]);
-				std::swap(indices[i * 3 + 1], indices[k * 3 + 1]);
-				std::swap(indices[i * 3 + 2], indices[k * 3 + 2]);
+				std::swap(indices[(k - 1) * 3 + 0], indices[k * 3 + 0]);
+				std::swap(indices[(k - 1) * 3 + 1], indices[k * 3 + 1]);
+				std::swap(indices[(k - 1) * 3 + 2], indices[k * 3 + 2]);
 				continue;
 			}
 
-			if (n0 == i0 && n1 > i1)
+			if (n0 == p0 && n1 < p1)
 			{
-				std::swap(indices[i * 3 + 0], indices[k * 3 + 0]);
-				std::swap(indices[i * 3 + 1], indices[k * 3 + 1]);
-				std::swap(indices[i * 3 + 2], indices[k * 3 + 2]);
+				std::swap(indices[(k - 1) * 3 + 1], indices[k * 3 + 1]);
+				std::swap(indices[(k - 1) * 3 + 2], indices[k * 3 + 2]);
 				continue;
 			}
 
-			if (n0 == i0 && n1 == i1 && n2 > i2)
+			if (n0 == p0 && n1 == p1 && n2 < p2)
 			{
-				std::swap(indices[i * 3 + 0], indices[k * 3 + 0]);
-				std::swap(indices[i * 3 + 1], indices[k * 3 + 1]);
-				std::swap(indices[i * 3 + 2], indices[k * 3 + 2]);
+				std::swap(indices[(k - 1) * 3 + 2], indices[k * 3 + 2]);
 				continue;
 			}
+			break;
 		}
 	}
 

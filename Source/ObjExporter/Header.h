@@ -15,10 +15,12 @@
 #include <vector>
 #include <unordered_map>
 #include <map>
+#include <set>
 #include <string>
 #include <fstream>
 #include <memory>
 #include <algorithm>
+#include <functional>
 
 constexpr float Epsilon = 1.0e-3f;
 
@@ -56,13 +58,16 @@ struct PNCT_VERTEX
 		}
 		return false;
 	}
-
 };
 
 struct VertexTri
 {
 	int mSubMtrl = -1;
 	PNCT_VERTEX v[3];
+	inline bool operator< (const VertexTri& rhs) const
+	{
+		return mSubMtrl < rhs.mSubMtrl;
+	}
 };
 
 struct SceneInfo
