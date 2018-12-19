@@ -5,7 +5,7 @@
 
 struct LessFunctor
 {
-	bool operator()(const VertexTri & lhs, const VertexTri & rhs)
+	bool operator()(VertexTri & lhs, VertexTri & rhs)
 	{
 		return lhs.mSubMtrl < rhs.mSubMtrl;
 	}
