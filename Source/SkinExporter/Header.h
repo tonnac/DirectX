@@ -62,6 +62,20 @@ struct PNCT_VERTEX
 	}
 };
 
+struct PNCTW4VERTEX : public PNCT_VERTEX
+{
+	std::array<float, 4> w;
+	std::array<std::wstring, 4> i;
+};
+
+struct PNCTW8VERTEX : public PNCT_VERTEX
+{
+	std::array<float, 4> w0;
+	std::array<std::wstring, 4> i0;
+	std::array<float, 4> w1;
+	std::array<std::wstring, 4> i1;
+};
+
 struct VertexTri
 {
 	int mSubMtrl = -1;
@@ -105,6 +119,7 @@ struct AnimTrack
 
 struct ZXCObject
 {
+	bool isBipedObject = false;
 	int mMaterialRef = -1;
 	std::wstring mNodeName;
 	std::wstring mParentName;
@@ -162,6 +177,44 @@ public:
 	{
 		return (DotProd(CrossProd(m.GetRow(0), m.GetRow(1)), m.GetRow(2)) < 0.0f) ? true : false;
 	}
+
+	static bool isBipedObject(INode* node)
+	{
+		Modifier * phyMod = FindModifer(node, Class_ID(PHYSIQUE_CLASS_ID_A, PHYSIQUE_CLASS_ID_B));
+		Modifier * skinMod = FindModifer(node, SKIN_CLASSID);
+
+		if (phyMod != nullptr || skinMod != nullptr)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	static Modifier* FindModifer(INode * node, Class_ID classID)
+	{
+		Object * object = node->GetObjectRef();
+		if (object == nullptr) return nullptr;
+
+		while (object->SuperClassID() == GEN_DERIVOB_CLASS_ID && object)
+		{
+			IDerivedObject* DerivedObject = static_cast<IDerivedObject*>(object);
+
+			int modStackIndex = 0;
+
+			while (modStackIndex < DerivedObject->NumModifiers())
+			{
+				Modifier * modifier = DerivedObject->GetModifier(modStackIndex);
+
+				if (modifier->ClassID() == classID)
+					return modifier;
+
+				++modStackIndex;
+			}
+			object = DerivedObject->GetObjRef();
+		}
+		return nullptr;
+	}
 };
 
 static inline Quat operator-(Quat& lhs)
@@ -174,16 +227,5 @@ static inline Quat operator-(Quat& lhs)
 	return temp;
 }
 
-template<typename X>
-class Singleton
-{
-protected:
-	Singleton() = default;
-
-public:
-	static X& getInstance()
-	{
-		static X instance;
-		return instance;
-	}
-};
+using ZXCMap = std::unordered_map<std::wstring, std::unique_ptr<ZXCObject>>;
+using ZXCIter = ZXCMap::iterator;

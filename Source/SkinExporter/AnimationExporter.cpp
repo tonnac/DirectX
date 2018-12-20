@@ -1,6 +1,6 @@
 #include "AnimationExporter.h"
 
-void AnimationExporter::LoadAnimation(INode * node, ZXCObject & o, TimeValue start, TimeValue end)
+void AnimationExporter::LoadAnimation(INode * node, ZXCObject * o, TimeValue start, TimeValue end)
 {
 	bool isPosAnimation;
 	bool isRotAnimation;
@@ -88,7 +88,7 @@ void AnimationExporter::DecompAffine(TimeValue t, INode * node, AffineParts & ap
 		AngAxisFromQ(ap.q, rotAngle, *rotAxis);
 }
 
-void AnimationExporter::InputPosSample(INode* node, ZXCObject& o, TimeValue start, TimeValue end)
+void AnimationExporter::InputPosSample(INode* node, ZXCObject* o, TimeValue start, TimeValue end)
 {
 	AffineParts ap;
 	int tickInterval = GetTicksPerFrame();
@@ -100,11 +100,11 @@ void AnimationExporter::InputPosSample(INode* node, ZXCObject& o, TimeValue star
 		AnimTrack ani;
 		ani.mTick = t;
 		MaxUtil::ConvertVector(ap.t, ani.mVec);
-		o.mPosTrack.push_back(ani);
+		o->mPosTrack.push_back(ani);
 	}
 }
 
-void AnimationExporter::InputRotSample(INode* node, ZXCObject& o, TimeValue start, TimeValue end)
+void AnimationExporter::InputRotSample(INode* node, ZXCObject* o, TimeValue start, TimeValue end)
 {
 	AffineParts ap;
 	int tickInterval = GetTicksPerFrame();
@@ -116,11 +116,11 @@ void AnimationExporter::InputRotSample(INode* node, ZXCObject& o, TimeValue star
 		AnimTrack ani;
 		ani.mTick = t;
 		MaxUtil::ConvertVector(ap.q, ani.mQuat);
-		o.mRotTrack.push_back(ani);
+		o->mRotTrack.push_back(ani);
 	}
 }
 
-void AnimationExporter::InputSclaeSample(INode* node, ZXCObject& o, TimeValue start, TimeValue end)
+void AnimationExporter::InputSclaeSample(INode* node, ZXCObject* o, TimeValue start, TimeValue end)
 {
 	AffineParts ap;
 	int tickInterval = GetTicksPerFrame();
@@ -133,41 +133,41 @@ void AnimationExporter::InputSclaeSample(INode* node, ZXCObject& o, TimeValue st
 		ani.mTick = t;
 		MaxUtil::ConvertVector(ap.u, ani.mQuat);
 		MaxUtil::ConvertVector(ap.k, ani.mVec);
-		o.mScaleTrack.push_back(ani);
+		o->mScaleTrack.push_back(ani);
 	}
 }
 
-void AnimationExporter::OverlappedTrackErase(ZXCObject & o)
+void AnimationExporter::OverlappedTrackErase(ZXCObject * o)
 {
-	if (!o.mPosTrack.empty())
+	if (!o->mPosTrack.empty())
 	{
-		std::vector<AnimTrack>::iterator iter = std::next(o.mPosTrack.begin());
-		for (;iter != std::prev(o.mPosTrack.end());)
+		std::vector<AnimTrack>::iterator iter = std::next(o->mPosTrack.begin());
+		for (;iter != std::prev(o->mPosTrack.end());)
 		{
 			if (iter->mVec.Equals(std::prev(iter)->mVec, Epsilon) &&
 				iter->mVec.Equals(std::next(iter)->mVec, Epsilon))
 			{
-				iter = o.mPosTrack.erase(iter);
+				iter = o->mPosTrack.erase(iter);
 			}
 			else
 				++iter;
 		}
 
-		iter = std::prev(o.mPosTrack.end());
+		iter = std::prev(o->mPosTrack.end());
 
 		Quat r0 = std::prev(iter)->mQuat;
 		Quat r1 = iter->mQuat;
 
 		if (r0.Equals(r1, Epsilon))
 		{
-			iter = o.mPosTrack.erase(iter);
+			iter = o->mPosTrack.erase(iter);
 		}
 	}
 
-	if (!o.mRotTrack.empty())
+	if (!o->mRotTrack.empty())
 	{
-		std::vector<AnimTrack>::iterator iter = std::next(o.mRotTrack.begin());
-		for (;iter != std::prev(o.mRotTrack.end());)
+		std::vector<AnimTrack>::iterator iter = std::next(o->mRotTrack.begin());
+		for (;iter != std::prev(o->mRotTrack.end());)
 		{
 			bool b0;
 			bool b1;
@@ -180,27 +180,27 @@ void AnimationExporter::OverlappedTrackErase(ZXCObject & o)
 
 			if (b0 && b1)
 			{
-				iter = o.mRotTrack.erase(iter);
+				iter = o->mRotTrack.erase(iter);
 			}
 			else
 				++iter;
 		}
 
-		iter = std::prev(o.mRotTrack.end());
+		iter = std::prev(o->mRotTrack.end());
 
 		Quat r0 = std::prev(iter)->mQuat;
 		Quat r1 = iter->mQuat;
 
 		if (r0.Equals(r1, Epsilon) || (-r0).Equals(r1, Epsilon))
 		{
-			iter = o.mRotTrack.erase(iter);
+			iter = o->mRotTrack.erase(iter);
 		}
 	}
 
-	if (!o.mScaleTrack.empty())
+	if (!o->mScaleTrack.empty())
 	{
-		std::vector<AnimTrack>::iterator iter = std::next(o.mScaleTrack.begin());
-		for (;iter != std::prev(o.mScaleTrack.end());)
+		std::vector<AnimTrack>::iterator iter = std::next(o->mScaleTrack.begin());
+		for (;iter != std::prev(o->mScaleTrack.end());)
 		{
 			bool b0;
 			bool b1;
@@ -216,20 +216,20 @@ void AnimationExporter::OverlappedTrackErase(ZXCObject & o)
 				iter->mVec.Equals(std::prev(iter)->mVec, Epsilon) &&
 				iter->mVec.Equals(std::next(iter)->mVec, Epsilon))
 			{
-				iter = o.mScaleTrack.erase(iter);
+				iter = o->mScaleTrack.erase(iter);
 			}
 			else
 				++iter;
 		}
 
-		iter = std::prev(o.mScaleTrack.end());
+		iter = std::prev(o->mScaleTrack.end());
 
 		Quat r0 = std::prev(iter)->mQuat;
 		Quat r1 = iter->mQuat;
 
 		if (r0.Equals(r1, Epsilon) || (-r0).Equals(r1, Epsilon))
 		{
-			iter = o.mScaleTrack.erase(iter);
+			iter = o->mScaleTrack.erase(iter);
 		}
 	}
 }

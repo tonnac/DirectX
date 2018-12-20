@@ -1,5 +1,6 @@
 
 #include "ZXCWriter.h"
+#include "SkinExporter.h"
 #include <codecvt>
 
 using namespace std::chrono;
@@ -9,8 +10,8 @@ ZXCWriter::ZXCWriter(
 	const std::wstring & Filename,
 	const SceneInfo & sceneInfo,
 	const std::vector<ZXCMaterial>& material,
-	std::unordered_map<std::wstring, ZXCObject>& mesh,
-	std::unordered_map<std::wstring, ZXCObject>& helper)
+	ZXCMap& mesh,
+	ZXCMap& helper)
 	: mExporterVersion(ExporterVersion),
 	mFilename(Filename),
 	mSceneInfo(sceneInfo),
@@ -116,44 +117,67 @@ void ZXCWriter::InputMesh(std::wofstream & os)
 
 		std::wstring MeshInfo =
 			L"\n\t#GEOMESH_INDEX " + std::to_wstring(++i) +
-			L" \t#NODE_NAME " + o.mNodeName +
-			L" \t#NODE_PARENT " + o.mParentName +
-			L" \t#MATERIAL_REF " + std::to_wstring(o.mMaterialRef) +
-			L" \t#POS_ANIMATION " + std::to_wstring(o.mPosTrack.size()) +
-			L" \t#ROT_ANIMATION " + std::to_wstring(o.mRotTrack.size()) +
-			L" \t#SCALE_ANIMATION " + std::to_wstring(o.mScaleTrack.size());
+			L" \t#NODE_NAME " + o->mNodeName +
+			L" \t#NODE_PARENT " + o->mParentName +
+			L" \t#MATERIAL_REF " + std::to_wstring(o->mMaterialRef) +
+			L" \t#POS_ANIMATION " + std::to_wstring(o->mPosTrack.size()) +
+			L" \t#ROT_ANIMATION " + std::to_wstring(o->mRotTrack.size()) +
+			L" \t#SCALE_ANIMATION " + std::to_wstring(o->mScaleTrack.size());
 
 		std::wstring world =
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[0][0]) + L" \t" + std::to_wstring(o.mWorld.m[0][1]) + L" \t" + std::to_wstring(o.mWorld.m[0][2]) + L" \t" + std::to_wstring(o.mWorld.m[0][3]) +
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[1][0]) + L" \t" + std::to_wstring(o.mWorld.m[1][1]) + L" \t" + std::to_wstring(o.mWorld.m[1][2]) + L" \t" + std::to_wstring(o.mWorld.m[1][3]) +
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[2][0]) + L" \t" + std::to_wstring(o.mWorld.m[2][1]) + L" \t" + std::to_wstring(o.mWorld.m[2][2]) + L" \t" + std::to_wstring(o.mWorld.m[2][3]) +
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[3][0]) + L" \t" + std::to_wstring(o.mWorld.m[3][1]) + L" \t" + std::to_wstring(o.mWorld.m[3][2]) + L" \t" + std::to_wstring(o.mWorld.m[3][3]);
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[0][0]) + L" \t" + std::to_wstring(o->mWorld.m[0][1]) + L" \t" + std::to_wstring(o->mWorld.m[0][2]) + L" \t" + std::to_wstring(o->mWorld.m[0][3]) +
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[1][0]) + L" \t" + std::to_wstring(o->mWorld.m[1][1]) + L" \t" + std::to_wstring(o->mWorld.m[1][2]) + L" \t" + std::to_wstring(o->mWorld.m[1][3]) +
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[2][0]) + L" \t" + std::to_wstring(o->mWorld.m[2][1]) + L" \t" + std::to_wstring(o->mWorld.m[2][2]) + L" \t" + std::to_wstring(o->mWorld.m[2][3]) +
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[3][0]) + L" \t" + std::to_wstring(o->mWorld.m[3][1]) + L" \t" + std::to_wstring(o->mWorld.m[3][2]) + L" \t" + std::to_wstring(o->mWorld.m[3][3]);
 
 		std::wstring worldMatrix =
 			L"\n\t\t#WORLD_MATRIX" + world;
 
 		os << MeshInfo << worldMatrix;
 
-		std::sort(o.mTriangles.begin(), o.mTriangles.end());
-
-		int mtrlRef = o.mMaterialRef;
-		if (mtrlRef >= 0 && !mMaterial[mtrlRef].SubMaterial.empty())
+		if (o->isBipedObject)
 		{
-			for (int j = 0; j < mMaterial[mtrlRef].SubMaterial.size(); ++j)
+			SkinMesh* skinMesh = static_cast<SkinMesh*>(o.get());
+
+			std::sort(skinMesh->mSkinTriList.begin(), skinMesh->mSkinTriList.end());
+
+			int mtrlRef = o->mMaterialRef;
+			if (mtrlRef >= 0 && !mMaterial[mtrlRef].SubMaterial.empty())
 			{
-				InputVBIB(o, j, os);
+				for (int j = 0; j < mMaterial[mtrlRef].SubMaterial.size(); ++j)
+				{
+					InputVBIBBiped(skinMesh, j, os);
+				}
+			}
+			else
+			{
+				InputVBIBBiped(skinMesh, -1, os);
 			}
 		}
+
 		else
 		{
-			InputVBIB(o, -1, os);
+			std::sort(o->mTriangles.begin(), o->mTriangles.end());
+
+			int mtrlRef = o->mMaterialRef;
+			if (mtrlRef >= 0 && !mMaterial[mtrlRef].SubMaterial.empty())
+			{
+				for (int j = 0; j < mMaterial[mtrlRef].SubMaterial.size(); ++j)
+				{
+					InputVBIB(o.get(), j, os);
+				}
+			}
+			else
+			{
+				InputVBIB(o.get(), -1, os);
+			}
 		}
 
-		if (!o.mPosTrack.empty() ||
-			!o.mRotTrack.empty() ||
-			!o.mScaleTrack.empty())
+		if (!o->mPosTrack.empty() ||
+			!o->mRotTrack.empty() ||
+			!o->mScaleTrack.empty())
 		{
-			InputAnimation(o, os);
+			InputAnimation(o.get(), os);
 		}
 	}
 
@@ -169,42 +193,42 @@ void ZXCWriter::InputHelper(std::wofstream & os)
 		auto & o = x.second;
 		std::wstring helperInfo =
 			L"\n\t#HELPER_INDEX " + std::to_wstring(++i) +
-			L" \t#NODE_NAME " + o.mNodeName +
-			L" \t#NODE_PARENT " + o.mParentName +
-			L" \t#POS_ANIMATION " + std::to_wstring(o.mPosTrack.size()) +
-			L" \t#ROT_ANIMATION " + std::to_wstring(o.mRotTrack.size()) +
-			L" \t#SCALE_ANIMATION " + std::to_wstring(o.mScaleTrack.size());
+			L" \t#NODE_NAME " + o->mNodeName +
+			L" \t#NODE_PARENT " + o->mParentName +
+			L" \t#POS_ANIMATION " + std::to_wstring(o->mPosTrack.size()) +
+			L" \t#ROT_ANIMATION " + std::to_wstring(o->mRotTrack.size()) +
+			L" \t#SCALE_ANIMATION " + std::to_wstring(o->mScaleTrack.size());
 
 		std::wstring world =
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[0][0]) + L" \t" + std::to_wstring(o.mWorld.m[0][1]) + L" \t" + std::to_wstring(o.mWorld.m[0][2]) + L" \t" + std::to_wstring(o.mWorld.m[0][3]) +
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[1][0]) + L" \t" + std::to_wstring(o.mWorld.m[1][1]) + L" \t" + std::to_wstring(o.mWorld.m[1][2]) + L" \t" + std::to_wstring(o.mWorld.m[1][3]) +
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[2][0]) + L" \t" + std::to_wstring(o.mWorld.m[2][1]) + L" \t" + std::to_wstring(o.mWorld.m[2][2]) + L" \t" + std::to_wstring(o.mWorld.m[2][3]) +
-			L"\n\t\t" + std::to_wstring(o.mWorld.m[3][0]) + L" \t" + std::to_wstring(o.mWorld.m[3][1]) + L" \t" + std::to_wstring(o.mWorld.m[3][2]) + L" \t" + std::to_wstring(o.mWorld.m[3][3]);
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[0][0]) + L" \t" + std::to_wstring(o->mWorld.m[0][1]) + L" \t" + std::to_wstring(o->mWorld.m[0][2]) + L" \t" + std::to_wstring(o->mWorld.m[0][3]) +
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[1][0]) + L" \t" + std::to_wstring(o->mWorld.m[1][1]) + L" \t" + std::to_wstring(o->mWorld.m[1][2]) + L" \t" + std::to_wstring(o->mWorld.m[1][3]) +
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[2][0]) + L" \t" + std::to_wstring(o->mWorld.m[2][1]) + L" \t" + std::to_wstring(o->mWorld.m[2][2]) + L" \t" + std::to_wstring(o->mWorld.m[2][3]) +
+			L"\n\t\t" + std::to_wstring(o->mWorld.m[3][0]) + L" \t" + std::to_wstring(o->mWorld.m[3][1]) + L" \t" + std::to_wstring(o->mWorld.m[3][2]) + L" \t" + std::to_wstring(o->mWorld.m[3][3]);
 
 		std::wstring worldMatrix =
 			L"\n\t\t#WORLD_MATRIX" + world;
 
 		os << helperInfo << worldMatrix;
 
-		if (!o.mPosTrack.empty() ||
-			!o.mRotTrack.empty() ||
-			!o.mScaleTrack.empty())
+		if (!o->mPosTrack.empty() ||
+			!o->mRotTrack.empty() ||
+			!o->mScaleTrack.empty())
 		{
-			InputAnimation(o, os);
+			InputAnimation(o.get(), os);
 		}
 
 	}
 }
 
-void ZXCWriter::InputVBIB(ZXCObject& mesh, int mtrlRef, std::wofstream & os)
+void ZXCWriter::InputVBIB(ZXCObject* mesh, int mtrlRef, std::wofstream & os)
 {
 	std::vector<PNCT_VERTEX> vertices;
 	std::vector<std::uint32_t> indices;
-	for (int i = 0; i < (int)mesh.mTriangles.size(); ++i)
+	for (int i = 0; i < (int)mesh->mTriangles.size(); ++i)
 	{
 		for (int j = 0; j < 3; ++j)
 		{
-			if (mtrlRef != -1 && mesh.mTriangles[i].mSubMtrl != mtrlRef) break;
+			if (mtrlRef != -1 && mesh->mTriangles[i].mSubMtrl != mtrlRef) break;
 			int vNumber = [&vertices](PNCT_VERTEX& rhs) -> int
 			{
 				for (int k = 0; k < (int)vertices.size(); ++k)
@@ -215,10 +239,10 @@ void ZXCWriter::InputVBIB(ZXCObject& mesh, int mtrlRef, std::wofstream & os)
 					}
 				}
 				return -1;
-			}(mesh.mTriangles[i].v[j]);
+			}(mesh->mTriangles[i].v[j]);
 			if (vNumber == -1)
 			{
-				vertices.push_back(mesh.mTriangles[i].v[j]);
+				vertices.push_back(mesh->mTriangles[i].v[j]);
 				indices.push_back((UINT)(vertices.size() - 1));
 			}
 			else
@@ -308,20 +332,133 @@ void ZXCWriter::InputVBIB(ZXCObject& mesh, int mtrlRef, std::wofstream & os)
 	}
 }
 
-void ZXCWriter::InputAnimation(const ZXCObject & obj, std::wofstream & os)
+void ZXCWriter::InputVBIBBiped(SkinMesh * mesh, int mtrlRef, std::wofstream & os)
+{
+	std::vector<PNCTW4VERTEX> vertices;
+	std::vector<std::uint32_t> indices;
+	for (int i = 0; i < (int)mesh->mSkinTriList.size(); ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			if (mtrlRef != -1 && mesh->mSkinTriList[i].mSubMtrl != mtrlRef) break;
+			int vNumber = [&vertices](PNCT_VERTEX& rhs) -> int
+			{
+				for (int k = 0; k < (int)vertices.size(); ++k)
+				{
+					if (vertices[k] == rhs)
+					{
+						return k;
+					}
+				}
+				return -1;
+			}(mesh->mSkinTriList[i].v[j]);
+			if (vNumber == -1)
+			{
+				vertices.push_back(mesh->mSkinTriList[i].v[j]);
+				indices.push_back((UINT)(vertices.size() - 1));
+			}
+			else
+			{
+				indices.push_back(vNumber);
+			}
+		}
+	}
+
+	for (int i = 0; i < (int)indices.size() / 3; ++i)
+	{
+		std::uint32_t i0 = indices[i * 3 + 0];
+		std::uint32_t i1 = indices[i * 3 + 1];
+		std::uint32_t i2 = indices[i * 3 + 2];
+
+		std::set<std::uint32_t> index;
+		index.insert(i0);
+		index.insert(i1);
+		index.insert(i2);
+
+		indices[i * 3 + 0] = *index.begin();
+		indices[i * 3 + 1] = *std::next(index.begin(), 1);
+		indices[i * 3 + 2] = *std::next(index.begin(), 2);
+
+		for (int k = i; k >= 1; --k)
+		{
+			std::uint32_t n0 = indices[k * 3 + 0];
+			std::uint32_t n1 = indices[k * 3 + 1];
+			std::uint32_t n2 = indices[k * 3 + 2];
+
+			std::uint32_t p0 = indices[(k - 1) * 3 + 0];
+			std::uint32_t p1 = indices[(k - 1) * 3 + 1];
+			std::uint32_t p2 = indices[(k - 1) * 3 + 2];
+
+			if (n0 < p0)
+			{
+				std::swap(indices[(k - 1) * 3 + 0], indices[k * 3 + 0]);
+				std::swap(indices[(k - 1) * 3 + 1], indices[k * 3 + 1]);
+				std::swap(indices[(k - 1) * 3 + 2], indices[k * 3 + 2]);
+				continue;
+			}
+
+			if (n0 == p0 && n1 < p1)
+			{
+				std::swap(indices[(k - 1) * 3 + 1], indices[k * 3 + 1]);
+				std::swap(indices[(k - 1) * 3 + 2], indices[k * 3 + 2]);
+				continue;
+			}
+
+			if (n0 == p0 && n1 == p1 && n2 < p2)
+			{
+				std::swap(indices[(k - 1) * 3 + 2], indices[k * 3 + 2]);
+				continue;
+			}
+			break;
+		}
+	}
+
+	if (vertices.empty())
+		return;
+
+	std::wstring vInfo = L"\n\t#MESH_MTLID " + std::to_wstring(mtrlRef) +
+		L"\n\t#VERTEX_NUMBER " + std::to_wstring(vertices.size());
+
+	os << vInfo;
+
+	for (int i = 0; i < (int)vertices.size(); ++i)
+	{
+		auto v = vertices[i];
+		std::wstring Vertex = VertexToString(v);
+		os << Vertex;
+	}
+
+	std::wstring iInfo = L" \n\t#FACE_NUMBER " + std::to_wstring(indices.size() / 3);
+
+	os << iInfo;
+
+	for (int i = 0; i < (int)indices.size() / 3; ++i)
+	{
+		std::uint32_t i0 = indices[i * 3 + 0];
+		std::uint32_t i1 = indices[i * 3 + 1];
+		std::uint32_t i2 = indices[i * 3 + 2];
+
+		std::wstring Index = L"\n\t\t" + std::to_wstring(i0) + L" " + std::to_wstring(i1) + L" " + std::to_wstring(i2);
+
+		os << Index;
+	}
+}
+
+
+void ZXCWriter::InputAnimation(const ZXCObject * obj, std::wofstream & os)
 {
 	std::wstring ani = L"\n\t\t#TM_ANIMATION";
 
 	os << ani;
 
-	if (!obj.mPosTrack.empty())
+	if (!obj->mPosTrack.empty())
 	{
 		std::wstring posAni = L"\n\t\t\t#CONTROL_POS_TRACK";
 		os << posAni;
 
-		for (int i = 0; i < (int)obj.mPosTrack.size(); ++i)
+		for (int i = 0; i < (int)obj->mPosTrack.size(); ++i)
 		{
-			auto o = obj.mPosTrack[i];
+			auto o = obj->mPosTrack[i];
 			std::wstring posInfo = L"\n\t\t\t\t#CONTROL_POS_SAMPLE " + std::to_wstring(o.mTick) +
 				L"     "+ std::to_wstring(o.mVec.x) +
 				L"     " + std::to_wstring(o.mVec.y) +
@@ -331,14 +468,14 @@ void ZXCWriter::InputAnimation(const ZXCObject & obj, std::wofstream & os)
 		}
 	}
 
-	if (!obj.mRotTrack.empty())
+	if (!obj->mRotTrack.empty())
 	{
 		std::wstring rotAni = L"\n\t\t\t#CONTROL_ROT_TRACK";
 		os << rotAni;
 
-		for (int i = 0; i < (int)obj.mRotTrack.size(); ++i)
+		for (int i = 0; i < (int)obj->mRotTrack.size(); ++i)
 		{
-			auto o = obj.mRotTrack[i];
+			auto o = obj->mRotTrack[i];
 			std::wstring rotInfo = L"\n\t\t\t\t#CONTROL_ROT_SAMPLE " + std::to_wstring(o.mTick) +
 				L"     "+ std::to_wstring(o.mQuat.x) +
 				L"     " + std::to_wstring(o.mQuat.y) +
@@ -349,14 +486,14 @@ void ZXCWriter::InputAnimation(const ZXCObject & obj, std::wofstream & os)
 		}
 	}
 
-	if (!obj.mScaleTrack.empty())
+	if (!obj->mScaleTrack.empty())
 	{
 		std::wstring scaleAni = L"\n\t\t\t#CONTROL_SCALE_TRACK";
 		os << scaleAni;
 
-		for (int i = 0; i < (int)obj.mScaleTrack.size(); ++i)
+		for (int i = 0; i < (int)obj->mScaleTrack.size(); ++i)
 		{
-			auto o = obj.mScaleTrack[i];
+			auto o = obj->mScaleTrack[i];
 			std::wstring scaleInfo = L"\n\t\t\t\t#CONTROL_SCALE_SAMPLE " + std::to_wstring(o.mTick) +
 				L"     " + std::to_wstring(o.mQuat.x) +
 				L"     " + std::to_wstring(o.mQuat.y) +
@@ -391,6 +528,26 @@ std::wstring ZXCWriter::VertexToString(const PNCT_VERTEX & v)
 		L"\t\t#NORMAL    " + std::to_wstring(v.n.x) + L"     " + std::to_wstring(v.n.y) + L"     " + std::to_wstring(v.n.z) + L"     " +
 		L"\t\t#COLOR    " + std::to_wstring(v.c.x) + L"     " + std::to_wstring(v.c.y) + L"     " + std::to_wstring(v.c.z) + L"     " + std::to_wstring(v.c.w) + L"     " +
 		L"\t\t#TEXCOORD    " + std::to_wstring(v.t.x) + L"     " + std::to_wstring(v.t.y);
+
+	return buf;
+}
+
+std::wstring ZXCWriter::VertexToString(const PNCTW4VERTEX & v)
+{
+	std::wstring weightinfo;
+	int i = 0;
+	while (i < MAXWEIGHTNUM && !v.i[i].empty())
+	{
+		weightinfo += 
+			L"\t\t#WEIGHTNODENUM " + std::to_wstring(i) + 
+			L"\t\t#NAME     " + v.i[i] + 
+			+ L"\t\t#WEIGHT     " + std::to_wstring(v.w[i]);
+		++i;
+	}
+	std::wstring buf = L"\n\t\t#POSITION    " + std::to_wstring(v.p.x) + L"     " + std::to_wstring(v.p.y) + L"     " + std::to_wstring(v.p.z) + L"     " +
+		L"\t\t#NORMAL    " + std::to_wstring(v.n.x) + L"     " + std::to_wstring(v.n.y) + L"     " + std::to_wstring(v.n.z) + L"     " +
+		L"\t\t#COLOR    " + std::to_wstring(v.c.x) + L"     " + std::to_wstring(v.c.y) + L"     " + std::to_wstring(v.c.z) + L"     " + std::to_wstring(v.c.w) + L"     " +
+		L"\t\t#TEXCOORD    " + std::to_wstring(v.t.x) + L"     " + std::to_wstring(v.t.y) + weightinfo;
 
 	return buf;
 }

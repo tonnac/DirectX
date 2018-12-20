@@ -26,10 +26,17 @@ bool ZXCExporter::Run()
 	LoadNode(mRootNode);
 	LoadMaterial();
 
-	std::unique_ptr<ObjectExporter> objExport = std::make_unique<ObjectExporter>(this);
-
-	std::unordered_map<std::wstring, ZXCObject> meshObjects = objExport->LoadObject(mGeomObjects);
-	std::unordered_map<std::wstring, ZXCObject> helperObjects = objExport->LoadObject(mHelperObjects);
+	if (misBipedObejct)
+	{
+		mObjectExporter = std::make_unique<SkinExporter>(this);
+	}
+	else
+	{
+		mObjectExporter = std::make_unique<ObjectExporter>(this);
+	}
+	
+	ZXCMap meshObjects = mObjectExporter->LoadObject(mGeomObjects);
+	ZXCMap helperObjects = mObjectExporter->LoadObject(mHelperObjects);
 
 	mWriter = std::make_unique<ZXCWriter>(mVersion, mFilename, mSceneInfo, mOutputMaterial, meshObjects, helperObjects);
 	if (!mWriter->Savefile()) return false;
@@ -48,6 +55,8 @@ void ZXCExporter::LoadScene()
 void ZXCExporter::LoadNode(INode * node)
 {
 	if (node == nullptr) return;
+
+	if (MaxUtil::isBipedObject(node)) misBipedObejct = true;
 
 	AddObject(node);
 	AddMaterial(node);

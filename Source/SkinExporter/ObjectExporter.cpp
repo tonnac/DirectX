@@ -1,48 +1,51 @@
 #include "ZXCExporter.h"
 
-std::unordered_map<std::wstring, ZXCObject> ObjectExporter::LoadObject(const std::vector<INode*> objects)
+ZXCMap ObjectExporter::LoadObject(const std::vector<INode*> objects)
 {
-	std::unordered_map<std::wstring, ZXCObject> ObjectList;
+	ZXCMap ObjectList;
 	for (auto& x : objects)
 	{
-		ZXCObject maxObj;
-		maxObj.mNodeName = x->GetName();
+		std::unique_ptr<ZXCObject> maxObj = MakeObject();
+		maxObj->mNodeName = x->GetName();
 		INode* parent = x->GetParentNode();
 
-		maxObj.mParentName = L"NONE";
+		maxObj->mParentName = L"NONE";
 		if (parent != nullptr && (!parent->IsRootNode()))
 		{
-			maxObj.mParentName = parent->GetName();
-			std::ReplaceString(maxObj.mParentName);
+			maxObj->mParentName = parent->GetName();
+			std::ReplaceString(maxObj->mParentName);
 		}
 
-		std::ReplaceString(maxObj.mNodeName);
+		std::ReplaceString(maxObj->mNodeName);
 
 		TimeValue t = mExporter->mInterval.Start();
 
 		Matrix3 world = x->GetNodeTM(t);
-		MaxUtil::ConvertMatrix(world, maxObj.mWorld);
+		MaxUtil::ConvertMatrix(world, maxObj->mWorld);
 
-		LoadMesh(x, maxObj);
-		AnimationExporter::LoadAnimation(x, maxObj, t, mExporter->mInterval.End());
+		LoadMesh(x, maxObj.get());
+		AnimationExporter::LoadAnimation(x, maxObj.get(), t, mExporter->mInterval.End());
 
 		ObjectState os = x->EvalWorldState(t);
 		switch (os.obj->SuperClassID())
 		{
 		case GEOMOBJECT_CLASS_ID:
 		case HELPER_CLASS_ID:
-			ObjectList.insert(std::make_pair(maxObj.mNodeName, maxObj));
+			ObjectList.insert(std::make_pair(maxObj->mNodeName, std::move(maxObj)));
 			break;
 		default:
 			break;
 		}
 	}
-	SkinMesh epep;
-	ObjectList.insert(std::make_pair(epep.mNodeName, epep));
 	return ObjectList;
 }
 
-ZXCObject& ObjectExporter::LoadMesh(INode* node, ZXCObject& o)
+std::unique_ptr<ZXCObject> ObjectExporter::MakeObject()
+{
+	return std::move(std::make_unique<ZXCObject>());
+}
+
+void ObjectExporter::LoadMesh(INode* node, ZXCObject* o)
 {
 	TimeValue t = mExporter->mInterval.Start();
 
@@ -59,8 +62,8 @@ ZXCObject& ObjectExporter::LoadMesh(INode* node, ZXCObject& o)
 	Mesh mesh = tri->GetMesh();
 	mesh.buildBoundingBox();
 	Box3 box = mesh.getBoundingBox(&tm);
-	MaxUtil::ConvertVector(box.pmin, o.mBoundingBox.pmin);
-	MaxUtil::ConvertVector(box.pmax, o.mBoundingBox.pmax);
+	MaxUtil::ConvertVector(box.pmin, o->mBoundingBox.pmin);
+	MaxUtil::ConvertVector(box.pmax, o->mBoundingBox.pmax);
 
 	std::uint32_t i0, i1, i2;
 	i0 = 0, i1 = 1, i2 = 2;
@@ -69,67 +72,61 @@ ZXCObject& ObjectExporter::LoadMesh(INode* node, ZXCObject& o)
 		i0 = 2, i1 = 1, i2 = 0;
 	}
 
-	o.mMaterialRef = GetMaterialRef(node->GetMtl());
-	o.mTriangles.resize(mesh.getNumFaces());
-	for (int i = 0; i < (int)o.mTriangles.size(); ++i)
+	o->mMaterialRef = GetMaterialRef(node->GetMtl());
+	o->mTriangles.resize(mesh.getNumFaces());
+	for (int i = 0; i < (int)o->mTriangles.size(); ++i)
 	{
 		Matrix3 Inv = Inverse(node->GetNodeTM(t));
 		
 		Point3 v;
-		
-		std::shared_ptr<VectorBiped> bipedes = std::make_shared<VectorBiped>();
-		S_SkinEx.LoadBipedInfo(node, bipedes.get(), mExporter->mInterval.Start());
 
 		if (mesh.getNumVerts() > 0)
 		{
 			v = mesh.verts[mesh.faces[i].v[i0]] * tm * Inv;
-			MaxUtil::ConvertVector(v, o.mTriangles[i].v[0].p);
+			MaxUtil::ConvertVector(v, o->mTriangles[i].v[0].p);
 
 			v = mesh.verts[mesh.faces[i].v[i2]] * tm * Inv;
-			MaxUtil::ConvertVector(v, o.mTriangles[i].v[1].p);
+			MaxUtil::ConvertVector(v, o->mTriangles[i].v[1].p);
 
 			v = mesh.verts[mesh.faces[i].v[i1]] * tm * Inv;
-			MaxUtil::ConvertVector(v, o.mTriangles[i].v[2].p);
+			MaxUtil::ConvertVector(v, o->mTriangles[i].v[2].p);
 		}
 		if (mesh.getNumTVerts() > 0)
 		{
-			o.mTriangles[i].v[0].t.x = mesh.tVerts[mesh.tvFace[i].t[i0]].x;
-			o.mTriangles[i].v[0].t.y = 1.0f - mesh.tVerts[mesh.tvFace[i].t[i0]].y;
+			o->mTriangles[i].v[0].t.x = mesh.tVerts[mesh.tvFace[i].t[i0]].x;
+			o->mTriangles[i].v[0].t.y = 1.0f - mesh.tVerts[mesh.tvFace[i].t[i0]].y;
 
-			o.mTriangles[i].v[1].t.x = mesh.tVerts[mesh.tvFace[i].t[i2]].x;
-			o.mTriangles[i].v[1].t.y = 1.0f - mesh.tVerts[mesh.tvFace[i].t[i2]].y;
-
-			o.mTriangles[i].v[2].t.x = mesh.tVerts[mesh.tvFace[i].t[i1]].x;
-			o.mTriangles[i].v[2].t.y = 1.0f - mesh.tVerts[mesh.tvFace[i].t[i1]].y;
+			o->mTriangles[i].v[1].t.x = mesh.tVerts[mesh.tvFace[i].t[i2]].x;
+			o->mTriangles[i].v[1].t.y = 1.0f - mesh.tVerts[mesh.tvFace[i].t[i2]].y;
+			 
+			o->mTriangles[i].v[2].t.x = mesh.tVerts[mesh.tvFace[i].t[i1]].x;
+			o->mTriangles[i].v[2].t.y = 1.0f - mesh.tVerts[mesh.tvFace[i].t[i1]].y;
 		}
 		if (mesh.getNumVertCol() > 0)
 		{
-			CopyMemory(&o.mTriangles[i].v[0].c, &mesh.vertCol[mesh.vcFace[i].t[i0]], sizeof(VertColor));
-			CopyMemory(&o.mTriangles[i].v[1].c, &mesh.vertCol[mesh.vcFace[i].t[i2]], sizeof(VertColor));
-			CopyMemory(&o.mTriangles[i].v[2].c, &mesh.vertCol[mesh.vcFace[i].t[i1]], sizeof(VertColor));
+			CopyMemory(&o->mTriangles[i].v[0].c, &mesh.vertCol[mesh.vcFace[i].t[i0]], sizeof(VertColor));
+			CopyMemory(&o->mTriangles[i].v[1].c, &mesh.vertCol[mesh.vcFace[i].t[i2]], sizeof(VertColor));
+			CopyMemory(&o->mTriangles[i].v[2].c, &mesh.vertCol[mesh.vcFace[i].t[i1]], sizeof(VertColor));
 		}
 
 		mesh.buildNormals();
 
 		int vert = mesh.faces[i].getVert(i0);
 		Point3 vn = GetVertexNormal(mesh, i, mesh.getRVert(vert));
-		MaxUtil::ConvertVector(vn, o.mTriangles[i].v[0].n);
+		MaxUtil::ConvertVector(vn, o->mTriangles[i].v[0].n);
 
 		vert = mesh.faces[i].getVert(i2);
 		vn = GetVertexNormal(mesh, i, mesh.getRVert(vert));
-		MaxUtil::ConvertVector(vn, o.mTriangles[i].v[1].n);
+		MaxUtil::ConvertVector(vn, o->mTriangles[i].v[1].n);
 
 		vert = mesh.faces[i].getVert(i1);
 		vn = GetVertexNormal(mesh, i, mesh.getRVert(vert));
-		MaxUtil::ConvertVector(vn, o.mTriangles[i].v[2].n);
+		MaxUtil::ConvertVector(vn, o->mTriangles[i].v[2].n);
 
-		o.mTriangles[i].mSubMtrl = mesh.faces[i].getMatID();
+		o->mTriangles[i].mSubMtrl = mesh.faces[i].getMatID();
 	}
 	if (needDel)
 		delete tri;
-
-	SkinMesh eee;
-	return std::move(eee);
 }
 
 TriObject * ObjectExporter::GetTriObject(Object* obj, TimeValue t, bool & isDelete)

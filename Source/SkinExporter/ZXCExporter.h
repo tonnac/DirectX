@@ -1,11 +1,12 @@
 #pragma once
 
-#include "ObjectExporter.h"
+#include "SkinExporter.h"
 #include "ZXCWriter.h"
 
 class ZXCExporter
 {
 	friend class ObjectExporter;
+	friend class SkinExporter;
 public:
 	ZXCExporter();
 	~ZXCExporter() = default;
@@ -50,4 +51,7 @@ private:
 	std::wstring mFilename;
 
 	std::unique_ptr<ZXCWriter> mWriter = nullptr;
+	std::unique_ptr<ObjectExporter> mObjectExporter = nullptr;
+
+	bool misBipedObejct = false;
 };

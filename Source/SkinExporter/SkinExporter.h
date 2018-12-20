@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Header.h"
+#include "ObjectExporter.h"
 
 using WeightMap = std::map<float, std::wstring, std::greater<float>>;
 using WeightIter = WeightMap::const_iterator;
@@ -12,22 +12,6 @@ struct BipedVertex
 	WeightMap	 mWeightList;
 };
 
-struct PNCTW4VERTEX
-{
-	PNCT_VERTEX v[3];
-	std::array<float, 4> w;
-	std::array<float, 4> i;
-};
-
-struct PNCTW8VERTEX
-{
-	PNCT_VERTEX v[3];
-	std::array<float, 4> w0;
-	std::array<float, 4> i0;
-	std::array<float, 4> w1;
-	std::array<float, 4> i1;
-};
-
 struct SkinTri
 {
 	int mSubMtrl = -1;
@@ -36,6 +20,10 @@ struct SkinTri
 #else
 	std::array<PNCTW4VERTEX, 3> v;
 #endif
+	inline bool operator< (const SkinTri& rhs) const
+	{
+		return mSubMtrl < rhs.mSubMtrl;
+	}
 };
 
 struct SkinMesh : public ZXCObject
@@ -46,23 +34,18 @@ struct SkinMesh : public ZXCObject
 
 using VectorBiped = std::vector<BipedVertex>;
 
-class SkinExporter : public Singleton<SkinExporter>
+class SkinExporter : public ObjectExporter
 {
-	friend class Singleton<SkinExporter>;
-private:
-	SkinExporter() = default;
-
 public:
-	bool isBipedObject(INode* node);
-	void LoadBipedInfo(INode* node, VectorBiped* bipedes, TimeValue t);
+	SkinExporter(ZXCExporter* exporter);
+private:
+	void LoadBipedInfo(INode* node, VectorBiped* bipedes);
+	virtual void LoadMesh(INode* node, ZXCObject* o)override;
+	virtual std::unique_ptr<ZXCObject> MakeObject()override;
 
 private:
-
-	Modifier* FindModifer(INode * node, Class_ID classID);
-
-	void ExportPhysiqueData(INode* node, VectorBiped* bipedes, Modifier* phyMod, TimeValue t);
+	void InputBipedes(PNCTW4VERTEX& vertex, const BipedVertex& bipedes);
+	void ExportPhysiqueData(INode* node, VectorBiped* bipedes, Modifier* phyMod);
 	void ExportSkinData(INode* node, VectorBiped* bipedes, Modifier* skinMod);
 
 };
-
-#define S_SkinEx SkinExporter::getInstance()
