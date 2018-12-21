@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <stack>
+#include <DirectXCollision.h>
 
 std::unique_ptr<Mesh> ZXCConverter::Convert(ZXCMesh * zxcMesh, ID3D11Device* device)
 {
@@ -134,6 +135,7 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 			for (int k = 0; k < (int)geoObj.mSubMesh.size(); ++k)
 			{
 				auto & subMesh = mesh->m_ObjectList[k];
+				int mtlID = geoObj.mSubMesh[k]->mtlID;
 
 				subMesh = std::make_unique<Mesh>();
 				mesh->m_Scene = zxcMesh->m_Scene;
@@ -141,7 +143,7 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 				subMesh->m_VertexList.insert(subMesh->m_VertexList.end(), geoObj.mSubMesh[k]->vertices.begin(), geoObj.mSubMesh[k]->vertices.end());
 				subMesh->m_IndexList.insert(subMesh->m_IndexList.end(), geoObj.mSubMesh[k]->indices.begin(), geoObj.mSubMesh[k]->indices.end());
 
-				std::tstring texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture[0].Filename;
+				std::tstring texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[mtlID].Texture[0].Filename;
 				std::tstring texPath = L"..\\..\\data\\maps\\";
 
 				subMesh->m_DxObject.m_iNumIndex = (UINT)subMesh->m_IndexList.size();
