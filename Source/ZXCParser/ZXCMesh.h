@@ -85,6 +85,7 @@ struct Helper
 struct GeomMesh
 {
 	int mtrlRef;
+	int mtlID;
 	std::wstring Name;
 	std::string ParentName = std::string();
 
@@ -93,6 +94,7 @@ struct GeomMesh
 
 	Helper m_Helper;
 	std::unique_ptr<Helper> m_AniHelper = nullptr;
+	std::vector<std::unique_ptr<GeomMesh>> mSubMesh;
 };
 
 

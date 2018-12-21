@@ -17,7 +17,7 @@ bool Sample::Init()
 	steady_clock::time_point bef0 = steady_clock::now();
 	steady_clock::time_point aft;
 	duration<double> t;
-	if (m_obj.Load(L"ship.ZXC"))
+	if (m_obj.Load(L"turret.ZXC"))
 	{
 		m_mesh = m_obj.Convert(m_pd3dDevice);
 	}

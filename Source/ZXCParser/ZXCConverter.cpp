@@ -80,125 +80,95 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 	for (size_t i = 0; i < zxcMesh->m_HelperList.size(); ++i)
 	{
 		auto& helper = zxcMesh->m_HelperList[i];
-		std::unique_ptr<Mesh> submesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>();
 
-		submesh->m_Scene = zxcMesh->m_Scene;
+		mesh->m_Scene = zxcMesh->m_Scene;
 
-		submesh->m_Position.insert(submesh->m_Position.end(), helper.m_Position.begin(), helper.m_Position.end());
-		submesh->m_Rotation.insert(submesh->m_Rotation.end(), helper.m_Rotation.begin(), helper.m_Rotation.end());
-		submesh->m_Scale.insert(submesh->m_Scale.end(), helper.m_Scale.begin(), helper.m_Scale.end());
-		submesh->Name = helper.Name;
-		submesh->ParentName = helper.ParentName;
-		submesh->m_Type = helper.m_ObjType;
-		submesh->m_BoundingBox = helper.m_BoundingBox;
-		submesh->m_matWorld = (float*)&helper.matWorld;
+		mesh->m_Position.insert(mesh->m_Position.end(), helper.m_Position.begin(), helper.m_Position.end());
+		mesh->m_Rotation.insert(mesh->m_Rotation.end(), helper.m_Rotation.begin(), helper.m_Rotation.end());
+		mesh->m_Scale.insert(mesh->m_Scale.end(), helper.m_Scale.begin(), helper.m_Scale.end());
+		mesh->Name = helper.Name;
+		mesh->ParentName = helper.ParentName;
+		mesh->m_Type = helper.m_ObjType;
+		mesh->m_BoundingBox = helper.m_BoundingBox;
+		mesh->m_matWorld = (float*)&helper.matWorld;
 
-		D3DXMatrixInverse(&submesh->InvWorld, nullptr, &submesh->m_matWorld);
+		D3DXMatrixInverse(&mesh->InvWorld, nullptr, &mesh->m_matWorld);
 
-		CopyMemory(&submesh->Rotation.m[0], &helper.Rotation, sizeof(float) * 4);
-		CopyMemory(&submesh->Scale.m[0], &helper.Scale, sizeof(float) * 3);
-		CopyMemory(&submesh->Scale.m[1], &helper.QuatScale, sizeof(float) * 4);
-		CopyMemory(&submesh->Translation.m[0], &helper.Position, sizeof(float) * 3);
+		CopyMemory(&mesh->Rotation.m[0], &helper.Rotation, sizeof(float) * 4);
+		CopyMemory(&mesh->Scale.m[0], &helper.Scale, sizeof(float) * 3);
+		CopyMemory(&mesh->Scale.m[1], &helper.QuatScale, sizeof(float) * 4);
+		CopyMemory(&mesh->Translation.m[0], &helper.Position, sizeof(float) * 3);
 
-		rMesh.insert(std::make_pair(submesh->Name, std::move(submesh)));
+		rMesh.insert(std::make_pair(mesh->Name, std::move(mesh)));
 	}
 
 	for (size_t i = 0; i < zxcMesh->m_ObjectList.size(); ++i)
 	{
 		auto& geoObj = zxcMesh->m_ObjectList[i];
-		std::unique_ptr<Mesh> subMesh = std::make_unique<Mesh>();
+		std::unique_ptr<Mesh> mesh = std::make_unique<Mesh>();
 		int mtrlRef = geoObj.mtrlRef;
 
 		if (geoObj.m_AniHelper != nullptr)
 		{
-			subMesh->m_Position.insert(subMesh->m_Position.end(), geoObj.m_AniHelper->m_Position.begin(), geoObj.m_AniHelper->m_Position.end());
-			subMesh->m_Rotation.insert(subMesh->m_Rotation.end(), geoObj.m_AniHelper->m_Rotation.begin(), geoObj.m_AniHelper->m_Rotation.end());
-			subMesh->m_Scale.insert(subMesh->m_Scale.end(), geoObj.m_AniHelper->m_Scale.begin(), geoObj.m_AniHelper->m_Scale.end());
+			mesh->m_Position.insert(mesh->m_Position.end(), geoObj.m_AniHelper->m_Position.begin(), geoObj.m_AniHelper->m_Position.end());
+			mesh->m_Rotation.insert(mesh->m_Rotation.end(), geoObj.m_AniHelper->m_Rotation.begin(), geoObj.m_AniHelper->m_Rotation.end());
+			mesh->m_Scale.insert(mesh->m_Scale.end(), geoObj.m_AniHelper->m_Scale.begin(), geoObj.m_AniHelper->m_Scale.end());
 		}
-		subMesh->Name = std::string(geoObj.Name.begin(), geoObj.Name.end());
-		subMesh->ParentName = geoObj.ParentName;
-		subMesh->m_Type = ObjectType::GEOMESH;
-		subMesh->m_matWorld = (float*)&geoObj.m_Helper.matWorld;
+		mesh->Name = std::string(geoObj.Name.begin(), geoObj.Name.end());
+		mesh->ParentName = geoObj.ParentName;
+		mesh->m_Type = ObjectType::GEOMESH;
+		mesh->m_matWorld = (float*)&geoObj.m_Helper.matWorld;
 
-		D3DXMatrixInverse(&subMesh->InvWorld, nullptr, &subMesh->m_matWorld);
+		D3DXMatrixInverse(&mesh->InvWorld, nullptr, &mesh->m_matWorld);
 
-		CopyMemory(&subMesh->Rotation.m[0], &geoObj.m_Helper.Rotation, sizeof(float) * 4);
-		CopyMemory(&subMesh->Scale.m[0], &geoObj.m_Helper.Scale, sizeof(float) * 3);
-		CopyMemory(&subMesh->Scale.m[1], &geoObj.m_Helper.QuatScale, sizeof(float) * 4);
-		CopyMemory(&subMesh->Translation.m[0], &geoObj.m_Helper.Position, sizeof(float) * 3);
+		CopyMemory(&mesh->Rotation.m[0], &geoObj.m_Helper.Rotation, sizeof(float) * 4);
+		CopyMemory(&mesh->Scale.m[0], &geoObj.m_Helper.Scale, sizeof(float) * 3);
+		CopyMemory(&mesh->Scale.m[1], &geoObj.m_Helper.QuatScale, sizeof(float) * 4);
+		CopyMemory(&mesh->Translation.m[0], &geoObj.m_Helper.Position, sizeof(float) * 3);
 
+		mesh->m_ObjectList.resize(geoObj.mSubMesh.size());
 
-		if(!zxcMesh->m_MateriaList[mtrlRef].SubMaterial.empty())
-			subMesh->m_ObjectList.resize(zxcMesh->m_MateriaList[mtrlRef].SubMaterial.size());
+		if (!geoObj.mSubMesh.empty())
+		{
+			for (int k = 0; k < (int)geoObj.mSubMesh.size(); ++k)
+			{
+				auto & subMesh = mesh->m_ObjectList[k];
+
+				subMesh = std::make_unique<Mesh>();
+				mesh->m_Scene = zxcMesh->m_Scene;
+				mesh->m_iNumFaces = (int)geoObj.mSubMesh[k]->indices.size() / 3;
+				subMesh->m_VertexList.insert(subMesh->m_VertexList.end(), geoObj.mSubMesh[k]->vertices.begin(), geoObj.mSubMesh[k]->vertices.end());
+				subMesh->m_IndexList.insert(subMesh->m_IndexList.end(), geoObj.mSubMesh[k]->indices.begin(), geoObj.mSubMesh[k]->indices.end());
+
+				std::tstring texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture[0].Filename;
+				std::tstring texPath = L"..\\..\\data\\tex\\";
+
+				subMesh->m_DxObject.m_iNumIndex = (UINT)subMesh->m_IndexList.size();
+				subMesh->m_DxObject.m_iNumVertex = (UINT)subMesh->m_VertexList.size();
+				subMesh->m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
+				subMesh->Create(device, L"shape.hlsl", texPath + texName);
+			}
+		}
 		else
 		{
-			subMesh->m_ObjectList.resize(zxcMesh->m_MateriaList.size());
-		}
-		for (int k = 0; k < (int)subMesh->m_ObjectList.size(); ++k)
-		{
-			subMesh->m_ObjectList[k] = std::make_unique<Mesh>();
-			subMesh->m_Scene = zxcMesh->m_Scene;
-		}
+			mesh->m_Scene = zxcMesh->m_Scene;
+			mesh->m_iNumFaces = (int)geoObj.indices.size() / 3;
+			mesh->m_VertexList.insert(mesh->m_VertexList.end(), geoObj.vertices.begin(), geoObj.vertices.end());
+			mesh->m_IndexList.insert(mesh->m_IndexList.end(), geoObj.indices.begin(), geoObj.indices.end());
 
-		if (zxcMesh->m_MateriaList[mtrlRef].SubMaterial.size() != 0)
-			subMesh->m_ObjectList.resize(zxcMesh->m_MateriaList[mtrlRef].SubMaterial.size());
-		else
-		{
-			subMesh->m_ObjectList.resize(zxcMesh->m_MateriaList.size());
-		}
-		for (int k = 0; k < (int)subMesh->m_ObjectList.size(); ++k)
-		{
-			subMesh->m_ObjectList[k] = std::make_unique<Mesh>();
-			subMesh->m_Scene = zxcMesh->m_Scene;
-			subMesh->m_iNumFaces = (int)zxcMesh->m_ObjectList[i].indices.size() / 3;
-			subMesh->m_ObjectList[k]->m_VertexList.insert(subMesh->m_ObjectList[k]->m_VertexList.end(), zxcMesh->m_ObjectList[i].vertices.begin(), zxcMesh->m_ObjectList[i].vertices.end());
-			subMesh->m_ObjectList[k]->m_IndexList.insert(subMesh->m_ObjectList[k]->m_IndexList.end(), zxcMesh->m_ObjectList[i].indices.begin(), zxcMesh->m_ObjectList[i].indices.end());
-		}
-
-		for (size_t k = 0; k < subMesh->m_ObjectList.size(); ++k)
-		{
-			auto& obj = subMesh->m_ObjectList[k];
 			std::tstring texName;
-			std::tstring texPath = L"..\\..\\data\\";
-			if (zxcMesh->m_MateriaList[mtrlRef].SubMaterial.size() != 0)
-			{
-				if(!zxcMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture.empty())
-					texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture[0].Filename;
-				else
-				{
-					texName = std::tstring();
-				}
-			}
-			else if(zxcMesh->m_MateriaList.size() != 0)
-			{
+			if (geoObj.mtlID == -1)
 				texName = zxcMesh->m_MateriaList[mtrlRef].Texture[0].Filename;
-			}
-			else
-			{
-				texName = std::tstring();
-				texPath = std::tstring();
-			}
-			obj->m_DxObject.m_iNumIndex = (UINT)obj->m_IndexList.size();
-			obj->m_DxObject.m_iNumVertex = (UINT)obj->m_VertexList.size();
-			obj->m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
-			if(obj->m_DxObject.m_iNumVertex > 0)
-				obj->Create(device, L"shape.hlsl", texPath + texName);
+			std::tstring texPath = L"..\\..\\data\\";
+
+			mesh->m_DxObject.m_iNumIndex = (UINT)mesh->m_IndexList.size();
+			mesh->m_DxObject.m_iNumVertex = (UINT)mesh->m_VertexList.size();
+			mesh->m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
+			mesh->Create(device, L"shape.hlsl", texPath + texName);
 		}
 
-		std::vector<std::unique_ptr<Mesh>>::iterator iter = subMesh->m_ObjectList.begin();
-		for (;iter != subMesh->m_ObjectList.end();)
-		{
-			if ((*iter)->m_VertexList.empty())
-			{
-				iter = subMesh->m_ObjectList.erase(iter);
-			}
-			else
-			{
-				++iter;
-			}
-		}
-
-		rMesh.insert(std::make_pair(subMesh->Name, std::move(subMesh)));
+		rMesh.insert(std::make_pair(mesh->Name, std::move(mesh)));
 	}
 
 	for (auto&x : rMesh)
@@ -262,4 +232,5 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 	rMesh[RootName]->Init();
 
 	return std::move(rMesh[RootName]);
+
 }

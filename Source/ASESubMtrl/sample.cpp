@@ -34,7 +34,7 @@ bool Sample::Init()
 	duration<double> t;
 
 	bef = c1.now();
-	if (m_obj.Load(L"eee.ase"))
+	if (m_obj.Load(L"st02sc00.ase"))
 	{
 		aft = c1.now();
 

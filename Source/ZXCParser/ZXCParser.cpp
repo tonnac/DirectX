@@ -165,7 +165,7 @@ void ZXCParser::LoadGeomesh()
 		is.str(m_Stream[++index]);
 
 		is >> ignore >> ignore >> ignore >> geo.Name >> ignore >> parent >>
-			ignore >> ignore >> geo.mtrlRef >> ignore >> pani >> ignore >> rani >> ignore >> sani;
+			ignore >> geo.mtrlRef >> ignore >> pani >> ignore >> rani >> ignore >> sani;
 
 		if (parent != L"NONE")
 			geo.ParentName = std::string(parent.begin(), parent.end());
@@ -189,69 +189,151 @@ void ZXCParser::LoadGeomesh()
 
 		is.clear();
 		is.str(m_Stream[++index]);
-		int mtlid;
-		is >> ignore >> mtlid;
+		int mtlNum;
+		is >> ignore >> mtlNum;
 
-		is.clear();
-		is.str(m_Stream[++index]);
-		int vertexNum;
-
-		is >> ignore >> vertexNum;
-	
-		geo.vertices.resize(vertexNum);
-
-		for (int j = 0; j < vertexNum; ++j)
+		if (mtlNum > 1)
 		{
-			auto& v = geo.vertices[j];
+			geo.mSubMesh.resize(mtlNum);
+			for (int k = 0; k < mtlNum; ++k)
+			{
+				geo.mSubMesh[k] = std::make_unique<GeomMesh>();
+				auto& subGeo = geo.mSubMesh[k];
 
-			is.clear();
-			is.str(m_Stream[++index]);
-			is >> ignore >> v.p.x >> v.p.y >> v.p.z >> ignore >> v.n.x >> v.n.y >> v.n.z >> ignore >> v.c.x >> v.c.y >> v.c.z >> v.c.w >> ignore >> v.t.x >> v.t.y;
+				is.clear();
+				is.str(m_Stream[++index]);
+				is >> ignore >> subGeo->mtlID;
+
+				is.clear();
+				is.str(m_Stream[++index]);
+				int vertexNum;
+
+				is >> ignore >> vertexNum;
+
+				subGeo->vertices.resize(vertexNum);
+
+				for (int j = 0; j < vertexNum; ++j)
+				{
+					auto& v = subGeo->vertices[j];
+
+					is.clear();
+					is.str(m_Stream[++index]);
+					is >> ignore >> v.p.x >> v.p.y >> v.p.z >> ignore >> v.n.x >> v.n.y >> v.n.z >> ignore >> v.c.x >> v.c.y >> v.c.z >> v.c.w >> ignore >> v.t.x >> v.t.y;
+				}
+				is.clear();
+				is.str(m_Stream[++index]);
+				int indicesNum;
+
+				is >> ignore >> indicesNum;
+
+				subGeo->indices.resize(indicesNum * 3);
+
+				for (int j = 0; j < indicesNum; ++j)
+				{
+					auto& i = subGeo->indices;
+
+					std::uint32_t i0 = j * 3 + 0;
+					std::uint32_t i1 = j * 3 + 1;
+					std::uint32_t i2 = j * 3 + 2;
+					is.clear();
+					is.str(m_Stream[++index]);
+
+					is >> i[i0] >> i[i1] >> i[i2];
+				}
+			}
 		}
-		is.clear();
-		is.str(m_Stream[++index]);
-		int indicesNum;
-		
-		is >> ignore >> indicesNum;
-
-		geo.indices.resize(indicesNum * 3);
-
-		for (int j = 0; j < indicesNum; ++j)
+		else
 		{
-			auto& i = geo.indices;
-
-			std::uint32_t i0 = j * 3 + 0;
-			std::uint32_t i1 = j * 3 + 1;
-			std::uint32_t i2 = j * 3 + 2;
 			is.clear();
 			is.str(m_Stream[++index]);
+			is >> ignore >> geo.mtlID;
 
-			is >> i[i0] >> i[i1] >> i[i2];
+			is.clear();
+			is.str(m_Stream[++index]);
+			int vertexNum;
+
+			is >> ignore >> vertexNum;
+
+			geo.vertices.resize(vertexNum);
+
+			for (int j = 0; j < vertexNum; ++j)
+			{
+				auto& v = geo.vertices[j];
+
+				is.clear();
+				is.str(m_Stream[++index]);
+				is >> ignore >> v.p.x >> v.p.y >> v.p.z >> ignore >> v.n.x >> v.n.y >> v.n.z >> ignore >> v.c.x >> v.c.y >> v.c.z >> v.c.w >> ignore >> v.t.x >> v.t.y;
+			}
+			is.clear();
+			is.str(m_Stream[++index]);
+			int indicesNum;
+
+			is >> ignore >> indicesNum;
+
+			geo.indices.resize(indicesNum * 3);
+
+			for (int j = 0; j < indicesNum; ++j)
+			{
+				auto& i = geo.indices;
+
+				std::uint32_t i0 = j * 3 + 0;
+				std::uint32_t i1 = j * 3 + 1;
+				std::uint32_t i2 = j * 3 + 2;
+				is.clear();
+				is.str(m_Stream[++index]);
+
+				is >> i[i0] >> i[i1] >> i[i2];
+			}
+		}
+
+		if (pani > 0)
+		{
+			geo.m_AniHelper = std::make_unique<Helper>();
+			while (m_Stream[++index].find(L"#CONTROL_POS_TRACK") == std::wstring::npos);
+			geo.m_AniHelper->m_Position.resize(pani);
+			for (int i = 0; i < pani; ++i)
+			{
+				auto& postrack = geo.m_AniHelper->m_Position[i];
+
+				is.clear();
+				is.str(m_Stream[++index]);
+				is >> ignore >> postrack.mTick >> postrack.mPosition.x >> postrack.mPosition.y >> postrack.mPosition.z;
+			}
+		}
+
+		if (rani > 0)
+		{
+			if(geo.m_AniHelper == nullptr)
+				geo.m_AniHelper = std::make_unique<Helper>();
+			while (m_Stream[++index].find(L"#CONTROL_ROT_TRACK") == std::wstring::npos);
+			geo.m_AniHelper->m_Rotation.resize(rani);
+			for (int i = 0; i < rani; ++i)
+			{
+				auto& rottrack = geo.m_AniHelper->m_Rotation[i];
+
+				is.clear();
+				is.str(m_Stream[++index]);
+				is >> ignore >> rottrack.mTick >> rottrack.mQuatRotation.x >> rottrack.mQuatRotation.y >> rottrack.mQuatRotation.z >> rottrack.mQuatRotation.w;
+			}
+		}
+
+		if (sani > 0)
+		{
+			if (geo.m_AniHelper == nullptr)
+				geo.m_AniHelper = std::make_unique<Helper>();
+			while (m_Stream[++index].find(L"#CONTROL_SCALE_TRACK") == std::wstring::npos);
+			geo.m_AniHelper->m_Scale.resize(sani);
+			for (int i = 0; i < sani; ++i)
+			{
+				auto& scaletrack = geo.m_AniHelper->m_Scale[i];
+
+				is.clear();
+				is.str(m_Stream[++index]);
+				is >> ignore >> scaletrack.mTick >> scaletrack.mQuatRotation.x >> scaletrack.mQuatRotation.y >> scaletrack.mQuatRotation.z >> scaletrack.mQuatRotation.w >> scaletrack.mPosition.x >> scaletrack.mPosition.y >> scaletrack.mPosition.z;
+			}
 		}
 	}
 }
-
-//void ZXCParser::LoadGeomesh()
-//{
-//	m_Index = m_GeomeshIndex[0] + 1;
-//
-//	size_t GeomeshCount = m_GeomeshIndex.size();
-//	m_ZXCMesh->m_ObjectList.resize(GeomeshCount);
-//	size_t Cnt = 0;
-//	MeshType meshtype = MeshType::NODE_NAME;
-//
-//	while (Cnt < GeomeshCount)
-//	{
-//		while ((int)meshtype != m_GeomeshType.size())
-//		{
-//			Findstring(m_GeomeshType[(int)meshtype]);
-//			InputMesh(Cnt, meshtype);
-//			IncreaseEnum(meshtype, true);
-//		}
-//		++Cnt;
-//		meshtype = MeshType::NODE_NAME;
-//	}
-//}
 
 void ZXCParser::LoadHelperObject()
 {
