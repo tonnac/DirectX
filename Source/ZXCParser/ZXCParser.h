@@ -9,6 +9,7 @@
 #include <memory>
 #include <functional>
 #include <map>
+#include <DirectXMath.h>
 
 
 class ZXCMesh;
@@ -30,6 +31,10 @@ private:
 	void LoadMaterial();
 	void LoadGeomesh();
 	void LoadHelperObject();
+
+private:
+	void InputMatrix(DirectX::XMFLOAT4X4& m, size_t& index);
+	void InputAnimation(Helper* h, size_t& index, int posTracknum, int rotTrackNum, int scaleTrackNum);
 
 private:
 	std::vector<std::wstring> m_Stream;

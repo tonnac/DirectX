@@ -171,21 +171,8 @@ void ZXCParser::LoadGeomesh()
 			geo.ParentName = std::string(parent.begin(), parent.end());
 
 		++index;
-		is.clear();
-		is.str(m_Stream[++index]);
-		is >> geo.m_Helper.matWorld._11 >> geo.m_Helper.matWorld._12 >> geo.m_Helper.matWorld._13 >> geo.m_Helper.matWorld._14;
 
-		is.clear();
-		is.str(m_Stream[++index]);
-		is >> geo.m_Helper.matWorld._21 >> geo.m_Helper.matWorld._22 >> geo.m_Helper.matWorld._23 >> geo.m_Helper.matWorld._24;
-
-		is.clear();
-		is.str(m_Stream[++index]);
-		is >> geo.m_Helper.matWorld._31 >> geo.m_Helper.matWorld._32 >> geo.m_Helper.matWorld._33 >> geo.m_Helper.matWorld._34;
-
-		is.clear();
-		is.str(m_Stream[++index]);
-		is >> geo.m_Helper.matWorld._41 >> geo.m_Helper.matWorld._42 >> geo.m_Helper.matWorld._43 >> geo.m_Helper.matWorld._44;
+		InputMatrix(geo.m_Helper.matWorld, index);
 
 		is.clear();
 		is.str(m_Stream[++index]);
@@ -286,55 +273,123 @@ void ZXCParser::LoadGeomesh()
 			}
 		}
 
-		if (pani > 0)
+		if (pani != 0 || rani != 0 || sani != 0)
 		{
 			geo.m_AniHelper = std::make_unique<Helper>();
-			while (m_Stream[++index].find(L"#CONTROL_POS_TRACK") == std::wstring::npos);
-			geo.m_AniHelper->m_Position.resize(pani);
-			for (int i = 0; i < pani; ++i)
-			{
-				auto& postrack = geo.m_AniHelper->m_Position[i];
-
-				is.clear();
-				is.str(m_Stream[++index]);
-				is >> ignore >> postrack.mTick >> postrack.mPosition.x >> postrack.mPosition.y >> postrack.mPosition.z;
-			}
-		}
-
-		if (rani > 0)
-		{
-			if(geo.m_AniHelper == nullptr)
-				geo.m_AniHelper = std::make_unique<Helper>();
-			while (m_Stream[++index].find(L"#CONTROL_ROT_TRACK") == std::wstring::npos);
-			geo.m_AniHelper->m_Rotation.resize(rani);
-			for (int i = 0; i < rani; ++i)
-			{
-				auto& rottrack = geo.m_AniHelper->m_Rotation[i];
-
-				is.clear();
-				is.str(m_Stream[++index]);
-				is >> ignore >> rottrack.mTick >> rottrack.mQuatRotation.x >> rottrack.mQuatRotation.y >> rottrack.mQuatRotation.z >> rottrack.mQuatRotation.w;
-			}
-		}
-
-		if (sani > 0)
-		{
-			if (geo.m_AniHelper == nullptr)
-				geo.m_AniHelper = std::make_unique<Helper>();
-			while (m_Stream[++index].find(L"#CONTROL_SCALE_TRACK") == std::wstring::npos);
-			geo.m_AniHelper->m_Scale.resize(sani);
-			for (int i = 0; i < sani; ++i)
-			{
-				auto& scaletrack = geo.m_AniHelper->m_Scale[i];
-
-				is.clear();
-				is.str(m_Stream[++index]);
-				is >> ignore >> scaletrack.mTick >> scaletrack.mQuatRotation.x >> scaletrack.mQuatRotation.y >> scaletrack.mQuatRotation.z >> scaletrack.mQuatRotation.w >> scaletrack.mPosition.x >> scaletrack.mPosition.y >> scaletrack.mPosition.z;
-			}
+			InputAnimation(geo.m_AniHelper.get(), index, pani, rani, sani);
 		}
 	}
 }
 
 void ZXCParser::LoadHelperObject()
 {
+	size_t index = m_HelperObjIndex;
+
+	std::wistringstream is(m_Stream[index]);
+
+	std::wstring ignore;
+	int HelperNum;
+
+	is >> ignore >> HelperNum;
+
+	m_zxcMesh->m_HelperList.resize(HelperNum);
+
+	//is.clear();
+	//is.str(m_Stream[++index]);
+	
+	for (int i = 0; i < HelperNum; ++i)
+	{
+		int pani, rani, sani;
+		auto& helper = m_zxcMesh->m_HelperList[i];
+
+		is.clear();
+		is.str(m_Stream[++index]);
+		std::wstring name;
+		std::wstring parentName;
+	
+		is >> ignore >> ignore >> ignore >> name >> ignore >> parentName >>
+			ignore >> pani >> ignore >> rani >> ignore >> sani;
+
+		helper.Name = std::string(name.begin(), name.end());
+
+		if (parentName != L"NONE")
+			helper.ParentName = std::string(parentName.begin(), parentName.end());
+
+		++index;
+
+		InputMatrix(helper.matWorld, index);
+
+		if (pani != 0 || rani != 0 || sani != 0)
+			InputAnimation(&helper, index, pani, rani, sani);
+	}
+
 }
+
+void ZXCParser::InputMatrix(DirectX::XMFLOAT4X4 & m, size_t& index)
+{
+	std::wistringstream is;
+	is.clear();
+	is.str(m_Stream[++index]);
+	is >> m._11 >> m._12 >> m._13 >> m._14;
+
+	is.clear();
+	is.str(m_Stream[++index]);
+	is >> m._21 >> m._22 >> m._23 >> m._24;
+
+	is.clear();
+	is.str(m_Stream[++index]);
+	is >> m._31 >> m._32 >> m._33 >> m._34;
+
+	is.clear();
+	is.str(m_Stream[++index]);
+	is >> m._41 >> m._42 >> m._43 >> m._44;
+}
+
+void ZXCParser::InputAnimation(Helper* h, size_t& index, int pani, int rani, int sani)
+{
+	std::wistringstream is;
+	std::wstring ignore;
+
+	if (pani > 0)
+	{
+		while (m_Stream[++index].find(L"#CONTROL_POS_TRACK") == std::wstring::npos);
+		h->m_Position.resize(pani);
+		for (int i = 0; i < pani; ++i)
+		{
+			auto& postrack = h->m_Position[i];
+
+			is.clear();
+			is.str(m_Stream[++index]);
+			is >> ignore >> postrack.mTick >> postrack.mPosition.x >> postrack.mPosition.y >> postrack.mPosition.z;
+		}
+	}
+
+	if (rani > 0)
+	{
+		while (m_Stream[++index].find(L"#CONTROL_ROT_TRACK") == std::wstring::npos);
+		h->m_Rotation.resize(rani);
+		for (int i = 0; i < rani; ++i)
+		{
+			auto& rottrack = h->m_Rotation[i];
+
+			is.clear();
+			is.str(m_Stream[++index]);
+			is >> ignore >> rottrack.mTick >> rottrack.mQuatRotation.x >> rottrack.mQuatRotation.y >> rottrack.mQuatRotation.z >> rottrack.mQuatRotation.w;
+		}
+	}
+
+	if (sani > 0)
+	{
+		while (m_Stream[++index].find(L"#CONTROL_SCALE_TRACK") == std::wstring::npos);
+		h->m_Scale.resize(sani);
+		for (int i = 0; i < sani; ++i)
+		{
+			auto& scaletrack = h->m_Scale[i];
+
+			is.clear();
+			is.str(m_Stream[++index]);
+			is >> ignore >> scaletrack.mTick >> scaletrack.mQuatRotation.x >> scaletrack.mQuatRotation.y >> scaletrack.mQuatRotation.z >> scaletrack.mQuatRotation.w >> scaletrack.mPosition.x >> scaletrack.mPosition.y >> scaletrack.mPosition.z;
+		}
+	}
+}
+

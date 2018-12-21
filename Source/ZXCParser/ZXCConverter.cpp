@@ -142,7 +142,7 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 				subMesh->m_IndexList.insert(subMesh->m_IndexList.end(), geoObj.mSubMesh[k]->indices.begin(), geoObj.mSubMesh[k]->indices.end());
 
 				std::tstring texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[k].Texture[0].Filename;
-				std::tstring texPath = L"..\\..\\data\\tex\\";
+				std::tstring texPath = L"..\\..\\data\\maps\\";
 
 				subMesh->m_DxObject.m_iNumIndex = (UINT)subMesh->m_IndexList.size();
 				subMesh->m_DxObject.m_iNumVertex = (UINT)subMesh->m_VertexList.size();
@@ -160,7 +160,11 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 			std::tstring texName;
 			if (geoObj.mtlID == -1)
 				texName = zxcMesh->m_MateriaList[mtrlRef].Texture[0].Filename;
-			std::tstring texPath = L"..\\..\\data\\";
+			else
+			{
+				texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[geoObj.mtlID].Texture[0].Filename;
+			}
+			std::tstring texPath = L"..\\..\\data\\maps\\";
 
 			mesh->m_DxObject.m_iNumIndex = (UINT)mesh->m_IndexList.size();
 			mesh->m_DxObject.m_iNumVertex = (UINT)mesh->m_VertexList.size();
@@ -178,33 +182,6 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 		{
 			mesh->m_Parent = rMesh[mesh->ParentName].get();
 			rMesh[mesh->ParentName]->m_ChildList.push_back(mesh.get());
-		}
-	}
-
-	std::unordered_map<std::string, std::unique_ptr<Mesh>>::const_iterator iter = rMesh.begin();
-	std::vector<Mesh*>::const_iterator childiter;
-
-	for (;iter != rMesh.end();)
-	{
-		if (iter->second->m_ChildList.size() == 0 && iter->second->m_Type < ObjectType::GEOMESH)
-		{
-			if (iter->second->m_Parent != nullptr)
-			{
-				childiter = iter->second->m_Parent->m_ChildList.begin();
-				for (;childiter != iter->second->m_Parent->m_ChildList.end(); ++childiter)
-				{
-					if ((*childiter)->Name == iter->second->Name)
-					{
-						childiter = iter->second->m_Parent->m_ChildList.erase(childiter);
-						break;
-					}
-				}
-			}
-			iter = rMesh.erase(iter);
-		}
-		else
-		{
-			++iter;
 		}
 	}
 

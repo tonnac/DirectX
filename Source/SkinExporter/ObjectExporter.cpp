@@ -124,6 +124,10 @@ void ObjectExporter::LoadMesh(INode* node, ZXCObject* o)
 		MaxUtil::ConvertVector(vn, o->mTriangles[i].v[2].n);
 
 		o->mTriangles[i].mSubMtrl = mesh.faces[i].getMatID();
+		if (o->mTriangles[i].mSubMtrl > (int)mExporter->mOutputMaterial[o->mMaterialRef].SubMaterial.size())
+		{
+			o->mTriangles[i].mSubMtrl = rand() % mExporter->mOutputMaterial[o->mMaterialRef].SubMaterial.size();
+		}
 	}
 	if (needDel)
 		delete tri;
