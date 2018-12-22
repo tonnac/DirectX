@@ -141,6 +141,23 @@ void ZXCWriter::InputMesh(std::wofstream & os)
 
 			std::sort(skinMesh->mSkinTriList.begin(), skinMesh->mSkinTriList.end());
 
+			int Count = 0;
+			int Num = -1;
+			std::count_if(o->mTriangles.begin(), o->mTriangles.end(), [&Num, &Count](const VertexTri& lhs)
+			{
+				if (lhs.mSubMtrl != Num)
+				{
+					++Count;
+					Num = lhs.mSubMtrl;
+					return true;
+				}
+				return false;
+			});
+
+			std::wstring mtrlNum = L"\n\t#MESH_TYPE_NUM " + std::to_wstring(Count);
+
+			os << mtrlNum;
+
 			int mtrlRef = o->mMaterialRef;
 			if (mtrlRef >= 0 && !mMaterial[mtrlRef].SubMaterial.empty())
 			{

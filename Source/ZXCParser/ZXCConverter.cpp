@@ -144,7 +144,7 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 				subMesh->m_IndexList.insert(subMesh->m_IndexList.end(), geoObj.mSubMesh[k]->indices.begin(), geoObj.mSubMesh[k]->indices.end());
 
 				std::tstring texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[mtlID].Texture[0].Filename;
-				std::tstring texPath = L"..\\..\\data\\maps\\";
+				std::tstring texPath = L"..\\..\\data\\character\\";
 
 				subMesh->m_DxObject.m_iNumIndex = (UINT)subMesh->m_IndexList.size();
 				subMesh->m_DxObject.m_iNumVertex = (UINT)subMesh->m_VertexList.size();
@@ -155,23 +155,28 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 		else
 		{
 			mesh->m_Scene = zxcMesh->m_Scene;
-			mesh->m_iNumFaces = (int)geoObj.indices.size() / 3;
-			mesh->m_VertexList.insert(mesh->m_VertexList.end(), geoObj.vertices.begin(), geoObj.vertices.end());
-			mesh->m_IndexList.insert(mesh->m_IndexList.end(), geoObj.indices.begin(), geoObj.indices.end());
-
-			std::tstring texName;
-			if (geoObj.mtlID == -1)
-				texName = zxcMesh->m_MateriaList[mtrlRef].Texture[0].Filename;
-			else
+			if (mtrlRef != -1)
 			{
-				texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[geoObj.mtlID].Texture[0].Filename;
-			}
-			std::tstring texPath = L"..\\..\\data\\maps\\";
+				mesh->m_iNumFaces = (int)geoObj.indices.size() / 3;
+				mesh->m_VertexList.insert(mesh->m_VertexList.end(), geoObj.vertices.begin(), geoObj.vertices.end());
+				mesh->m_IndexList.insert(mesh->m_IndexList.end(), geoObj.indices.begin(), geoObj.indices.end());
 
-			mesh->m_DxObject.m_iNumIndex = (UINT)mesh->m_IndexList.size();
-			mesh->m_DxObject.m_iNumVertex = (UINT)mesh->m_VertexList.size();
-			mesh->m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
-			mesh->Create(device, L"shape.hlsl", texPath + texName);
+				std::tstring texName;
+				if (geoObj.mtlID == -1)
+				{
+					texName = zxcMesh->m_MateriaList[1].Texture[0].Filename;
+				}
+				else
+				{
+					texName = zxcMesh->m_MateriaList[mtrlRef].SubMaterial[geoObj.mtlID].Texture[0].Filename;
+				}
+				std::tstring texPath = L"..\\..\\data\\character\\";
+
+				mesh->m_DxObject.m_iNumIndex = (UINT)mesh->m_IndexList.size();
+				mesh->m_DxObject.m_iNumVertex = (UINT)mesh->m_VertexList.size();
+				mesh->m_DxObject.m_iVertexSize = sizeof(PNCT_VERTEX);
+				mesh->Create(device, L"shape.hlsl", texPath + texName);
+			}
 		}
 
 		rMesh.insert(std::make_pair(mesh->Name, std::move(mesh)));
@@ -200,7 +205,7 @@ std::unique_ptr<Mesh> ZXCConverter::Convert0(ZXCMesh * zxcMesh, ID3D11Device * d
 	{
 		if (x.second->Name != RootName)
 		{
-			if (x.second->m_Type == ObjectType::GEOMESH)
+			if (x.second->m_Type == ObjectType::GEOMESH && x.second->m_DxObject.m_pVertexBuffer)
 			{
 				rMesh[RootName]->m_RenderList.push_back(x.second.get());
 			}

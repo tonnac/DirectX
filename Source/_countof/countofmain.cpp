@@ -1,6 +1,12 @@
 #include <iostream>
 #include <cstdlib>
 #include <windows.h>
+#include <unordered_map>
+#include <string>
+
+using namespace std;
+
+
 int main(void)
 {
 	int * ptr = new int[5];

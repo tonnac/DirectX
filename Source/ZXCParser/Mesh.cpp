@@ -51,11 +51,15 @@ bool Mesh::Frame()
 
 	D3DXMatrixInverse(&InvWorld, nullptr, &m_matWorld);
 
-	if (!m_ChildList.empty())
+	if (!m_ChildList.empty() || !m_NodeList.empty())
 	{
 		for (auto&x : m_ChildList)
 		{
 			x->Frame();
+		}
+		for (auto&k : m_NodeList)
+		{
+			k->Frame();
 		}
 	}
 
@@ -150,11 +154,16 @@ void Mesh::InitMatrix()
 		m_Position = pe;
 	}
 
-	if (!m_ChildList.empty())
+	if (!m_ChildList.empty() || !m_NodeList.empty())
 	{
 		for (auto & x : m_ChildList)
 		{
 			x->InitMatrix();
+		}
+
+		for (auto& k : m_NodeList)
+		{
+			k->InitMatrix();
 		}
 	}
 }
