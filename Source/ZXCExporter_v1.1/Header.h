@@ -134,21 +134,6 @@ struct AnimationClip
 	std::vector<BoneAnimation> BoneAnimations;
 };
 
-//struct abd
-//{
-//	int mMaterialRef = -1;
-//	std::pair<std::wstring, size_t> mNodeName;
-//	std::pair<std::wstring, size_t> mParentName;
-//
-//	Box3 mBoundingBox;
-//
-//	std::vector<VertexTri> mTriangles;
-//
-//	D3D_MATRIX mWorld;
-//	std::vector<AnimationClip> mAnimations;
-//	std::vector<ZXCObject> mSubMesh;
-//};
-
 enum class ObjectType
 {
 	MESH,
